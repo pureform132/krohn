@@ -1108,7 +1108,7 @@ export const jaOverrides = {
       sshErrHostKey:
         '前回の接続以降、ホスト鍵が変更されています。想定どおりか確認し、ssh-keygen -R <host> を実行してから再接続してください。',
       sshErrNotInstalled:
-        'リモートホストに KROHN がインストールされていません。リモートでインストールする（curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh）か、KROHN パスを設定してください。',
+        'リモートホストに KROHN がインストールされていません。リモートでインストールする（curl -fsSL https://github.com/pureform132/krohn/install.sh | sh）か、KROHN パスを設定してください。',
       sshErrPlatform:
         'サポートされていないリモートプラットフォームです。KROHN Desktop の SSH モードは Linux、macOS、Windows のリモートホストに対応しています。',
       sshErrTimeout: 'SSH 接続がタイムアウトしました。ホストが到達不能、またはスリープ中の可能性があります。',
@@ -1855,7 +1855,7 @@ export const jaOverrides = {
       title: (profile: string) => `${profile} をリモートホストに接続`,
       description: 'このプロファイルのセッションは、このパソコンではなく指定したリモートの KROHN で実行されます。',
       urlLabel: 'リモートアドレス',
-      urlPlaceholder: 'https://hermes.example.com',
+      urlPlaceholder: 'https://krohn.example.com',
       urlInvalid: 'http:// または https:// で始まる完全なアドレスを入力してください',
       tokenLabel: 'アクセストークン',
       tokenPlaceholder: 'リモートのセッショントークンを貼り付け',
@@ -2844,7 +2844,7 @@ export const jaOverrides = {
       'ゲートウェイ URL を入力してください。KROHN Desktop がトークンとブラウザーサインインのどちらが必要かを検出します。',
     remoteUrlTitle: 'ゲートウェイ URL',
     remoteUrlDesc: 'KROHN ゲートウェイのベース URL を使用します。リモートの場合は https:// を含めてください。',
-    remoteUrlPlaceholder: 'https://gateway.example.com/hermes',
+    remoteUrlPlaceholder: 'https://gateway.example.com/krohn',
     probing: 'ゲートウェイ認証方式を検出中...',
     probeError: 'その KROHN ゲートウェイに到達できませんでした。',
     identityProvider: 'ID プロバイダー',

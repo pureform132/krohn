@@ -27,8 +27,8 @@ afterEach(() => {
 
 describe('remoteHostLabel', () => {
   it('keeps a non-default port and drops default ones', () => {
-    expect(remoteHostLabel('https://hermes.example.com:8443/x')).toBe('krohn.example.com:8443')
-    expect(remoteHostLabel('https://hermes.example.com:443')).toBe('krohn.example.com')
+    expect(remoteHostLabel('https://krohn.example.com:8443/x')).toBe('krohn.example.com:8443')
+    expect(remoteHostLabel('https://krohn.example.com:443')).toBe('krohn.example.com')
     expect(remoteHostLabel('http://hermes.example.com:80')).toBe('krohn.example.com')
   })
 

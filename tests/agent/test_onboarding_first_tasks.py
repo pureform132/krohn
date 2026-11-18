@@ -73,7 +73,7 @@ def test_how_krohn_works_reads_the_docs_and_builds_three_screens():
 
     assert text.split("\n")[1] == ("Load these skills with skill_view first: krohn, claude-design, p5js, "
                                    "humanizer.")
-    assert "https://hermes-agent.nousresearch.com/docs" in text and "web_extract" in text
+    assert "https://github.com/pureform132/krohn/tree/master/website/docs" in text and "web_extract" in text
     assert all(f"Screen {n}" in text for n in (1, 2, 3)) and "~/krohn-first-task/" in text
 
 

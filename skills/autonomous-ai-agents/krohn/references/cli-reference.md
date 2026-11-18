@@ -1,7 +1,7 @@
 # KROHN CLI Reference
 
 Live sources when anything looks stale: `krohn --help`, `krohn <command> --help`,
-https://hermes-agent.nousresearch.com/docs/reference/cli-commands
+https://github.com/pureform132/krohn/tree/master/website/docs/reference/cli-commands
 
 ### Global Flags
 
@@ -79,7 +79,7 @@ krohn gateway run|install|start|stop|restart|status|setup
 ```
 
 20+ platforms: Telegram, Discord, Slack, WhatsApp (Baileys + Business Cloud API), iMessage (Photon — `krohn photon setup`), Signal, Email, SMS, Matrix, Mattermost, Teams, LINE, SimpleX, ntfy, Google Chat, Home Assistant, DingTalk, Feishu, WeCom, Weixin, API Server, Webhooks. Open WebUI connects via the API Server adapter. Most adapters ship under `plugins/platforms/`.
-Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
+Docs: https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/messaging/
 
 ### Sessions
 
@@ -142,10 +142,10 @@ Plugin- and provider-supplied subcommands (e.g. `krohn photon setup`) only appea
 
 | Looking for... | Location |
 |---|---|
-| Config options | `krohn config edit` · [Configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) |
-| Tools / toolsets | `krohn tools list` · [Tools reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference) |
-| Skills catalog | `krohn skills browse` · [Skills catalog](https://hermes-agent.nousresearch.com/docs/reference/skills-catalog) |
-| Provider setup | `krohn model` · [Providers guide](https://hermes-agent.nousresearch.com/docs/integrations/providers) |
-| Env variables | `krohn config env-path` · [Env vars reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) |
+| Config options | `krohn config edit` · [Configuration docs](https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/configuration) |
+| Tools / toolsets | `krohn tools list` · [Tools reference](https://github.com/pureform132/krohn/tree/master/website/docs/reference/tools-reference) |
+| Skills catalog | `krohn skills browse` · [Skills catalog](https://github.com/pureform132/krohn/tree/master/website/docs/reference/skills-catalog) |
+| Provider setup | `krohn model` · [Providers guide](https://github.com/pureform132/krohn/tree/master/website/docs/integrations/providers) |
+| Env variables | `krohn config env-path` · [Env vars reference](https://github.com/pureform132/krohn/tree/master/website/docs/reference/environment-variables) |
 | Gateway logs | `~/.krohn/logs/gateway.log` (or `krohn logs`) |
 | Sessions | `krohn sessions browse` (reads state.db) |

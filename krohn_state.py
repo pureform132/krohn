@@ -27,7 +27,7 @@ if _typing.TYPE_CHECKING:
 
 _REMOVAL_RELEASE = "v0.27.0"
 _MIGRATION_GUIDE = (
-    "https://hermes-agent.nousresearch.com/docs/developer-guide/plugins#hermes_state-deprecated-use-the-storage-interface"
+    "https://github.com/pureform132/krohn/tree/master/website/docs/developer-guide/plugins#hermes_state-deprecated-use-the-storage-interface"
 )
 
 _logger = _logging.getLogger("krohn_state")
@@ -631,7 +631,7 @@ def _engine_session_db(engine: "Any", db_path: "Path", read_only: "bool") -> "_S
             f"context engine {type(engine).__module__}.{type(engine).__qualname__} gets session_db, a "
             f"krohn_state.SessionDB, which is deprecated and is removed in {_REMOVAL_RELEASE}; accept the "
             "persistence= keyword in its bind_session_state and on_session_start to read through the agent's store "
-            "handle instead (https://hermes-agent.nousresearch.com/docs/developer-guide/context-engine-plugin"
+            "handle instead (https://github.com/pureform132/krohn/tree/master/website/docs/developer-guide/context-engine-plugin"
             "#session-storage).", DeprecationWarning, stacklevel=3)
     return db
 

@@ -182,7 +182,7 @@ describe('WebAccessSettings', () => {
   it('keeps an unsaved address choice through a refetch that changes nothing', async () => {
     renderPane(OFF)
     fireEvent.click(await screen.findByRole('button', { name: 'My own URL' }))
-    fireEvent.change(screen.getByPlaceholderText('https://hermes.example.com'), {
+    fireEvent.change(screen.getByPlaceholderText('https://krohn.example.com'), {
       target: { value: 'https://typed.example.net' }
     })
     mocked.getWebAccessStatus.mockClear()
@@ -361,7 +361,7 @@ describe('WebAccessSettings', () => {
 
     expect(screen.queryByText(/192\.168\.1\.50/)).toBeNull()
 
-    fireEvent.change(screen.getByPlaceholderText('https://hermes.example.com'), {
+    fireEvent.change(screen.getByPlaceholderText('https://krohn.example.com'), {
       target: { value: 'https://hermes.tail.ts.net' }
     })
 

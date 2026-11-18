@@ -591,7 +591,7 @@ def register(ctx):
     ctx.register_platform(
         name="irc",
         dashboard_description="Relay messages between an IRC channel (or DMs) and KROHN.",
-        docs_url="https://hermes-agent.nousresearch.com/docs/user-guide/messaging/irc",
+        docs_url="https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/messaging/irc",
         label="IRC",
         adapter_factory=IRCAdapter,
         check_fn=check_requirements,

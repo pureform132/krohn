@@ -371,7 +371,7 @@ def _beta_header(betas: list) -> dict[str, str]:
 def _attribution_headers() -> dict[str, str]:
     """Same client-attribution set sent to OpenRouter / Vercel AI Gateway / Fireworks."""
     return {
-        "HTTP-Referer": "https://hermes-agent.nousresearch.com", "X-Title": "KROHN",
+        "HTTP-Referer": "https://github.com/pureform132/krohn", "X-Title": "KROHN",
         "User-Agent": f"KROHNAgent/{get_version_info().base_version}",
     }
 

@@ -141,6 +141,6 @@ krohn kanban create "Wire the webhook" --project payments
 - `references/background-systems.md` — kanban overview.
 - `references/project-context-files.md` — a different feature: `AGENTS.md` / `.krohn.md` /
   `CLAUDE.md` instruction files that load into a session.
-- https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban#managing-boards-from-the-dashboard
+- https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/features/kanban#managing-boards-from-the-dashboard
   (board ↔ project binding) and
-  https://hermes-agent.nousresearch.com/docs/reference/cli-commands#hermes-project
+  https://github.com/pureform132/krohn/tree/master/website/docs/reference/cli-commands#hermes-project

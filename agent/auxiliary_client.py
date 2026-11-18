@@ -878,7 +878,7 @@ _PROVIDERS_WITHOUT_VISION: frozenset = frozenset({"kimi-coding", "kimi-coding-cn
 
 # OpenRouter app attribution (always sent). `X-Title` is what the dashboard reads.
 _OR_HEADERS_BASE = {
-    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
+    "HTTP-Referer": "https://github.com/pureform132/krohn",
     "X-Title": "KROHN",
     "X-OpenRouter-Categories": "productivity,cli-agent",
 }
@@ -947,7 +947,7 @@ from krohn_cli.version_info import krohn_user_agent
 
 
 def _ai_gateway_headers() -> dict[str, str]:
-    return {"HTTP-Referer": "https://hermes-agent.nousresearch.com", "X-Title": "KROHN",
+    return {"HTTP-Referer": "https://github.com/pureform132/krohn", "X-Title": "KROHN",
             "User-Agent": krohn_user_agent("KROHNAgent")}
 
 # Nous Portal attribution tags, built per call. They come from agent.portal_tags so the client=

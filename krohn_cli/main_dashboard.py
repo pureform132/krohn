@@ -678,7 +678,7 @@ def _maybe_setup_dashboard_auth_interactively(args) -> None:
             "    krohn dashboard register\n"
             "  It provisions a Nous Portal OAuth client and writes "
             "KROHN_DASHBOARD_OAUTH_CLIENT_ID into ~/.krohn/.env for you.\n"
-            "  Docs: https://hermes-agent.nousresearch.com/docs/"
+            "  Docs: https://github.com/pureform132/krohn/tree/master/website/docs/"
             "user-guide/features/web-dashboard#authentication-gated-mode"
         )
         sys.exit(0)

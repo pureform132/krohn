@@ -2,8 +2,8 @@
 
 KROHN es un fork derivado de **Hermes Agent**, creado por **Nous Research**.
 
-- Proyecto original: https://github.com/NousResearch/hermes-agent
-- Sitio del proyecto original: https://hermes-agent.nousresearch.com
+- Proyecto original: https://github.com/pureform132/krohn
+- Sitio del proyecto original: https://github.com/pureform132/krohn
 - Licencia original: MIT (conservada en `LICENSE`)
 
 KROHN conserva la licencia MIT y acredita la autoría del código original a Nous Research.

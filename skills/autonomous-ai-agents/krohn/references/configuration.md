@@ -1,7 +1,7 @@
 # Configuration, Toolsets & Voice
 
 Edit with `krohn config edit` or `krohn config set section.key value`.
-Full reference: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+Full reference: https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/configuration
 
 ### Config Sections (most-used keys)
 

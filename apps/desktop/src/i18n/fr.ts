@@ -1861,7 +1861,7 @@ export const frOverrides = {
       sshErrHostKey:
         "La clé de l'hôte a changé depuis votre dernière connexion. Vérifiez que ce changement est attendu, puis exécutez ssh-keygen -R <host> et reconnectez-vous.",
       sshErrNotInstalled:
-        "KROHN n'est pas installé sur l'hôte distant. Installez-le là-bas (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh) ou définissez le chemin KROHN.",
+        "KROHN n'est pas installé sur l'hôte distant. Installez-le là-bas (curl -fsSL https://github.com/pureform132/krohn/install.sh | sh) ou définissez le chemin KROHN.",
       sshErrPlatform:
         'Plateforme distante non prise en charge. Le mode SSH de KROHN Desktop supporte les hôtes distants Linux, macOS et Windows.',
       sshErrTimeout: "Expiration de la connexion SSH. L'hôte peut être inaccessible ou en veille.",
@@ -4361,7 +4361,7 @@ export const frOverrides = {
       "Entrez l'URL du gateway. KROHN Desktop détectera s'il a besoin d'un jeton ou d'une connexion par navigateur.",
     remoteUrlTitle: 'URL du gateway',
     remoteUrlDesc: "Utilisez l'URL de base du gateway KROHN, y compris https:// pour les connexions distantes.",
-    remoteUrlPlaceholder: 'https://gateway.example.com/hermes',
+    remoteUrlPlaceholder: 'https://gateway.example.com/krohn',
     probing: "Détection de l'authentification du gateway...",
     probeError: "Impossible d'atteindre ce gateway KROHN.",
     probeErrorDetails: 'Détails',

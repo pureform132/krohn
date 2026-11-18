@@ -150,7 +150,7 @@ _OAUTH_PROVIDER_CATALOG: tuple[dict[str, Any], ...] = (
     # Device code works in remote shells/containers without a reachable 127.0.0.1 callback.
     {"id": "xai-oauth", "name": "xAI Grok OAuth (SuperGrok / Premium+)", "flow": "device_code",
      "cli_command": "krohn auth add xai-oauth",
-     "docs_url": "https://hermes-agent.nousresearch.com/docs/guides/xai-grok-oauth", "status_fn": None},
+     "docs_url": "https://github.com/pureform132/krohn/tree/master/website/docs/guides/xai-grok-oauth", "status_fn": None},
     # Anthropic / Claude entries sit at the bottom. Deliberately flow == "external": an
     # in-dashboard Connect button would let a scriptable HTTP endpoint mint Claude Pro/Max
     # subscription tokens outside Anthropic's own client, against its OAuth usage policies.

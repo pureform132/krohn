@@ -123,17 +123,17 @@ test('remoteRequestMatchesBaseUrl treats HTTPS and WSS as the same gateway origi
   assert.equal(
     remoteRequestMatchesBaseUrl(
       'wss://krohn.example.com/gateway/api/ws?ticket=abc',
-      'https://hermes.example.com/gateway'
+      'https://krohn.example.com/gateway'
     ),
     true
   )
   assert.equal(remoteRequestMatchesBaseUrl('ws://krohn.example.com/api/ws', 'http://hermes.example.com'), true)
   assert.equal(
-    remoteRequestMatchesBaseUrl('wss://krohn.example.com/other/api/ws', 'https://hermes.example.com/gateway'),
+    remoteRequestMatchesBaseUrl('wss://krohn.example.com/other/api/ws', 'https://krohn.example.com/gateway'),
     false
   )
   assert.equal(
-    remoteRequestMatchesBaseUrl('wss://other.example.com/gateway/api/ws', 'https://hermes.example.com/gateway'),
+    remoteRequestMatchesBaseUrl('wss://other.example.com/gateway/api/ws', 'https://krohn.example.com/gateway'),
     false
   )
 })

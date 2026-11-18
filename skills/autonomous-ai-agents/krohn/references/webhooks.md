@@ -86,7 +86,7 @@ krohn webhook subscribe todoist-krohn \
   --deliver telegram --deliver-chat-id "12345"
 ```
 
-Full filter syntax: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/webhooks#payload-filters
+Full filter syntax: https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/messaging/webhooks#payload-filters
 
 ### List subscriptions
 ```bash

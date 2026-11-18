@@ -1849,7 +1849,7 @@ export const esOverrides = {
       sshErrHostKey:
         'La clave del host CAMBIÓ desde la última conexión. Confirma que sea un cambio esperado, ejecuta ssh-keygen -R <host> y vuelve a conectar.',
       sshErrNotInstalled:
-        'KROHN no está instalado en el host remoto. Instálalo allí (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh) o indica la ruta de KROHN.',
+        'KROHN no está instalado en el host remoto. Instálalo allí (curl -fsSL https://github.com/pureform132/krohn/install.sh | sh) o indica la ruta de KROHN.',
       sshErrPlatform:
         'Plataforma remota no compatible. El modo SSH de KROHN Desktop admite hosts remotos Linux, macOS y Windows.',
       sshErrTimeout: 'La conexión SSH agotó el tiempo de espera. Es posible que el host no responda o esté en reposo.',
@@ -3297,7 +3297,7 @@ export const esOverrides = {
       description:
         'Las sesiones de este perfil se ejecutarán en el KROHN remoto que indiques, en lugar de en este equipo.',
       urlLabel: 'Dirección remota',
-      urlPlaceholder: 'https://hermes.example.com',
+      urlPlaceholder: 'https://krohn.example.com',
       urlInvalid: 'Introduce una dirección completa que empiece por http:// o https://',
       tokenLabel: 'Token de acceso',
       tokenPlaceholder: 'Pega el token de sesión remota',
@@ -4341,7 +4341,7 @@ export const esOverrides = {
       'Introduce la URL de tu gateway. KROHN Desktop detectará si necesita un token o iniciar sesión en el navegador.',
     remoteUrlTitle: 'URL del gateway',
     remoteUrlDesc: 'Usa la URL base del gateway de KROHN e incluye https:// si es remoto.',
-    remoteUrlPlaceholder: 'https://gateway.example.com/hermes',
+    remoteUrlPlaceholder: 'https://gateway.example.com/krohn',
     probing: 'Detectando la autenticación del gateway…',
     probeError:
       'KROHN no puede llegar a esa dirección. Comprueba la URL y que el otro equipo esté ejecutando KROHN; las opciones de inicio de sesión aparecen cuando responde.',

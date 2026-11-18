@@ -461,7 +461,7 @@ async function artistRequest(path, signal, ctx) {
     ctx.storage.set('local.artistRequestAt', Date.now())
     const response = await fetch(`https://musicbrainz.org/ws/2/${path}`, {
       signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]), credentials: 'omit',
-      headers: { 'User-Agent': 'KROHNRadio/1.0 (https://github.com/NousResearch/hermes-agent)' }
+      headers: { 'User-Agent': 'KROHNRadio/1.0 (https://github.com/pureform132/krohn)' }
     })
     if (!response.ok) throw new Error(`Artist lookup: HTTP ${response.status}`)
     return response.json()

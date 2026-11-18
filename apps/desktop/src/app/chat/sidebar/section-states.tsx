@@ -107,7 +107,7 @@ export function SidebarLoadErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 const SESSION_STORAGE_RECOVERY_URL =
-  'https://hermes-agent.nousresearch.com/docs/user-guide/session-storage-recovery#when-the-three-steps-do-not-work'
+  'https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/session-storage-recovery#when-the-three-steps-do-not-work'
 
 interface SidebarStorageCorruptNoticeProps {
   openRecoveryGuide?: (url: string) => void

@@ -8,7 +8,7 @@ import { DirectiveContent } from './directive-text'
 
 const desktopWindow = window as unknown as { krohnDesktop?: Window['krohnDesktop'] }
 
-const PR_URL = 'https://github.com/NousResearch/hermes-agent/pull/107950'
+const PR_URL = 'https://github.com/pureform132/krohn/pull/107950'
 
 function installDesktopBridge() {
   const openExternal = vi.fn().mockResolvedValue(undefined)

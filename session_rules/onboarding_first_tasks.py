@@ -61,7 +61,7 @@ FIRST_TASKS: tuple[FirstTask, ...] = (
         "krohn", "Explain how KROHN works", lambda facts, picks: False, ("krohn", "claude-design", "p5js"),
         goal="build a living page that shows how KROHN works, from the real docs and this install",
         steps=(
-            "Read https://hermes-agent.nousresearch.com/docs/llms.txt once with web_extract. Open a page only to "
+            "Read https://github.com/pureform132/krohn/tree/master/website/docs/llms.txt once with web_extract. Open a page only to "
             "check a fact you show.",
             "Read this install: the model, how many skills are installed, the connected apps, and what this chat did "
             "(tools called, skills loaded, their name and picks).",

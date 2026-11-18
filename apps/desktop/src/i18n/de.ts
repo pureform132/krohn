@@ -1855,7 +1855,7 @@ export const deOverrides = {
       sshErrHostKey:
         'Der Host-Key hat sich seit Ihrer letzten Verbindung GEÄNDERT. Prüfen Sie, ob das erwartet ist, führen Sie dann ssh-keygen -R <host> aus und verbinden Sie sich erneut.',
       sshErrNotInstalled:
-        'KROHN ist auf dem Remote-Host nicht installiert. Installieren Sie es dort (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh) oder legen Sie den KROHN-Pfad fest.',
+        'KROHN ist auf dem Remote-Host nicht installiert. Installieren Sie es dort (curl -fsSL https://github.com/pureform132/krohn/install.sh | sh) oder legen Sie den KROHN-Pfad fest.',
       sshErrPlatform:
         'Nicht unterstützte Remote-Plattform. Der Desktop-SSH-Modus von KROHN unterstützt Linux-, macOS- und Windows-Remote-Hosts.',
       sshErrTimeout: 'SSH-Verbindung ist ausgelaufen. Der Host ist möglicherweise nicht erreichbar oder schläft.',
@@ -3309,7 +3309,7 @@ export const deOverrides = {
       description:
         'Sessions in diesem Profil laufen auf dem von Ihnen festgelegten Remote-KROHN statt auf diesem Computer.',
       urlLabel: 'Remote-Adresse',
-      urlPlaceholder: 'https://hermes.example.com',
+      urlPlaceholder: 'https://krohn.example.com',
       urlInvalid: 'Geben Sie eine vollständige Adresse ein, die mit http:// oder https:// beginnt',
       tokenLabel: 'Access-Token',
       tokenPlaceholder: 'Remote-Session-Token einfügen',
@@ -4352,7 +4352,7 @@ export const deOverrides = {
       'Geben Sie die URL Ihres Gateways ein. KROHN Desktop erkennt, ob ein Token oder eine Browser-Anmeldung nötig ist.',
     remoteUrlTitle: 'Gateway-URL',
     remoteUrlDesc: 'Verwenden Sie die Basis-URL des KROHN Gateways, bei Remote-Gateways einschließlich https://.',
-    remoteUrlPlaceholder: 'https://gateway.example.com/hermes',
+    remoteUrlPlaceholder: 'https://gateway.example.com/krohn',
     probing: 'Gateway-Authentifizierung wird erkannt...',
     probeError: 'Dieses KROHN Gateway konnte nicht erreicht werden.',
     probeErrorDetails: 'Details',

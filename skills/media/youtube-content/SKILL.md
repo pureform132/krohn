@@ -26,7 +26,7 @@ Use `terminal` with the Python from a PM-prepared KROHN source checkout. The
 KROHN with raw pip or project-discovering `uv run`.
 
 From that checkout, first follow the isolated development-home setup in
-[Package Management](https://hermes-agent.nousresearch.com/docs/reference/package-management#developer-workflow),
+[Package Management](https://github.com/pureform132/krohn/tree/master/website/docs/reference/package-management#developer-workflow),
 then prepare the extra and reactivate before running the helper:
 
 ```bash

@@ -204,7 +204,7 @@ async function locateKROHN(ssh, remoteKROHNPath) {
     //   - version checking: `<python> --version` printed "Python x.y.z" instead of
     //     the KROHN version, and
     //   - capability probing: `<python> serve --help` failed entirely.
-    // See https://github.com/NousResearch/hermes-agent/issues/74411
+    // See https://github.com/pureform132/krohn/issues/74411
     return candidate
   }
 
@@ -264,7 +264,7 @@ async function locateKROHN(ssh, remoteKROHNPath) {
 
   const err: any = new Error(
     'KROHN is not installed on the remote host (could not find a `krohn` executable). ' +
-      'Install it on the remote with:  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh  ' +
+      'Install it on the remote with:  curl -fsSL https://github.com/pureform132/krohn/install.sh | sh  ' +
       '— or set the KROHN path explicitly in the SSH connection settings.'
   )
 

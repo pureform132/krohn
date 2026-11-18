@@ -34,7 +34,7 @@ from krohn_cli._startup_fast import project_root_str
 
 PROJECT_ROOT = Path(project_root_str())
 
-_DOCS_BASE = "https://hermes-agent.nousresearch.com/docs"
+_DOCS_BASE = "https://github.com/pureform132/krohn/tree/master/website/docs"
 _BRACKETED_PASTE_PATTERN = re.compile(r"\x1b\[\s*200~|\x1b\[\s*201~")
 
 

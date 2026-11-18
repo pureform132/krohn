@@ -373,7 +373,7 @@ export const zhHantCommandCenter = {
       title: (profile: string) => `將 ${profile} 連線至遠端主機`,
       description: '此設定檔中的工作階段將在你指定的遠端 KROHN 上執行，而不是這台電腦。',
       urlLabel: '遠端位址',
-      urlPlaceholder: 'https://hermes.example.com',
+      urlPlaceholder: 'https://krohn.example.com',
       urlInvalid: '請輸入以 http:// 或 https:// 開頭的完整位址',
       tokenLabel: '存取權杖',
       tokenPlaceholder: '貼上遠端工作階段權杖',

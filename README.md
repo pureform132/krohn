@@ -108,4 +108,4 @@ krohn import-agent cursor
 
 MIT. Ver [LICENSE](LICENSE).
 
-**KROHN** deriva de **Hermes Agent** (© Nous Research, https://github.com/NousResearch/hermes-agent), publicado bajo MIT. KROHN no está afiliado con Nous Research. Atribución completa en [NOTICE.md](NOTICE.md).
+**KROHN** deriva de **Hermes Agent** (© Nous Research, https://github.com/pureform132/krohn), publicado bajo MIT. KROHN no está afiliado con Nous Research. Atribución completa en [NOTICE.md](NOTICE.md).

@@ -27,7 +27,7 @@ A quick search before you build saves your time and keeps the PR queue clean —
   gh search issues --repo NousResearch/krohn "<your terms>"
   gh search prs --repo NousResearch/krohn --state all "<your terms>"
   ```
-  Or use the web UI: [issues](https://github.com/NousResearch/hermes-agent/issues?q=) · [PRs (all states)](https://github.com/NousResearch/hermes-agent/pulls?q=is%3Apr).
+  Or use the web UI: [issues](https://github.com/pureform132/krohn/issues?q=) · [PRs (all states)](https://github.com/pureform132/krohn/pulls?q=is%3Apr).
 - **The issue tracker can lag the code.** Many requested features are already implemented in-tree, so also search the source (`search_files`, or your editor's grep) for the capability before proposing it.
 - **If an open PR already addresses it**, consider reviewing or improving that one instead of opening a competing duplicate.
 - **For larger work**, comment on the issue to signal you're working on it, so others don't start the same thing.
@@ -93,7 +93,7 @@ The reason is maintenance load, not quality. Every external product absorbed int
 
 Publish these as a **standalone plugin repo** instead:
 
-- Implement the relevant ABC and use the existing plugin discovery path (`~/.krohn/plugins/`, project `.krohn/plugins/`, or a pip entry point) — see [Build a KROHN Plugin](https://hermes-agent.nousresearch.com/docs/guides/build-a-hermes-plugin)
+- Implement the relevant ABC and use the existing plugin discovery path (`~/.krohn/plugins/`, project `.krohn/plugins/`, or a pip entry point) — see [Build a KROHN Plugin](https://github.com/pureform132/krohn/tree/master/website/docs/guides/build-a-hermes-plugin)
 - Register lifecycle hooks (`pre_tool_call`, `post_tool_call`, `pre_llm_call`, `post_llm_call`, `on_session_start`, `on_session_end`), tools (`ctx.register_tool`), and CLI subcommands (`ctx.register_cli_command`) through the surface we already expose — no core changes needed
 - If your plugin needs a capability the framework doesn't expose, that's a feature request to **widen the generic plugin surface** (a new hook or `ctx` method) — never special-case your plugin in core
 - Promote it in the [Nous Research Discord](https://discord.gg/NousResearch) `#plugins-skills-and-skins` channel so users can find and install it
@@ -104,7 +104,7 @@ A well-built third-party-product plugin can clear automated review and still be 
 
 ## Submitting a Plugin to the Catalog
 
-A standalone plugin reaches users through the [plugin catalog](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugin-catalog), browsable on the [KROHN Marketplace](https://hermes-agent.nousresearch.com/marketplace): a PR to this repo adding one `plugin-catalog/<name>.yaml` file that pins your repo at an exact commit. Read **[Submitting to the plugin catalog](https://hermes-agent.nousresearch.com/docs/developer-guide/plugins/catalog-submission)** before opening one. It covers what to check first (`krohn plugins validate --install-deps`), how review works, and every admission rule. The canonical rules live in [`plugin-catalog/README.md`](plugin-catalog/README.md); if you change them, change the mirrored block in the docs page in the same PR (a test keeps the two identical).
+A standalone plugin reaches users through the [plugin catalog](https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/features/plugin-catalog), browsable on the [KROHN Marketplace](https://github.com/pureform132/krohn/marketplace): a PR to this repo adding one `plugin-catalog/<name>.yaml` file that pins your repo at an exact commit. Read **[Submitting to the plugin catalog](https://github.com/pureform132/krohn/tree/master/website/docs/developer-guide/plugins/catalog-submission)** before opening one. It covers what to check first (`krohn plugins validate --install-deps`), how review works, and every admission rule. The canonical rules live in [`plugin-catalog/README.md`](plugin-catalog/README.md); if you change them, change the mirrored block in the docs page in the same PR (a test keeps the two identical).
 
 The rules that most often send a submission back: the plugin must extend KROHN only through public hooks, `ctx.register_*` APIs and the Desktop SDK (no patching core code or Desktop markup at runtime), must not update itself, must declare the capabilities it registers, and must disclose risky behaviour.
 
@@ -1074,7 +1074,7 @@ test(tools): add unit tests for file_operations
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/NousResearch/hermes-agent/issues)
+- Use [GitHub Issues](https://github.com/pureform132/krohn/issues)
 - Include: OS, Python version, KROHN version (`krohn --version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates

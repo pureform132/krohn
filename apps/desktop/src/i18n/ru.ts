@@ -1214,7 +1214,7 @@ export const ruOverrides = {
       sshErrHostKey:
         'Ключ хоста ИЗМЕНИЛСЯ с последнего подключения. Убедитесь, что это ожидаемо, затем выполните ssh-keygen -R <host> и переподключитесь.',
       sshErrNotInstalled:
-        'KROHN не установлен на удалённой машине. Установите его там (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh) или задайте путь к KROHN.',
+        'KROHN не установлен на удалённой машине. Установите его там (curl -fsSL https://github.com/pureform132/krohn/install.sh | sh) или задайте путь к KROHN.',
       sshErrPlatform:
         'Неподдерживаемая удалённая платформа. SSH-режим KROHN Desktop поддерживает удалённые хосты Linux, macOS и Windows.',
       sshErrTimeout: 'SSH-соединение истекло. Хост может быть недоступен или «спит».',
@@ -3096,7 +3096,7 @@ export const ruOverrides = {
     remoteSetupDesc: 'Введите URL вашего шлюза. KROHN Desktop определит, нужен токен или вход через браузер.',
     remoteUrlTitle: 'URL шлюза',
     remoteUrlDesc: 'Используйте базовый URL шлюза KROHN, включая https:// для удалённых.',
-    remoteUrlPlaceholder: 'https://gateway.example.com/hermes',
+    remoteUrlPlaceholder: 'https://gateway.example.com/krohn',
     probing: 'Определяем аутентификацию шлюза...',
     probeError: 'Не удалось подключиться к этому шлюзу KROHN.',
     identityProvider: 'ваш провайдер аутентификации',

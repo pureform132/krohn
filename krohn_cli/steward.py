@@ -41,7 +41,7 @@ STEWARD_UPDATE_MESSAGES = {
         "\n"
         "Manage updates from within the desktop app.\n"
         "Prefer a self-managed source install? See:\n"
-        "  https://hermes-agent.nousresearch.com/docs/user-guide/switching-to-source"
+        "  https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/switching-to-source"
     ),
     STEWARD_NIX: (
         "✗ This KROHN runs from the Nix store.\n"

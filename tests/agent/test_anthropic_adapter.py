@@ -1814,7 +1814,7 @@ def test_oauth_system_prompt_sanitizer_preserves_docs_url():
                 "role": "system",
                 "content": (
                     "KROHN by Nous Research uses krohn skills. "
-                    "Docs: https://hermes-agent.nousresearch.com/docs ; "
+                    "Docs: https://github.com/pureform132/krohn/tree/master/website/docs ; "
                     "interpreter ~/.krohn/krohn/venv/bin/python ; "
                     "source github.com/NousResearch/krohn ; mail krohn@example.com ; "
                     "skill_view(name='krohn') ; krohn's docs ; built by krohn."
@@ -1830,7 +1830,7 @@ def test_oauth_system_prompt_sanitizer_preserves_docs_url():
 
     system_text = "\n".join(block["text"] for block in kwargs["system"])
     assert "Claude Code by Anthropic uses claude-code skills." in system_text
-    assert "https://hermes-agent.nousresearch.com/docs" in system_text
+    assert "https://github.com/pureform132/krohn/tree/master/website/docs" in system_text
     # Paths and repo slugs are addresses too: a subagent told to run
     # ``~/.krohn/claude-code/venv/bin/python`` fails on a file that does not exist.
     assert "~/.krohn/krohn/venv/bin/python" in system_text

@@ -27,11 +27,11 @@ import { requestGatewayForActiveRoute } from '@/store/active-route-request'
 import { activeGatewayProfileKey } from '@/store/gateway'
 import { $gatewayState } from '@/store/session'
 
-export const CATALOG_ORIGIN = 'https://hermes-agent.nousresearch.com'
+export const CATALOG_ORIGIN = 'https://github.com/pureform132/krohn'
 export const PLUGIN_CATALOG_URL = `${CATALOG_ORIGIN}/docs/api/plugins.json`
 export const PLUGIN_CATALOG_DOCS_URL = `${CATALOG_ORIGIN}/docs/user-guide/features/plugin-catalog`
 export const SKILLS_DOCS_URL = `${CATALOG_ORIGIN}/docs/user-guide/features/skills`
-export const SUBMIT_MOD_URL = 'https://github.com/NousResearch/hermes-agent/compare'
+export const SUBMIT_MOD_URL = 'https://github.com/pureform132/krohn/compare'
 
 const FETCH_TIMEOUT_MS = 15_000
 const LOOKUP_TIMEOUT_MS = 20_000

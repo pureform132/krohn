@@ -102,7 +102,7 @@ def _print_curator_first_run_notice() -> None:
     )
     print("  Preview now:  krohn curator run --dry-run")
     print("  Pause it:     krohn curator pause")
-    print("  Docs:         https://hermes-agent.nousresearch.com/docs/user-guide/features/curator")
+    print("  Docs:         https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/features/curator")
 
 
 def _print_fts_optimize_available_notice() -> None:

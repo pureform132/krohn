@@ -6,7 +6,7 @@ import path from 'node:path'
 /** The closed token set `krohn_cli.update_receipt.record_stop_reason` records. */
 const STOP_CLASS_TOKEN = /^[a-z][a-z0-9_]{0,39}$/
 
-const UPDATES_GUIDE = 'https://hermes-agent.nousresearch.com/docs/getting-started/updating'
+const UPDATES_GUIDE = 'https://github.com/pureform132/krohn/tree/master/website/docs/getting-started/updating'
 
 export interface UpdateStop {
   stopClass: string

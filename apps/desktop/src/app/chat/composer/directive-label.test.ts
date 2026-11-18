@@ -133,7 +133,7 @@ describe('one label per reference, on every surface', () => {
   })
 
   it('a url still reads host + path on every surface', () => {
-    const item = backendRow('@url:https://github.com/NousResearch/hermes-agent/pull/74533', '', '')
+    const item = backendRow('@url:https://github.com/pureform132/krohn/pull/74533', '', '')
     const { editor, result } = typed('@gith')
 
     act(() => result.current.replaceTriggerWithChip(item))

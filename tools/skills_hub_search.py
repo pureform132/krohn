@@ -24,7 +24,7 @@ from tools.skills_hub_sources import BrowseShSource, LobeHubSource, UrlSource, W
 # Log-record parity with the origin module.
 logger = logging.getLogger("tools.skills_hub")
 
-KROHN_INDEX_URL = "https://hermes-agent.nousresearch.com/docs/api/skills-index.json"
+KROHN_INDEX_URL = "https://github.com/pureform132/krohn/tree/master/website/docs/api/skills-index.json"
 KROHN_INDEX_TTL = 6 * 3600  # 6 hours
 
 

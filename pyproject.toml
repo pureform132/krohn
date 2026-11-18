@@ -592,7 +592,7 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 krohn = "krohn_cli.main:main"
-krohn = "agent.legacy_cli:main"
+krohn-agent = "agent.legacy_cli:main"
 krohn-acp = "acp_adapter.entry:main"
 
 [tool.krohn]

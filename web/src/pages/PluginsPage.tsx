@@ -907,7 +907,7 @@ export default function PluginsPage() {
               {t.pluginsPage.catalogEmpty ?? "No catalog entries match."}{" "}
               <a
                 className="underline"
-                href="https://hermes-agent.nousresearch.com/docs/user-guide/features/plugin-catalog"
+                href="https://github.com/pureform132/krohn/tree/master/website/docs/user-guide/features/plugin-catalog"
                 target="_blank"
                 rel="noreferrer"
               >
