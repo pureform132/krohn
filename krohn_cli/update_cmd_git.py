@@ -29,7 +29,7 @@ _ORPHAN_RESCUE_REF_MAX_AGE_DAYS = 30
 _GIT_TEXT_KW = dict(capture_output=True, text=True, encoding="utf-8", errors="replace",
                    creationflags=windows_hide_flags())
 _BAR = "=" * 68
-_UPSTREAM_ADD_CMD = "git remote add upstream https://github.com/krohn-labs/krohn.git"
+_UPSTREAM_ADD_CMD = "git remote add upstream https://github.com/pureform132/krohn.git"
 
 
 def _git_ok(git_cmd, args, cwd, **kw) -> bool:
@@ -272,13 +272,13 @@ def _print_parked_branch_kept_notice(current_branch: str, target_branch: str, un
 
 
 OFFICIAL_REPO_URLS = {
-    "https://github.com/krohn-labs/krohn.git",
-    "git@github.com:krohn-labs/krohn.git",
-    "https://github.com/krohn-labs/krohn",
-    "git@github.com:krohn-labs/krohn",
+    "https://github.com/pureform132/krohn.git",
+    "git@github.com:pureform132/krohn.git",
+    "https://github.com/pureform132/krohn",
+    "git@github.com:pureform132/krohn",
 }
 # KROHN never self-pulls the upstream Nous Hermes tree. The KROHN fork owns its tree.
-OFFICIAL_REPO_URL = "https://github.com/krohn-labs/krohn.git"
+OFFICIAL_REPO_URL = "https://github.com/pureform132/krohn.git"
 SKIP_UPSTREAM_PROMPT_FILE = ".skip_upstream_prompt"
 
 

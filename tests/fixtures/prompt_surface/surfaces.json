@@ -33,7 +33,7 @@
   "cli.claude": {
     "prompt_tokens": {
       "context": 0,
-      "stable": 1230,
+      "stable": 1231,
       "volatile": 1297
     },
     "tool_tokens": 9463,
@@ -95,7 +95,7 @@
   "cli.gpt": {
     "prompt_tokens": {
       "context": 0,
-      "stable": 2425,
+      "stable": 2426,
       "volatile": 1293
     },
     "tool_tokens": 9618,
@@ -126,7 +126,7 @@
   "cli.krohn": {
     "prompt_tokens": {
       "context": 0,
-      "stable": 1230,
+      "stable": 1231,
       "volatile": 1297
     },
     "tool_tokens": 9463,

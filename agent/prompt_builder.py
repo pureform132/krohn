@@ -176,7 +176,7 @@ KROHN_AGENT_HELP_GUIDANCE = (
     "For help with KROHN itself — configuring, setting up, using, extending, or troubleshooting it — "
     "or to understand your own features, tools, or capabilities, the bundled docs "
     "(`website/docs/` in the repository, and the KROHN project site at "
-    "https://github.com/krohn-labs/krohn) are your "
+    "https://github.com/pureform132/krohn) are your "
     "reference. The `krohn` "
     "skill has the actual commands and proven workflows — load it with skill_view(name='krohn') "
     "before configuring, modifying, or troubleshooting KROHN so you don't guess or invent workarounds."
@@ -186,7 +186,7 @@ KROHN_AGENT_HELP_GUIDANCE = (
 KROHN_AGENT_HELP_GUIDANCE_NO_SKILLS = (
     "For help with KROHN itself — configuring, setting up, using, extending, or troubleshooting it — "
     "or to understand your own features, tools, or capabilities, the bundled docs (`website/docs/`) are "
-    "your reference; point the user there, or at https://github.com/krohn-labs/krohn."
+    "your reference; point the user there, or at https://github.com/pureform132/krohn."
 )
 
 

@@ -22,13 +22,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/krohn-labs/krohn.git"
+    "url": "git+https://github.com/pureform132/krohn.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/krohn-labs/krohn/issues"
+    "url": "https://github.com/pureform132/krohn/issues"
   },
-  "homepage": "https://github.com/krohn-labs/krohn#readme",
+  "homepage": "https://github.com/pureform132/krohn#readme",
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "eslint": "10.12.0",
