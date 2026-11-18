@@ -2,15 +2,14 @@ import { useCallback } from 'react'
 
 import { useTheme } from './context'
 
-// Old names land on a shipped theme so muscle memory works. `gold`/`krohn`
-// only ever meant the classic gold look, so they reach Classic KROHN; `default`
-// stays Nous because it is also the stock config value, which Desktop reads as
-// "the Desktop default" everywhere else (boot, backend sync, setTheme).
+// Old names land on a shipped theme so muscle memory works. `gold` only ever
+// meant the classic gold look, so it reaches Classic KROHN; `default` lands on
+// the flagship `krohn` skin, also the stock config value GitHub
+// "legacy default" maps to. `krohn` resolves to the KROHN Editorial theme.
 const ALIASES: Record<string, string> = {
   ares: 'ember',
-  default: 'nous',
+  default: 'krohn',
   gold: 'classic',
-  krohn: 'classic',
   'nous-light': 'nous'
 }
 

@@ -67,18 +67,34 @@ export function webPresetFromShared(
 
 export const defaultTheme: DashboardTheme = {
   name: "default",
-  label: "KROHN Teal",
-  description: "Classic dark teal — the canonical KROHN look",
+  label: "KROHN Editorial",
+  description: "Carbon paper editorial — the canonical KROHN look",
   palette: {
-    background: { hex: "#041c1c", alpha: 1 },
-    midground: { hex: "#ffe6cb", alpha: 1 },
-    foreground: { hex: "#ffffff", alpha: 0 },
-    warmGlow: "rgba(255, 189, 56, 0.35)",
+    background: { hex: "#0E0D0B", alpha: 1 },
+    midground: { hex: "#F2EAD9", alpha: 1 },
+    foreground: { hex: "#190E08", alpha: 0.06 },
+    warmGlow: "rgba(200, 57, 43, 0.22)",
     noiseOpacity: 1,
   },
-  typography: DEFAULT_TYPOGRAPHY,
-  layout: DEFAULT_LAYOUT,
-  terminalBackground: "#000000",
+  typography: {
+    ...DEFAULT_TYPOGRAPHY,
+    fontSans: '"Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif',
+    fontMono: '"IBM Plex Mono", "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace',
+    fontUrl:
+      "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+    baseSize: "15px",
+    lineHeight: "1.6",
+    letterSpacing: "0.005em",
+  },
+  layout: {
+    ...DEFAULT_LAYOUT,
+    radius: "0.375rem",
+  },
+  terminalBackground: "#0E0D0B",
+  seriesColors: {
+    inputTokenAccent: "#F2EAD9",
+    outputTokenAccent: "#C8392B",
+  },
 };
 
 export const midnightTheme: DashboardTheme = {
@@ -229,8 +245,8 @@ export const nousBlueTheme: DashboardTheme = {
  */
 export const defaultLargeTheme: DashboardTheme = {
   name: "default-large",
-  label: "KROHN Teal (Large)",
-  description: "KROHN Teal with bigger fonts and roomier spacing",
+  label: "KROHN Editorial (Large)",
+  description: "KROHN Editorial with bigger fonts and roomier spacing",
   palette: defaultTheme.palette,
   typography: {
     ...DEFAULT_TYPOGRAPHY,

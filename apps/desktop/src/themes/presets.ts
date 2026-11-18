@@ -441,7 +441,28 @@ export const slateTheme: DesktopTheme = {
   }
 }
 
+/**
+ * KROHN Editorial — the flagship theme. Charcoal paper, warm ink-cream
+ * typography, crimson accent; serif-first reading experience. Dark-first;
+ * the light end of the preset is a warm paper cream.
+ */
+export const krohnTheme: DesktopTheme = {
+  name: 'krohn',
+  label: 'KROHN Editorial',
+  description: 'Carbon paper, cream ink, crimson — the KROHN flagship look',
+  ...THEME_PRESET_PALETTES.krohn,
+  typography: {
+    fontSans: '"Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif, ' + EMOJI_FALLBACK,
+    fontMono: `"IBM Plex Mono", "JetBrains Mono", ${SYSTEM_MONO}`,
+    fontUrl:
+      'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap',
+    letterSpacing: '0.005em',
+    lineHeight: '1.6'
+  }
+}
+
 export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
+  krohn: krohnTheme,
   nous: nousTheme,
   github: githubTheme,
   catppuccin: catppuccinTheme,
@@ -459,7 +480,7 @@ export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
 export const BUILTIN_THEME_LIST = Object.values(BUILTIN_THEMES)
 
 /** Skin used when nothing is persisted or the persisted name is retired. */
-export const DEFAULT_SKIN_NAME = 'nous'
+export const DEFAULT_SKIN_NAME = 'krohn'
 
 /** Names that no longer resolve to a skin of their own. A stored pick of one
  *  falls back to DEFAULT_SKIN_NAME, and a cached backend theme under one is

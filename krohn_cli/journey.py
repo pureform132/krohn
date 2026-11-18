@@ -26,9 +26,9 @@ def _primary_hex() -> str:
         from krohn_cli.skin_engine import get_active_skin
 
         skin = get_active_skin()
-        return skin.get_color("ui_primary", "") or skin.get_color("banner_title", "#FFD700")
+        return skin.get_color("ui_primary", "") or skin.get_color("banner_title", "#E0503E")
     except Exception:
-        return "#FFD700"
+        return "#E0503E"
 
 
 @lru_cache(maxsize=1)

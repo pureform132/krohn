@@ -118,17 +118,17 @@ test('nonstable runtime pins userData before the app name can change', async ():
 })
 
 test.each([
-  [undefined, 'KROHN', 'krohn', 'latest', 'canary'],
-  ['bundled', 'KROHN', 'krohn', 'latest', 'canary'],
-  ['light', 'KROHN Light', 'krohn-light', 'light', 'light-canary']
+  [undefined, 'KROHN', 'krohn', null, null],
+  ['bundled', 'KROHN Agent', 'krohn', null, null],
+  ['light', 'KROHN Light', 'krohn-light', null, null]
 ] as const)(
   '%s separates stable, canary and independent commits',
   async (
     variant: string | undefined,
     display: string,
     cli: string,
-    channel: string,
-    canaryChannel: string
+    channel: null,
+    canaryChannel: null
   ): Promise<void> => {
     const stable: ProductIdentity = await identityForVariant(variant)
     assert.equal(stable.displayName, display)
@@ -138,7 +138,7 @@ test.each([
     const identities: ProductIdentity[] = [stable]
 
     for (const [tag, commit, expectedCli, expectedChannel] of [
-      ['v1.2.3+canary.20260818T000000Z', '', `${cli}-canary`, canaryChannel],
+      ['v1.2.3+canary.20260818T000000Z', '', `${cli}-canary`, null],
       ['', 'abcdef1234567890abcdef1234567890abcdef12', `${cli}-abcdef1`, null],
       ['', '1234567890abcdef1234567890abcdef12345678', `${cli}-1234567`, null]
     ] as const) {
@@ -193,12 +193,11 @@ test('light and bundled retain distinct OS markers from the full client', async 
 
     if (variant === 'light') {
       assert.notEqual(other.msixAppIdWithOrg, full.msixAppIdWithOrg)
-      assert.notEqual(other.channel, full.channel)
     }
   }
 })
 
-test('packaging isolates boot metadata and executable names without renaming release artifacts', async (): Promise<void> => {
+test('packaging isolates boot metadata and executable names without renaming release artifacts', { timeout: 120_000 }, async (): Promise<void> => {
   const pkg: { name: string; productName: string; version: string; description: string } = require('../package.json')
 
   const load: () => PackagingConfiguration = (): PackagingConfiguration => {

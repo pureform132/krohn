@@ -16,9 +16,9 @@ const variants = {
     pascal: 'KROHNLight'
   },
   bundled: {
-    display: 'KROHN',
+    display: 'KROHN Agent',
     kebab: 'krohn-bundled',
-    pascal: 'KROHNBundled'
+    pascal: 'KROHNAgent'
   }
 }
 
@@ -68,7 +68,9 @@ const identity = {
   displayName,
   appId: `com.nousresearch.${name.kebab}${kebabSuffix}`,
   // Store and commit builds do not publish a release feed.
-  channel: store || buildCommit ? null : light ? (canary ? 'light-canary' : 'light') : (canary ? 'canary' : 'latest'),
+  // KROHN never ships a self-update feed. The app is distributed by its
+  // installer; the OS and the user own the update loop, forever.
+  channel: null,
   appNamePascal: `${name.pascal}${pascalSuffix}`,
   artifactNamePascal: name.pascal,
   windowsExecutableName: kebabSuffix ? cliName : displayName,

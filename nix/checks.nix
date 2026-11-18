@@ -222,7 +222,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           dist = desktop / 'krohn-desktop/dist'
           launcher = desktop / 'icons/hicolor/1024x1024/apps/krohn.png'
           for path in [launcher, dist / 'apple-touch-icon.png',
-                       dist / 'nous-girl.png', dist / 'nous-girl-dark.png',
+                       dist / 'krohn-mark.png', dist / 'krohn-mark-dark.png',
                        Path('${self'.packages.web}/favicon.ico')]:
               with Image.open(path) as image:
                   image.load()

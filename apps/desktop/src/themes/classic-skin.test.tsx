@@ -71,18 +71,18 @@ describe('Classic KROHN is an explicit Desktop pick, never inferred from stock c
   it.each([
     ['display.skin: default', stockDefaultSkin],
     ['display.skin unset', null]
-  ])('a stock user (%s) with no Desktop pick paints Nous on boot, connect and relaunch', async (_label, local) => {
+  ])('a stock user (%s) with no Desktop pick paints KROHN Editorial on boot, connect and relaunch', async (_label, local) => {
     let run = await launch(local)
-    expect(run.bootPaint).toBe('nous')
+    expect(run.bootPaint).toBe('krohn')
     run.connect()
     run.connect() // reconnect re-seed
-    expect(run.api.theme?.themeName).toBe('nous')
-    expect(paintedSkin()).toBe('nous')
+    expect(run.api.theme?.themeName).toBe('krohn')
+    expect(paintedSkin()).toBe('krohn')
 
     run = await launch(local)
-    expect(run.bootPaint).toBe('nous')
+    expect(run.bootPaint).toBe('krohn')
     run.connect()
-    expect(paintedSkin()).toBe('nous')
+    expect(paintedSkin()).toBe('krohn')
   })
 
   it('a Classic pick paints gold/navy (dark mode) and survives connect, reconnect and relaunch; a later Nous pick sticks', async () => {
@@ -112,7 +112,7 @@ describe('Classic KROHN is an explicit Desktop pick, never inferred from stock c
     expect(paintedSkin()).toBe('nous')
   })
 
-  it('/skin gold and /skin krohn select Classic; /skin default stays the Desktop default (Nous)', async () => {
+  it('/skin gold selects Classic; /skin krohn selects KROHN Editorial; /skin default stays the Desktop default (krohn)', async () => {
     const run = await launch(stockDefaultSkin)
 
     act(() => void run.api.skin?.('gold'))
@@ -120,10 +120,10 @@ describe('Classic KROHN is an explicit Desktop pick, never inferred from stock c
 
     act(() => void run.api.skin?.('nous'))
     act(() => void run.api.skin?.('krohn'))
-    expect(run.api.theme?.themeName).toBe('classic')
+    expect(run.api.theme?.themeName).toBe('krohn')
 
     act(() => void run.api.skin?.('default'))
-    expect(run.api.theme?.themeName).toBe('nous')
+    expect(run.api.theme?.themeName).toBe('krohn')
   })
 
   it('a cache left by the reverted #130015 build (CLI `default` as "Classic KROHN") shows ONE Classic and is purged', async () => {

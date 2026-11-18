@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Generate every app icon in the repo from the nous-girl art + platform backgrounds.
+"""Generate every app icon in the repo from the KROHN glyph art + platform backgrounds.
 
 Usage (from repo root):
     node scripts/generate-icons.mjs           # write
     node scripts/generate-icons.mjs --check   # verify structure
 
 Sources of truth — two axes, composed per target:
-  Girl art (vector):  assets/nous-girl-black.svg  (black positive space)
-                      assets/nous-girl-white.svg  (white positive space)
+  Glyph art (vector):  assets/krohn-glyph-black.svg  (black positive space)
+                      assets/krohn-glyph-white.svg  (white positive space)
                       straight from the Nous brand kit (Inkscape exports,
                       5487^2 viewBox, one path each).
 
@@ -36,7 +36,7 @@ and a seven-character SHA badge. The girl and tile geometry do not change.
 Only apps/desktop outputs use this identity. Website, bootstrap, dashboard,
 and the shared master SVGs retain the default brand.
 
-The girl's position and uniform scale are registered to the reference artwork.
+The glyph's position and uniform scale are registered to the reference artwork.
 She is clipped only to the outer rounded silhouette. Only nodes near her bottom
 edge are dragged down (past the edge, or to the ring when BORDER_ENABLED); the
 fitted face and hair stay fixed. Standalone wordmarks remain centered.
@@ -70,14 +70,14 @@ Outputs (99 files):
   apps/desktop/assets/appx/Square44x44Logo.targetsize-N[_altform-(light)unplated].png
                                                       taskbar/Start bitmaps 16..256; unplated = dark tile
   apps/desktop/public/apple-touch-icon.png            1024x1024 squircle
-  apps/desktop/public/nous-girl.png                   256x256 squircle, black girl (light mark)
-  apps/desktop/public/nous-girl-dark.png              256x256 squircle, white girl (dark mark)
+  apps/desktop/public/krohn-mark.png                   256x256 squircle, black girl (light mark)
+  apps/desktop/public/krohn-mark-dark.png              256x256 squircle, white girl (dark mark)
   apps/bootstrap-installer/src-tauri/icons/32x32.png       32x32
   apps/bootstrap-installer/src-tauri/icons/128x128.png     128x128
   apps/bootstrap-installer/src-tauri/icons/128x128@2x.png  256x256
   apps/bootstrap-installer/src-tauri/icons/icon.ico        16,32,64,128,256
   apps/bootstrap-installer/src-tauri/icons/icon.icns       16..1024
-  apps/bootstrap-installer/public/nous-girl.png   256x256 squircle mark (light)
+  apps/bootstrap-installer/public/krohn-mark.png   256x256 squircle mark (light)
   website/static/img/logo.png                     1772x1799 girl alone, transparent (light)
   website/static/img/logo-dark.png                1772x1799 girl alone, transparent (dark)
   website/static/img/nous-logo.png                150x150 on white (opaque)
@@ -128,7 +128,7 @@ BORDER_FRACTION = 0.0407747197
 # flat plate + girl read better beside macOS 26's own icons. The ring code
 # stays so it can be turned back on in one place.
 BORDER_ENABLED = False
-# Without a ring the girl's lowest nodes are dragged past the tile edge (in
+# Without a ring the glyph's lowest nodes are dragged past the tile edge (in
 # 1024ths of the tile) so the outline crops her instead of leaving a gap.
 EDGE_OVERSHOOT = 48 / 1024
 
@@ -138,7 +138,7 @@ EDGE_OVERSHOOT = 48 / 1024
 GIRL_BOXES = {
     "squircle-light.svg": (72.149433, 104.703674, 872.767801, 872.767801),
     "squircle-dark.svg": (72.149433, 104.703674, 872.767801, 872.767801),
-    # Mac: the girl scaled 1.06x about the plate center; the plate stays on the
+    # Mac: the glyph scaled 1.06x about the plate center; the plate stays on the
     # 824 grid, but a white tile with a ring reads small beside full-color peers.
     "squircle-mac-light.svg": (140.19, 164.44, 744.68, 744.68),
     "squircle-mac-dark.svg": (140.19, 164.44, 744.68, 744.68),
@@ -227,12 +227,12 @@ CHECK_SIZES: dict[str, tuple[str, tuple[int, int]]] = {
     "apps/desktop/assets/icon.icon/Assets/art-light.png": ("PNG", (1024, 1024)),
     "apps/desktop/assets/icon.icon/Assets/art-dark.png": ("PNG", (1024, 1024)),
     "apps/desktop/public/apple-touch-icon.png": ("PNG", (1024, 1024)),
-    "apps/desktop/public/nous-girl.png": ("PNG", (256, 256)),
-    "apps/desktop/public/nous-girl-dark.png": ("PNG", (256, 256)),
+    "apps/desktop/public/krohn-mark.png": ("PNG", (256, 256)),
+    "apps/desktop/public/krohn-mark-dark.png": ("PNG", (256, 256)),
     "apps/bootstrap-installer/src-tauri/icons/32x32.png": ("PNG", (32, 32)),
     "apps/bootstrap-installer/src-tauri/icons/128x128.png": ("PNG", (128, 128)),
     "apps/bootstrap-installer/src-tauri/icons/128x128@2x.png": ("PNG", (256, 256)),
-    "apps/bootstrap-installer/public/nous-girl.png": ("PNG", (256, 256)),
+    "apps/bootstrap-installer/public/krohn-mark.png": ("PNG", (256, 256)),
     "website/static/img/logo.png": ("PNG", (1772, 1799)),
     "website/static/img/logo-dark.png": ("PNG", (1772, 1799)),
     "website/static/img/nous-logo.png": ("PNG", (150, 150)),
@@ -252,7 +252,7 @@ TARGETS: list[tuple[str, str, object]] = [
     ("apps/desktop/assets/icon-dark.png", "png_dark", 1024),
     ("apps/desktop/assets/icon-dark.ico", "ico_dark", [16, 24, 32, 48, 64, 128, 256]),
     ("apps/desktop/assets/icon-dark.icns", "icns_dark", None),
-    # The DMG volume icon: our own drive artwork with the girl on its face,
+    # The DMG volume icon: our own drive artwork with the glyph on its face,
     # one artwork for light and dark (volume icons have no appearance variants).
     ("apps/desktop/packaging/dmg-volume.icns", "icns_from_png", "assets/dmg-volume.png"),
     ("apps/desktop/assets/icon.icon/icon.json", "icon_manifest", None),
@@ -265,8 +265,8 @@ TARGETS: list[tuple[str, str, object]] = [
     ("apps/desktop/public/apple-touch-icon.png", "png", 1024),
     # The dev-run Dock icon (app.dock.setIcon): same mac grid as the icns.
     ("apps/desktop/assets/icon-mac.png", "png_mac", 1024),
-    ("apps/desktop/public/nous-girl.png", "girl_light", 256),
-    ("apps/desktop/public/nous-girl-dark.png", "girl_dark", 256),
+    ("apps/desktop/public/krohn-mark.png", "girl_light", 256),
+    ("apps/desktop/public/krohn-mark-dark.png", "girl_dark", 256),
     ("apps/bootstrap-installer/src-tauri/icons/32x32.png", "png", 32),
     ("apps/bootstrap-installer/src-tauri/icons/128x128.png", "png", 128),
     ("apps/bootstrap-installer/src-tauri/icons/128x128@2x.png", "png", 256),
@@ -278,7 +278,7 @@ TARGETS: list[tuple[str, str, object]] = [
     ("apps/bootstrap-installer/src-tauri/icons/icon.icon/Assets/art-light.png", "icon_art", "black"),
     ("apps/bootstrap-installer/src-tauri/icons/icon.icon/Assets/art-dark.png", "icon_art", "white"),
     ("apps/bootstrap-installer/src-tauri/icons/icon.icon/Assets/mono.png", "icon_mono", None),
-    ("apps/bootstrap-installer/public/nous-girl.png", "girl_light", 256),
+    ("apps/bootstrap-installer/public/krohn-mark.png", "girl_light", 256),
     ("website/static/img/logo.png", "logo", None),
     ("website/static/img/logo-dark.png", "logo_dark", None),
     ("website/static/img/nous-logo.png", "png_white", 150),
@@ -291,7 +291,7 @@ TARGETS: list[tuple[str, str, object]] = [
     ("web/public/favicon.ico", "ico", [16, 32, 48]),
 ]
 
-# ─── girl art extraction ────────────────────────────────────────────────────
+# ─── glyph art extraction ────────────────────────────────────────────────────
 
 class IconArt:
     """One generation's rendering inputs and caches; never writes to source."""
@@ -301,7 +301,7 @@ class IconArt:
         self.source = source
         self.colors = colors
         self.commit = commit
-        self.girls = {color: assets / f"nous-girl-{color}.svg" for color in ("black", "white")}
+        self.girls = {color: assets / f"krohn-glyph-{color}.svg" for color in ("black", "white")}
         self.backgrounds = assets / "backgrounds"
         self.paths: dict[str, str] = {}
         self.bboxes: dict[str, tuple[float, float, float, float]] = {}
@@ -329,7 +329,7 @@ def girl_path(art: IconArt, girl: str) -> str:
 
 
 def girl_bbox(art: IconArt, girl: str) -> tuple[float, float, float, float]:
-    """Art bounding box in the girl SVG's coordinate space, measured by
+    """Art bounding box in the glyph SVG's coordinate space, measured by
     rendering once and taking the alpha bbox (robust to art changes)."""
     if girl not in art.bboxes:
         data = resvg_py.svg_to_bytes(svg_path=str(art.girls[girl]), width=512, height=512)
@@ -345,7 +345,7 @@ def girl_layer(
     *, align: str = "xMidYMid",
 ) -> str:
     """Nested-svg layer: girl art (bbox as viewBox) placed into `box` — the
-    box's aspect is preserved via 'meet', so the girl never distorts."""
+    box's aspect is preserved via 'meet', so the glyph never distorts."""
     bx, by, bw, bh = girl_bbox(art, girl)
     x, y, w, h = box
     return (
@@ -631,7 +631,7 @@ def icon_border_svg(ink: str) -> str:
 
 
 def icon_art_svg(art: IconArt, girl: str) -> str:
-    """Art layer: the girl registered as on the canvas-filling squircle, joined
+    """Art layer: the glyph registered as on the canvas-filling squircle, joined
     to the border band; the commit badge rides along for commit builds."""
     bg = "icon.icon"  # the plate is the canvas; the system supplies the grid
     join_bottom = ICON_CANVAS - ICON_CANVAS * BORDER_FRACTION + 10 if BORDER_ENABLED else ICON_CANVAS * (1 + EDGE_OVERSHOOT)
@@ -653,7 +653,7 @@ def icon_color(hex_color: str) -> str:
 
 
 # Mono (Clear/Tinted) materials, as luminance + opacity: the dark-ink parts of
-# the girl become a near-black frosted glass instead of black, her white parts
+# the glyph become a near-black frosted glass instead of black, her white parts
 # stay white, and the ring (when enabled) is a soft light glass.
 MONO_INK = (0.13, 0.90)
 MONO_RING = (0.82, 0.75)
@@ -662,7 +662,7 @@ MONO_RING = (0.82, 0.75)
 def icon_mono_image(art: IconArt) -> Image.Image:
     """The single grayscale layer behind Clear light/dark and Tinted light/dark
     (Apple's "tinted" specialization). One image, each pixel painted once, so
-    translucent materials never stack where the girl meets the ring."""
+    translucent materials never stack where the glyph meets the ring."""
     def coverage(svg: str) -> Image.Image:
         return render_svg(svg, ICON_CANVAS).convert("RGBA").getchannel("A")
 
@@ -781,7 +781,7 @@ def girl_mark(art: IconArt, kind: str, size: int) -> Image.Image:
 
 
 def build_logo_image(art: IconArt, dark: bool = False) -> Image.Image:
-    """1772x1799 wordmark: the girl alone on transparency (no frame), centered.
+    """1772x1799 wordmark: the glyph alone on transparency (no frame), centered.
     Light = black girl, dark = white girl — the consuming surface's background
     (navbar light/dark) shows through."""
     W, H = 1772, 1799
@@ -946,8 +946,8 @@ def cmd_check(source: Path, out: Path) -> int:
     for rel in (
         "apps/desktop/assets/icon.png",
         "apps/desktop/assets/icon-dark.png",
-        "apps/desktop/public/nous-girl.png",
-        "apps/desktop/public/nous-girl-dark.png",
+        "apps/desktop/public/krohn-mark.png",
+        "apps/desktop/public/krohn-mark-dark.png",
         "apps/desktop/public/apple-touch-icon.png",
     ):
         path = out / rel

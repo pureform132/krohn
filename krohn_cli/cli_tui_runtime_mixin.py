@@ -334,7 +334,7 @@ class CLITuiRuntimeMixin:
 
         _welcome_skin = None  # stays None when the skin engine failed
         _welcome_text = t("cli.tui.welcome")
-        _welcome_color = "#FFF8DC"
+        _welcome_color = "#F2EAD9"
         try:
             from krohn_cli.skin_engine import get_active_skin
             _welcome_skin = get_active_skin()
@@ -347,7 +347,7 @@ class CLITuiRuntimeMixin:
         self._tui_startup_prewarm_and_warnings(_welcome_skin)
         if _show_vscode_images_hint:
             from krohn_cli.skin_engine import get_active_skin
-            _tip_color = get_active_skin().get_color("banner_dim", "#B8860B")
+            _tip_color = get_active_skin().get_color("banner_dim", "#8A6A2E")
             self._console_print(f"[dim {_tip_color}]{t('cli.tip_line', tip=t('cli.tui.vscode_images_hint'))}[/]")
         else:
             self._print_random_tip()
@@ -400,9 +400,9 @@ class CLITuiRuntimeMixin:
             )
             if not is_seen(self.config, OPENCLAW_RESIDUE_FLAG) and detect_openclaw_residue():
                 try:
-                    _resid_color = _welcome_skin.get_color("banner_dim", "#B8860B")
+                    _resid_color = _welcome_skin.get_color("banner_dim", "#8A6A2E")
                 except Exception:
-                    _resid_color = "#B8860B"
+                    _resid_color = "#8A6A2E"
                 self._console_print(f"[{_resid_color}]{openclaw_residue_hint_cli()}[/]")
                 try:
                     from krohn_cli.config import get_config_path as _get_cfg_path_resid

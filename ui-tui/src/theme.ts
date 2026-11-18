@@ -370,26 +370,26 @@ export function buildPalette(seeds: ThemeSeeds, isLight: boolean): ThemeColors {
 }
 
 export const DARK_SEEDS: ThemeSeeds = {
-  accent: '#FFBF00',
+  accent: '#E0503E',
   // The classic KROHN navy surfaces are IDENTITY, not derivation drift —
   // keep them as explicit fill seeds (the ladder derives them for skins
   // that don't care).
-  activeRow: '#333355',
-  bg: '#101014',
-  border: '#CD7F32',
+  activeRow: '#33241D',
+  bg: '#0E0D0B',
+  border: '#C8392B',
   error: '#ef5350',
   ok: '#4caf50',
-  primary: '#FFD700',
-  prompt: '#FFF8DC',
-  selection: '#3a3a55',
-  shellDollar: '#4dabf7',
-  statusBad: '#FF8C00',
+  primary: '#C8392B',
+  prompt: '#F2EAD9',
+  selection: '#332019',
+  shellDollar: '#E0503E',
+  statusBad: '#E08A2E',
   statusCritical: '#FF6B6B',
   statusGood: '#8FBC8F',
-  statusWarn: '#FFD700',
-  surface: '#1a1a2e',
-  text: '#FFF8DC',
-  warn: '#ffa726'
+  statusWarn: '#E6B84C',
+  surface: '#1B1712',
+  text: '#F2EAD9',
+  warn: '#E08A2E'
 }
 
 // Light-terminal seeds: darker golds/ambers that stay legible on white.
@@ -401,20 +401,20 @@ export const DARK_SEEDS: ThemeSeeds = {
 // render the same thing Cursor always showed. Text/prompt stay ink — body
 // copy historically rendered in the terminal's default near-black fg.
 export const LIGHT_SEEDS: ThemeSeeds = {
-  accent: '#956E00',
-  bg: '#ffffff',
-  border: '#A56628',
+  accent: '#B33B2B',
+  bg: '#F5EFE1',
+  border: '#A69A7C',
   error: '#C14240',
   ok: '#367E39',
-  primary: '#867000',
-  prompt: '#2B2014',
-  shellDollar: '#377BB3',
-  statusBad: '#A65A00',
+  primary: '#B33B2B',
+  prompt: '#241F18',
+  shellDollar: '#B33B2B',
+  statusBad: '#B8571F',
   statusCritical: '#B94D4D',
   statusGood: '#5C7A5C',
-  statusWarn: '#867000',
-  text: '#3D2F13',
-  warn: '#956115'
+  statusWarn: '#9A7B1E',
+  text: '#241F18',
+  warn: '#8A5A1A'
 }
 
 export const DARK_THEME: Theme = {

@@ -28,7 +28,7 @@ DEFAULT_CATALOG_URL = (
 # The Docusaurus site sits behind Vercel, which occasionally 403s non-browser clients (bot
 # challenge); the raw GitHub copy is the same manifest and is not bot-gated.
 DEFAULT_CATALOG_FALLBACK_URLS: tuple[str, ...] = (
-    "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/website/static/api/model-catalog.json",
+    "https://raw.githubusercontent.com/krohn-labs/krohn/main/website/static/api/model-catalog.json",
 )
 DEFAULT_TTL_MINUTES = 20
 # Legacy key, honoured only when the user set it explicitly; ``ttl_minutes`` is the shipped default.
@@ -110,7 +110,9 @@ def _load_catalog_config() -> dict[str, Any]:
         ttl_minutes = DEFAULT_TTL_MINUTES
 
     return {
-        "enabled": bool(raw.get("enabled", True)),
+        # KROHN: the upstream Nous remote catalog is OFF by default. KROHN serves its
+        # built-in curated lists and only fetches when the operator opts in.
+        "enabled": bool(raw.get("enabled", False)),
         "url": str(raw.get("url") or DEFAULT_CATALOG_URL),
         "ttl_hours": ttl_minutes / 60.0,
         "providers": raw.get("providers") if isinstance(raw.get("providers"), dict) else {}}

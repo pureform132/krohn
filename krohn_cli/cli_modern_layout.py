@@ -80,7 +80,7 @@ def separator(accent: bool) -> str:
     a blank line ahead of it, so it also settles a gap the previous block owes."""
     global _GAP_PENDING
     _GAP_PENDING = False
-    color = _fg(_skin_hex("ui_accent", "#FFBF00")) if accent else _DIM
+    color = _fg(_skin_hex("ui_accent", "#E0503E")) if accent else _DIM
     return f"{color}{'─' * _SEPARATOR_WIDTH}{_RST}"
 
 
@@ -108,7 +108,7 @@ def answer_label(timestamp: str = "") -> str:
     """The rows that open an answer: the accent bar, then the skin's brand glyph + name."""
     glyph, name = _brand_glyph()
     stamp = f" {_DIM}{timestamp}{_RST}" if timestamp else ""
-    return f"\n{separator(True)}\n{_fg(_skin_hex('ui_accent', '#FFBF00'), bold=True)}{glyph} {name}{_RST}{stamp}"
+    return f"\n{separator(True)}\n{_fg(_skin_hex('ui_accent', '#E0503E'), bold=True)}{glyph} {name}{_RST}{stamp}"
 
 
 def thought_line(seconds: float | None) -> str:
@@ -247,7 +247,7 @@ def _turn_elapsed(cli) -> str:
 
 def rule_style() -> str:
     """Composer rules are quiet chrome: the skin's session border, not the accent."""
-    return f"fg:{_skin_hex('session_border', '#8B8682')}"
+    return f"fg:{_skin_hex('session_border', '#4A4036')}"
 
 
 def _no_bg(frags: list) -> list:
@@ -266,7 +266,7 @@ def _fit(cli, frags: list, width: int) -> list:
 def top_rule_fragments(cli) -> list:
     """``── ⠹ Running tests · 14s ─────────── calc helpers ─``: live status left, session title right."""
     width = max(10, cli._get_tui_terminal_width())
-    rule, accent = rule_style(), f"fg:{_skin_hex('ui_accent', '#FFBF00')} bold"
+    rule, accent = rule_style(), f"fg:{_skin_hex('ui_accent', '#E0503E')} bold"
     busy = getattr(cli, "_agent_running", False) or getattr(cli, "_command_running", False)
     left: list = []
     if busy:
@@ -278,7 +278,7 @@ def top_rule_fragments(cli) -> list:
                 left.append(("class:status-bar-dim bg:default", f" · {extra}"))
         left.append((rule, " "))
     title = cli._get_status_bar_session_title()
-    right = [(rule, " "), (f"fg:{_skin_hex('ui_label', '#DAA520')}", title), (rule, " ─")] if title else []
+    right = [(rule, " "), (f"fg:{_skin_hex('ui_label', '#C9BFA6')}", title), (rule, " ─")] if title else []
     used = sum(cli._status_bar_display_width(text) for _, text in left + right)
     if used >= width:
         right, used = [], sum(cli._status_bar_display_width(text) for _, text in left)

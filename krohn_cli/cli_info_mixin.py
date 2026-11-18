@@ -573,9 +573,9 @@ class CLIInfoMixin:
             _tip = get_random_tip()
             try:
                 from krohn_cli.skin_engine import get_active_skin
-                _tip_color = get_active_skin().get_color("banner_dim", "#B8860B")
+                _tip_color = get_active_skin().get_color("banner_dim", "#8A6A2E")
             except Exception:
-                _tip_color = "#B8860B"
+                _tip_color = "#8A6A2E"
             self._console_print(f"[dim {_tip_color}]{t('cli.tip_line', tip=_tip)}[/]")
         except Exception:
             pass
