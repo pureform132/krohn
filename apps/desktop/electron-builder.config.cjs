@@ -235,12 +235,31 @@ module.exports = {
   win: {
     executableName: windowsExecutableName,
     legalTrademarks: displayName,
-    target: ['msix'],
+    // KROHN ships ONE Windows installer: NSIS, per-machine, no UAC nag surprises,
+    // no MSIX dependency chain, no certificate requirement. Any user on
+    // Windows 10/11 can double-click it and get KROHN.
+    target: ['nsis'],
+    artifactName: 'KROHN-Setup-${version}.${ext}',
     // The updaters' relaunch waiter is PowerShell run outside the package. The
     // sealed payload's snapshot omits scripts/, so it ships as a resource
     // (RELAUNCH_WAITER_SCRIPT in electron/updater/relaunch-waiter.ts).
     extraResources: [{ from: 'scripts/update-relaunch-waiter.ps1', to: 'update-relaunch-waiter.ps1' }],
     ...windowsSigning()
+  },
+  nsis: {
+    guid: '9d2f1f33-3f45-4e7a-9f0a-8f3a00000001',
+    oneClick: false,
+    perMachine: true,
+    allowElevation: true,
+    allowToChangeInstallationDirectory: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: 'KROHN',
+    installerIcon: 'assets/icon.ico',
+    uninstallerIcon: 'assets/icon.ico',
+    installerHeader: 'assets/icon-dark.png',
+    installerHeaderIcon: 'assets/icon.ico',
+    deleteAppDataOnUninstall: false
   },
   msix: {
     // A store build uses the Partner Center packaging identity (the Store
@@ -250,7 +269,7 @@ module.exports = {
     applicationId: appNamePascal,
     displayName,
     publisher: store ? mustStoreMsix(storeMsixWhenStore).publisher : OUT_OF_STORE_PUBLISHER,
-    publisherDisplayName: store ? mustStoreMsix(storeMsixWhenStore).publisherDisplayName : 'Nous Research',
+    publisherDisplayName: store ? mustStoreMsix(storeMsixWhenStore).publisherDisplayName : 'KROHN',
     // The native quad is the build time (scripts/msix-shared.mjs::nativeQuad),
     // baked into the manifest template, so the builder's own build-number
     // override would stamp a second, conflicting version.
