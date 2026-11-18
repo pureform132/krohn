@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://krohn.netlify.app/sitemap.xml
-Canonical: https://krohn.netlify.app/
