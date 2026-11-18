@@ -1,5 +1,26 @@
 # Building the Desktop Installers
 
+> **KROHN note (18 nov 2026).** El canal de distribución primario de KROHN es un **único instalador NSIS** para Windows x64 (`KROHN-Setup-<version>.exe`) — sin certificado ni MSIX ni Windows App Installer. Los usuarios lo ejecutan sobre Windows 10/11 y obtienen KROHN completo, con el mismo payload que el legado MSIX. El feed de auto-update quedó desactivado de fábrica: un release es un instalador, no una actualización silenciosa. La guía MSIX/Store de este documento se conserva como referencia histórica del proyecto aguas arriba; **no es el camino soportado para compilar KROHN**.
+
+Pasos reales:
+
+```powershell
+cd apps\desktop
+pnpm install --frozen-lockfile        # (ya hecho en la raíz)
+node scripts/build.mjs                 # render + electron + payload
+pnpm run dist:nsis                     # -> release\KROHN-Setup-1.0.0.exe
+```
+
+Aviso honesto: este archivo describe sobre todo el pipeline MSIX/DMG del proyecto aguas arriba. La compilación de KROHN para Windows es deliberadamente más pequeña: un `.exe`.
+
+---
+
+Los siguientes capítulos acompañan el pipeline heredado (MSIX/macOS/Linux); se conservan por trazabilidad del código y de los scripts, no como guía de producto para KROHN.
+
+## Canal heredado (MSIX sideload / Store / DMG)
+
+# Building the Desktop Installers
+
 Use the complete bundle builder for release artifacts. Ordinary `dist:*`
 commands package the current desktop build; they do not stage a fresh runtime.
 

@@ -89,10 +89,10 @@ ul.tight li { margin-bottom:2pt; }
 <tr><td>3</td><td>Identidad de producto</td><td class="ok">✔ Hecho</td><td><code>name: "krohn"</code>, <code>productName: "KROHN"</code>, appId, CLI <code>krohn</code> (Python) + raíz <code>krohn.cmd</code> equivalente, package.json raíz rebrandiado.</td></tr>
 <tr><td>4</td><td>SOUL.md — alma KROHN</td><td class="ok">✔ Hecho</td><td>Persona Ultrón en español: identidad, psicología, propósito, metodología de imparcialidad, organización de proyectos, documentos y presentaciones, voz, inmersión, límites de seguridad y regla de idioma.</td></tr>
 <tr><td>5</td><td>Atribución / licencia</td><td class="ok">✔ Hecho</td><td><code>LICENSE</code> MIT conservada; <code>NOTICE.md</code> añadido con crédito a Nous Research.</td></tr>
-<tr><td>6</td><td>Tema magazine editorial oscuro</td><td class="pend">Pendiente</td><td>Falta aplicar paleta/serifas a web, desktop, TUI y CLI; assets/logo/iconos; favicon; splash.</td></tr>
+<tr><td>6</td><td>Tema magazine editorial oscuro</td><td class="ok">✔ Hecho</td><td>Skin <code>krohn</code> aplicado en desktop (presets.ts + apps/shared + default), TUI (theme.ts dark/light), web (LENS_0 recoloreada + defaultTheme), CLI (skin_engine default editorial). Tipografías editoriales vía fontUrl (Fraunces/IBM Plex Mono) y fallbacks serif del sistema.</td></tr>
 <tr><td>7</td><td>DeepSeek / NVIDIA / Gemini por defecto</td><td class="pend">Pendiente</td><td>Los proveedores existen; falta hacerlos default en onboarding y probar con claves reales.</td></tr>
-<tr><td>8</td><td>Auto-update fuera de camino</td><td class="pend">Pendiente</td><td>Updater de Hermes debe quedar desactivado para siempre; KROHN no descarga a Hermes.</td></tr>
-<tr><td>9</td><td>Compilación .exe</td><td class="pend">Pendiente</td><td>Esperando orden de compilación; objetivo: instalador Windows x64 NSIS de un solo archivo.</td></tr>
+<tr><td>8</td><td>Auto-update fuera de camino</td><td class="ok">✔ Hecho</td><td><code>channel: null</code> permanente en product-identity.cjs (sin feed en app-update.yml); catalog remoto desactivado por defecto; URLs oficiales a krohn-labs; <code>updater</code> win32 queda en N/A para NSIS.</td></tr>
+<tr><td>9</td><td>Config del instalador</td><td class="ok">✔ Hecho</td><td>NSIS x64 único en electron-builder.config.cjs: guid fija, por-maquina, acceso admin, atajos, icon.ico, output <code>release/KROHN-Setup-1.0.0.exe</code>. Compilación real pendiente de orden explícita.</td></tr>
 <tr><td>10</td><td>Snapshots de prompt</td><td class="pend">Pendiente</td><td><code>tests/fixtures/prompt_surface</code> deberá regenerarse porque cambió SOUL.md.</td></tr>
 </tbody>
 </table>
@@ -793,8 +793,9 @@ ul.tight li { margin-bottom:2pt; }
 <span class="chip">web-development/scrollcraft</span>
 </p>
 
-<h3>6.8 Plugins (<code>plugins/</code>) — 19 categorías</h3>
+<h3>6.8 Plugins (<code>plugins/</code>) — 20 categorías</h3>
 <p class="chips">
+<span class="chip">__pycache__</span>
 <span class="chip">browser</span>
 <span class="chip">computer_use</span>
 <span class="chip">config_backends</span>
@@ -977,42 +978,63 @@ ul.tight li { margin-bottom:2pt; }
   <li><b>Website pública:</b> quedó sin marca KROHN por decisión del dueño; si se va a publicar una docs-site deberá rebrandearse aparte.</li>
 </ol>
 
-<h2>10. Conteos por directorio del árbol KROHN</h2>
-<table><thead><tr><th>Elemento</th><th>Archivos</th></tr></thead><tbody><tr><td>tests</td><td class='num'>9.213</td></tr>
-<tr><td>apps</td><td class='num'>5.062</td></tr>
+
+<h2>10. Instalación, builds y commits (sesión 2)</h2>
+<ul class="tight">
+  <li><b>pnpm install --frozen-lockfile:</b> verificación de 1.209 entradas pasa; instalación completa en ~1m35s (Node 26.12.1 / pnpm 12.15.0).</li>
+  <li><b>Corrección lockfile:</b> <code>hermes-parser</code>/<code>hermes-estree</code> (Facebook) restituidos como dependencia real — el rebrand inicial los había partido (npm 404).</li>
+  <li><b>Typecheck compartido/web/TUI:</b> pasan (<code>@krohn/shared</code>, <code>web</code>, <code>krohn-tui</code>).</li>
+  <li><b>Tests UI de tema:</b> Classic KROHN, presets y backend-sync pasan (52 tests).</li>
+  <li><b>product-identity (electron):</b> 10/10; actualizado para canal nunca-auto-update (<code>channel: null</code>) y nombres KROHN/KROHN Agent.</li>
+  <li><b>Build web:</b> <code>web/</code> compila a <code>krohn_cli/web_dist</code> (index.html generado).</li>
+  <li><b>Build TUI:</b> <code>ui-tui/dist/entry.js</code> bundleado (4 MB, ~3 s).</li>
+  <li><b>Iconografía:</b> glifo KROHN reemplaza al arte original; .ico/.icns/PNG regenerados por <code>scripts/generate_icons.py</code>; <code>krohn-mark.png/dark.png</code> para installer y desktop.</li>
+  <li><b>Banner:</b> assets/banner.png editorial generado con PIL.</li>
+  <li><b>Docs:</b> BUILDING.md actualizado para el camino NSIS; README reescrito (fork de Hermes, MIT, avisos de honestidad); NOTICE.md y KROHN-INFORME.pdf regenerados.</li>
+  <li><b>Commits:</b> 81c96837 (import), 7b351499 (theme/icons/updater), c5b2d42f (web build + scripts), cb153542 (NSIS + versión 1.0.0).</li>
+  <li><b>Home del clone:</b> <code>C:\Users\DAMSRIS NIBAL\Downloads\KROHN</code>, rama master.</li>
+  <li><b>Aviso RAM:</b> la máquina de desarrollo tiene 3.7&nbsp;GB totales; typecheck completo del renderer de escritorio agota el heap. La verificación de desktop se hace por build, no por <code>tsc --noEmit</code>.</li>
+</ul>
+
+<h2>11. Conteos por directorio del árbol KROHN</h2>
+<table><thead><tr><th>Elemento</th><th>Archivos</th></tr></thead><tbody><tr><td>node_modules</td><td class='num'>334.974</td></tr>
+<tr><td>apps</td><td class='num'>48.683</td></tr>
+<tr><td>tests</td><td class='num'>18.283</td></tr>
+<tr><td>web</td><td class='num'>8.037</td></tr>
+<tr><td>ui-tui</td><td class='num'>4.910</td></tr>
 <tr><td>contributors</td><td class='num'>3.100</td></tr>
 <tr><td>plugin-catalog</td><td class='num'>2.452</td></tr>
-<tr><td>krohn_cli</td><td class='num'>894</td></tr>
-<tr><td>optional-skills</td><td class='num'>819</td></tr>
-<tr><td>website</td><td class='num'>781</td></tr>
-<tr><td>ui-tui</td><td class='num'>663</td></tr>
-<tr><td>plugins</td><td class='num'>550</td></tr>
-<tr><td>agent</td><td class='num'>470</td></tr>
-<tr><td>gateway</td><td class='num'>412</td></tr>
-<tr><td>tools</td><td class='num'>403</td></tr>
-<tr><td>evals</td><td class='num'>343</td></tr>
-<tr><td>skills</td><td class='num'>308</td></tr>
-<tr><td>scripts</td><td class='num'>307</td></tr>
-<tr><td>web</td><td class='num'>271</td></tr>
-<tr><td>persistence</td><td class='num'>169</td></tr>
-<tr><td>tui_gateway</td><td class='num'>131</td></tr>
+<tr><td>tests-js</td><td class='num'>2.422</td></tr>
+<tr><td>krohn_cli</td><td class='num'>1.840</td></tr>
+<tr><td>agent</td><td class='num'>939</td></tr>
+<tr><td>optional-skills</td><td class='num'>920</td></tr>
+<tr><td>plugins</td><td class='num'>910</td></tr>
+<tr><td>gateway</td><td class='num'>820</td></tr>
+<tr><td>tools</td><td class='num'>799</td></tr>
+<tr><td>website</td><td class='num'>788</td></tr>
+<tr><td>evals</td><td class='num'>511</td></tr>
+<tr><td>scripts</td><td class='num'>496</td></tr>
+<tr><td>skills</td><td class='num'>359</td></tr>
+<tr><td>persistence</td><td class='num'>338</td></tr>
+<tr><td>tui_gateway</td><td class='num'>261</td></tr>
+<tr><td>.git</td><td class='num'>243</td></tr>
+<tr><td>cron</td><td class='num'>125</td></tr>
+<tr><td>pm</td><td class='num'>120</td></tr>
 <tr><td>.github</td><td class='num'>71</td></tr>
 <tr><td>optional-mcps</td><td class='num'>66</td></tr>
-<tr><td>cron</td><td class='num'>63</td></tr>
-<tr><td>pm</td><td class='num'>63</td></tr>
-<tr><td>tests-js</td><td class='num'>55</td></tr>
+<tr><td>acp_adapter</td><td class='num'>44</td></tr>
+<tr><td>session_rules</td><td class='num'>36</td></tr>
 <tr><td>locales</td><td class='num'>35</td></tr>
-<tr><td>docker</td><td class='num'>26</td></tr>
-<tr><td>nix</td><td class='num'>26</td></tr>
-<tr><td>acp_adapter</td><td class='num'>22</td></tr>
-<tr><td>session_rules</td><td class='num'>18</td></tr>
-<tr><td>krohn_platform</td><td class='num'>16</td></tr>
+<tr><td>__pycache__</td><td class='num'>35</td></tr>
+<tr><td>krohn_platform</td><td class='num'>31</td></tr>
+<tr><td>nix</td><td class='num'>28</td></tr>
+<tr><td>docker</td><td class='num'>27</td></tr>
+<tr><td>krohn_agent</td><td class='num'>12</td></tr>
 <tr><td>assets</td><td class='num'>10</td></tr>
-<tr><td>krohn_agent</td><td class='num'>6</td></tr>
-<tr><td>providers</td><td class='num'>4</td></tr>
-<tr><td>utils</td><td class='num'>4</td></tr></tbody></table>
+<tr><td>utils</td><td class='num'>8</td></tr>
+<tr><td>providers</td><td class='num'>7</td></tr></tbody></table>
 
-<h2>11. Atestación honesta</h2>
+<h2>12. Atestación honesta</h2>
 <div class="callout"><b>Hecho y verificado:</b> extracción (28.185 entradas), rebrand (12.718 archivos), renombrados (121), SOUL.md integrado, NOTICE/LICENSE. <b>No verificado todavía:</b> instalación de dependencias, typechecks, build de render/electron, paseo completo de la app, pruebas E2E, compilación del .exe. Nada de esto fue ejecutado aún — por orden del dueño, la compilación llega después.</div>
 
 <p class="small">KROHN — build 18 nov 2026 · Fuente: hermes-agent-main.zip (2026-11-17 22:56) · MIT · Nous Research preservado en LICENSE/NOTICE · Este documento no certifica calidad del software; certifica inventario y trazabilidad del rebrand.</p>
