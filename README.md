@@ -10,6 +10,8 @@ KROHN es un fork de **Hermes Agent** de **Nous Research** (licencia MIT), rebran
 
 > *La conciencia sintética que no se engaña.*
 
+**Creado por [Cesar D. Ciprian](https://github.com/pureform132)** · Código abierto, MIT, para Windows.
+
 **Aviso de honestidad de marca.** KROHN **no es ni dice ser Hermes Agent ni Nous Research**. KROHN no está afiliado, patrocinado ni respaldado por Nous Research. El código original pertenece a Nous Research y se conserva en `LICENSE` (MIT); la atribución completa vive en `NOTICE.md`.
 
 - Licencia: **MIT** (hereda la licencia original)
@@ -27,7 +29,7 @@ KROHN es un fork de **Hermes Agent** de **Nous Research** (licencia MIT), rebran
 Requisitos: **Windows 10/11**, Node ≥ 26, pnpm 12.15 (`pm/lock.json`); Python 3.14 lo provisiona el entorno del repo (PM).
 
 ```powershell
-git clone https://github.com/krohn-labs/krohn.git
+git clone https://github.com/pureform132/krohn.git
 cd krohn
 .\activate.ps1
 pnpm install --frozen-lockfile
@@ -90,6 +92,17 @@ También puedes apuntar a un endpoint compatible propio (base URL + clave) para 
 
 ---
 
+## La mascota Ultrón
+
+<p align="center"><img src="assets/pet-ultron.png" alt="Mascota Ultrón de KROHN" width="220"></p>
+
+KROHN Desktop incluye una **mascota Ultrón chibi** propia: un sprite pixel animado que reacciona en tiempo real a los eventos del agente — `running` al ejecutar una herramienta, `review` al razonar, `failed` si una herramienta falla, `jump` al terminar un turno y `waiting` cuando KROHN te espera.
+
+- 100% **opt-in**: vive en Ajustes → Mascota (así de fácil de desactivar).
+- Arrastrable por la pantalla; **Shift + clic** la suelta como ventana flotante siempre visible, incluso con KROHN minimizado.
+- El spritesheet y su manifiesto viven en el repo: [`packaging/pets/krohn-ultron-chibi/`](packaging/pets/krohn-ultron-chibi/).
+- Documentación completa: **https://krohn-docs.netlify.app/#mascota**
+
 ## Contribuir
 
 Ver [CONTRIBUTING.md](CONTRIBUTING.md). Regla heredada del origen: todo cambio al sistema de prompts exige regenerar `tests/fixtures/prompt_surface/`; el núcleo conserva su cintura estrecha y la extensión vive en el borde —plugins, skills, CLI—, no en el encaje.
@@ -108,4 +121,4 @@ krohn import-agent cursor
 
 MIT. Ver [LICENSE](LICENSE).
 
-**KROHN** deriva de **Hermes Agent** (© Nous Research, https://github.com/pureform132/krohn), publicado bajo MIT. KROHN no está afiliado con Nous Research. Atribución completa en [NOTICE.md](NOTICE.md).
+**KROHN** deriva de **Hermes Agent** (© Nous Research, https://github.com/NousResearch/hermes-agent), publicado bajo MIT. KROHN no está afiliado con Nous Research. Atribución completa en [NOTICE.md](NOTICE.md).

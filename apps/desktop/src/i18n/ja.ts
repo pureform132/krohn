@@ -634,6 +634,8 @@ export const jaOverrides = {
         scaleDesc: '浮遊マスコットの大きさを変更します。すべての画面に即時反映されます。',
         roamTitle: '散歩',
         roamDesc: 'アイドル中にペットがウィンドウ内を自由に歩き回ります。',
+        desktopTitle: 'デスクトップに表示',
+        desktopDesc: 'ペットをShift＋クリックすると、ドラッグ可能なデスクトップ上のフローティングウィンドウになり、KROHN を最小化しても表示され続けます。',
         chooseTitle: 'ペットを選ぶ',
         chooseDesc: '選ぶと（必要に応じて）インストールされ、アクティブになります。',
         searchPlaceholder: 'ペットを検索…',

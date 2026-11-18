@@ -1131,6 +1131,8 @@ export const frOverrides = {
         scaleDesc: "Redimensionnez la mascotte flottante. S'applique partout instantanément.",
         roamTitle: 'Errer',
         roamDesc: "Laissez l'animal errer dans la fenêtre pendant les moments d'inactivité.",
+        desktopTitle: 'Épingler sur le bureau',
+        desktopDesc: 'Maj+clic sur l’animal pour l’envoyer sur le bureau : une fenêtre flottante déplaçable qui reste visible même lorsque KROHN est minimisé.',
         chooseTitle: 'Choisir un animal',
         chooseDesc: "Le choisir l'installe (si nécessaire) et l'active.",
         searchPlaceholder: 'Rechercher des animaux…',

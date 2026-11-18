@@ -66,7 +66,7 @@ const identity = {
   store,
   light,
   displayName,
-  appId: `com.nousresearch.${name.kebab}${kebabSuffix}`,
+  appId: `com.krohn.${name.kebab}${kebabSuffix}`,
   // Store and commit builds do not publish a release feed.
   // KROHN never ships a self-update feed. The app is distributed by its
   // installer; the OS and the user own the update loop, forever.
@@ -75,7 +75,7 @@ const identity = {
   artifactNamePascal: name.pascal,
   windowsExecutableName: kebabSuffix ? cliName : displayName,
   cliName,
-  msixAppIdWithOrg: `NousResearch.${name.pascal}${pascalSuffix}`,
+  msixAppIdWithOrg: `Krohn.${name.pascal}${pascalSuffix}`,
   ...(store
     ? {
         storeMsix: {

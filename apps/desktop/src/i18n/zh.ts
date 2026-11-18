@@ -843,6 +843,8 @@ export const zhOverrides = {
         scaleDesc: '调整悬浮宠物的大小，所有界面即时生效。',
         roamTitle: '漫游',
         roamDesc: '空闲时让宠物自己在窗口内四处走动。',
+        desktopTitle: '显示到桌面',
+        desktopDesc: '按住 Shift 点击宠物，将其变为可拖动的桌面浮动窗口，即使 KROHN 最小化也能一直显示。',
         chooseTitle: '选择宠物',
         chooseDesc: '选择后会自动安装（如需）并设为当前宠物。',
         searchPlaceholder: '搜索宠物…',

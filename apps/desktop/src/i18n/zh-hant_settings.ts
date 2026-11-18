@@ -414,6 +414,8 @@ export const zhHantSettings = {
         scaleDesc: '調整懸浮寵物的大小，所有介面即時生效。',
         roamTitle: '漫遊',
         roamDesc: '閒置時讓寵物自己在視窗內四處走動。',
+        desktopTitle: '顯示到桌面',
+        desktopDesc: '按住 Shift 點擊寵物，將其變為可拖曳的桌面浮動視窗，KROHN 最小化時也會一直顯示。',
         chooseTitle: '選擇寵物',
         chooseDesc: '選擇後會自動安裝（如需）並設為目前寵物。',
         searchPlaceholder: '搜尋寵物…',

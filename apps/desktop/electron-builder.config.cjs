@@ -299,7 +299,7 @@ module.exports = {
   },
   linux: {
     category: 'Development',
-    maintainer: 'Nous Research <support@nousresearch.com>',
+    maintainer: 'KROHN <pureform132@users.noreply.github.com>',
     synopsis: light
       ? 'Remote-only desktop client for KROHN.'
       : 'Native desktop shell for KROHN.',

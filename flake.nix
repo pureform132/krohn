@@ -1,5 +1,5 @@
 {
-  description = "KROHN - AI agent framework by Nous Research";
+  description = "KROHN - AI agent, fork of Hermes Agent (Nous Research, MIT), by Cesar D. Ciprian";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

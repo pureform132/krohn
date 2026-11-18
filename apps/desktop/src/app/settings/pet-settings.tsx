@@ -18,6 +18,7 @@ import { isSubmitEnter } from '@/lib/ime'
 import { selectableCardClass } from '@/lib/selectable-card'
 import { cn } from '@/lib/utils'
 import { $petInfo, $petRoam, setPetRoam } from '@/store/pet'
+import { $petOverlayActive, popInPet, popOutPet } from '@/store/pet-overlay'
 import {
   $petBusy,
   $petGallery,
@@ -59,11 +60,32 @@ export function PetSettings() {
   const busySlug = useStore($petBusy)
   const petInfo = useStore($petInfo)
   const roam = useStore($petRoam)
+  const overlayActive = useStore($petOverlayActive)
   const [query, setQuery] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<GalleryPet | null>(null)
   const [renameTarget, setRenameTarget] = useState<GalleryPet | null>(null)
   const [renameValue, setRenameValue] = useState('')
   const scale = petInfo.scale ?? PET_SCALE_DEFAULT
+
+  // Popping out hands the pet its own always-on-top OS window (position lives on
+  // the desktop, persisted across restarts). Without a remembered spot, spawn it
+  // at the lower-right corner of the current window.
+  const toggleOverlay = (on: boolean) => {
+    if (!on) {
+      popInPet()
+      return
+    }
+
+    const w = Math.round((petInfo.frameW ?? 192) * (petInfo.scale ?? PET_SCALE_DEFAULT))
+    const h = Math.round((petInfo.frameH ?? 208) * (petInfo.scale ?? PET_SCALE_DEFAULT))
+
+    popOutPet({
+      height: h,
+      width: w,
+      x: Math.max(0, window.innerWidth - w - 32),
+      y: Math.max(0, window.innerHeight - h - 32)
+    })
+  }
 
   useEffect(() => {
     if (gatewayState !== 'open') {
@@ -288,6 +310,15 @@ export function PetSettings() {
 
         {enabled && (
           <ToggleRow checked={roam} description={copy.roamDesc} label={copy.roamTitle} onChange={setPetRoam} />
+        )}
+
+        {enabled && (
+          <ToggleRow
+            checked={overlayActive}
+            description={copy.desktopDesc}
+            label={copy.desktopTitle}
+            onChange={toggleOverlay}
+          />
         )}
       </div>
 

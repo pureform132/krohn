@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!-- KROHN — "En tu escritorio" · 10s · 16:9 · window.seek(t) pure -->
+<html lang="es">
+<head>
+<meta charset="UTF-8"><title>KROHN — Tu mascota en el escritorio</title>
+<style>
+  :root{
+    --paper:#0E0D0B; --panel:#161310; --panel2:#1D1915; --ink:#F2EAD9; --dim:#A79A83;
+    --accent:#C8392B; --accent2:#E0503E; --rule:#33291F; --carbon:#080706;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#050403;overflow:hidden;font-family:"Fraunces","Iowan Old Style",Georgia,serif}
+  #stage{position:relative;width:1600px;height:900px;background:var(--paper);overflow:hidden}
+  .scene{position:absolute;inset:0;opacity:0;pointer-events:none}
+  .scene.on{opacity:1}
+  .mono{font-family:"IBM Plex Mono","Geist Mono",ui-monospace,Menlo,Consolas,monospace}
+  .kicker{font-family:Inter,system-ui,sans-serif;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent2)}
+  .vignette{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 42%,transparent 55%,rgba(0,0,0,.55) 100%)}
+  #hud{position:absolute;inset:16px 22px;display:flex;justify-content:space-between;align-items:flex-start;font-family:Inter,system-ui,sans-serif;font-size:11px;color:#C7BAA2;letter-spacing:.22em;text-transform:uppercase;opacity:0;z-index:50}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent2);margin-right:8px;vertical-align:-1px}
+  /* desk scene */
+  .desk{position:absolute;bottom:0;left:0;right:0;height:210px;background:linear-gradient(#1A1611 0%,#0A0807 100%);border-top:1px solid #241E17}
+  .monitor{position:absolute;bottom:190px;left:43.5%;width:150px;height:96px;background:#0A0908;border:2px solid #2B241C;border-radius:6px 6px 0 0}
+  .monitor::after{content:"";position:absolute;left:50%;top:100%;width:40px;height:14px;background:#14100D;transform:translateX(-50%)}
+  .stand{position:absolute;bottom:172px;left:43.5%;width:80px;height:4px;background:#241E17}
+  .mug{position:absolute;bottom:182px;left:17%;width:34px;height:30px;background:#231F19;border-radius:3px 3px 8px 8px}
+  .lamp{position:absolute;bottom:182px;left:88%;width:70px;height:90px;background:conic-gradient(from 200deg at 60% 100%, transparent 0deg, rgba(224,80,62,.16) 20deg, transparent 45deg)}
+  /* composer card */
+  .card{position:absolute;left:270px;top:170px;width:560px;background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:0 40px 90px rgba(0,0,0,.65),0 0 0 1px #000}
+  .card-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--rule)}
+  .tl{width:11px;height:11px;border-radius:50%}
+  .card-title{margin-left:auto;font-family:Inter,system-ui,sans-serif;font-size:11px;color:var(--dim);letter-spacing:.08em}
+  .card-body{padding:16px}
+  .bubble{max-width:86%;padding:10px 13px;border-radius:12px;font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.45}
+  .user{margin-left:auto;background:#F2EAD9;color:#14110E;border-bottom-right-radius:3px}
+  .agent{margin-top:12px;background:#1E1A15;color:var(--ink);border:1px solid var(--rule);border-bottom-left-radius:3px}
+  .caret{display:inline-block;width:9px;height:18px;background:var(--accent2);vertical-align:-3px;margin-left:2px}
+  .tool{display:flex;align-items:center;gap:10px;font-family:Inter,system-ui,sans-serif;font-size:12.5px;color:var(--dim);padding:6px 10px;border:1px dashed #2B241C;border-radius:8px;margin-top:8px}
+  .tool b{color:var(--ink);font-weight:600}
+  .ok{color:#7FB069;margin-left:auto}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid #4a4036;border-top-color:var(--accent2);border-radius:50%;animation:none}
+  /* hearts */
+  .heart{position:absolute;color:var(--accent2);font-family:Georgia,serif;pointer-events:none}
+  /* end card */
+  #endcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(1100px 700px at 50% 42%,#1B1612 0%,#080706 78%)}
+  #endmark{font-size:170px;line-height:.95;letter-spacing:-.04em;color:var(--ink)}
+  #endmark em{color:var(--accent2);font-style:italic}
+</style>
+</head>
+<body>
+<div id="stage" aria-label="KROHN — la mascota reacciona a tu agente">
+  <div class="vignette"></div>
+  <div class="desk"></div>
+  <div class="lamp"></div>
+  <div class="monitor"></div>
+  <div class="stand"></div>
+  <div class="mug"></div>
+
+  <!-- pet layers (visibility driven by seek) -->
+  <img id="pIdle0" src="assets/pet_idle_0.png"  class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom">
+  <img id="pIdle1" src="assets/pet_idle_2.png"  class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom">
+  <img id="pIdle2" src="assets/pet_idle_4.png"  class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom">
+  <img id="pWait"  src="assets/pet_waiting_2.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pRun0" src="assets/pet_running_0.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pRun1" src="assets/pet_running_1.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pRun2" src="assets/pet_running_2.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pRun3" src="assets/pet_running_3.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pJump0" src="assets/pet_jumping_1.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pJump1" src="assets/pet_jumping_2.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pJump2" src="assets/pet_jumping_3.png" class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+  <img id="pWave"  src="assets/pet_waving_0.png"  class="pet" alt="" style="position:absolute;left:1010px;bottom:196px;width:300px;height:300px;object-fit:contain;object-position:bottom;display:none">
+
+  <!-- cursor -->
+  <div id="cursor" style="position:absolute;left:300px;top:340px;z-index:40;opacity:0">
+    <svg width="26" height="30" viewBox="0 0 26 30"><path d="M1 1 L1 23 L7.2 17.4 L11.4 27 L14.8 25.3 L10.6 15.6 L19 15.6 Z" fill="#F2EAD9" stroke="#0E0D0B" stroke-width="1.4" stroke-linejoin="round"/></svg>
+  </div>
+
+  <!-- hearts container -->
+  <div id="hearts" style="position:absolute;inset:0;z-index:30"></div>
+
+  <!-- pet bubble -->
+  <div id="bubble" style="position:absolute;left:1130px;bottom:520px;z-index:35;background:#F2EAD9;color:#14110E;font-family:Inter,system-ui,sans-serif;font-size:14px;padding:10px 14px;border-radius:12px;border-bottom-left-radius:2px;box-shadow:0 14px 34px rgba(0,0,0,.4);opacity:0;white-space:nowrap">Listo. Lo suyo está hecho.</div>
+
+  <!-- composer card -->
+  <div id="card" class="card" style="opacity:0">
+    <div class="card-head">
+      <span class="tl" style="background:#C8392B"></span>
+      <span class="tl" style="background:#B58500"></span>
+      <span class="tl" style="background:#7FB069"></span>
+      <span class="card-title">KROHN — chat</span>
+    </div>
+    <div class="card-body">
+      <div id="userBubble" class="bubble user"><span id="userText"></span><span id="caret" class="caret"></span></div>
+      <div id="agentBubble" class="bubble agent" style="display:none">Aquí tiene: <b>3 cosas hoy</b> — 1 reunión a las 11:00, 2 PRs abiertos, y el cron de los viernes ya está creado. Nada late, todo alojado.</div>
+      <div id="tools" style="display:none">
+        <div id="tool0" class="tool" style="opacity:0"><b>file_read</b> · memoria y sesiones<span id="ok0" class="ok" style="opacity:0">✓ 0.12s</span></div>
+        <div id="tool1" class="tool" style="opacity:0"><b>search_sessions</b> · “reunión”<span id="ok1" class="ok" style="opacity:0">✓ 0.08s</span></div>
+        <div id="tool2" class="tool" style="opacity:0"><b>cron_add</b> · “viernes 15:00”<span id="ok2" class="ok" style="opacity:0">✓ 0.05s</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud"><span><span class="dot"></span>KROHN / DESKTOP — PET</span><span id="sceneLabel">SCENE 01 / 05</span><span id="timecode">00:00.0</span></div>
+
+  <!-- end card -->
+  <div id="endcard" style="opacity:0">
+    <img src="assets/pet_jumping_2.png" alt="KROHN" width="150" height="163" style="margin-bottom:26px">
+    <h1 id="endmark">KROHN<em>.</em></h1>
+    <p style="margin-top:14px;font-style:italic;color:var(--dim);font-size:26px;letter-spacing:-.01em">La mascota que siente lo que tu agente hace.</p>
+    <div class="mono" style="margin-top:26px;font-size:13px;color:var(--dim);letter-spacing:.22em">github.com/pureform132/krohn · Windows · MIT</div>
+  </div>
+</div>
+
+<script>
+window.VIDEO = { w: 1600, h: 900, duration: 10 };
+const V = window.VIDEO;
+const id = s => document.getElementById(s);
+const clamp = (x,a=0,b=1) => Math.min(b, Math.max(a, x));
+const lerp = (a,b,k) => a + (b - a) * k;
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const seg = (t,a,b) => clamp((t - a) / (b - a));
+const rng = s => () => { s = (s + 0x6D2B79F5) | 0; s = Math.imul(s ^ (s >>> 15), 1 | s); s ^= s + Math.imul(s ^ (s >>> 7), 61 | s); return ((s ^ (s >>> 14)) >>> 0) / 4294967296; };
+
+const petIds = ['pIdle0','pIdle1','pIdle2','pWait','pRun0','pRun1','pRun2','pRun3','pJump0','pJump1','pJump2','pWave'];
+function setPet(showIds){
+  for (const p of petIds) id(p).style.display = showIds.includes(p) ? 'block' : 'none';
+}
+function setScene(t){
+  // scene label phases
+  const label = t < 1.0 ? 'SCENE 01 / 05 — ESCRITORIO'
+    : t < 2.6 ? 'SCENE 02 / 05 — PREGUNTA'
+    : t < 4.6 ? 'SCENE 03 / 05 — TRABAJANDO'
+    : t < 6.2 ? 'SCENE 04 / 05 — LISTO'
+    : t < 7.8 ? 'SCENE 05 / 05 — AVISO'
+    : 'SCENE 05 / 05 — CIERRE';
+  id('sceneLabel').textContent = label;
+}
+
+const rand = rng(20261118);
+// hearts baked: 6 hearts with (x, y0, drift, phase, size)
+const HEARTS = Array.from({length: 6}, () => ({ x: 1120 + rand() * 130, drift: (rand() - 0.5) * 70, phase: rand() * 0.6, size: 16 + rand() * 16 }));
+
+function seek(t){
+  t = ((t % V.duration) + V.duration) % V.duration;
+  setScene(t);
+  id('hud').style.opacity = String(clamp(seg(t, 0.3, 0.9)) * 0.9);
+  id('timecode').textContent = `00:0${Math.floor(t)}.${String(Math.floor((t % 1) * 10))}`;
+
+  // camera push: subtle scale on stage content via monitor/card/pet opacity logic only (keep cheap)
+
+  // --- pet state machine (time-pure) ---
+  if (t >= 8.7) {
+    setPet([]);
+    id('bubble').style.opacity = '0';
+  } else if (t < 1.55) {
+    const idx = Math.floor(t / 0.75) % 3;
+    setPet([['pIdle0','pIdle1','pIdle2'][idx]]);
+    id('bubble').style.opacity = '0';
+  } else if (t < 2.6) {
+    setPet(['pWait']);
+    id('bubble').style.opacity = '0';
+  } else if (t < 4.6) {
+    const idx = Math.floor(t * 6) % 4;
+    setPet([['pRun0','pRun1','pRun2','pRun3'][idx]]);
+    id('bubble').style.opacity = '0';
+  } else if (t < 5.6) {
+    const idx = Math.floor((t - 4.6) * 6) % 3;
+    setPet([['pJump0','pJump1','pJump2'][idx]]);
+    id('bubble').style.opacity = '0';
+  } else if (t < 7.6) {
+    setPet(['pWave']);
+    id('bubble').style.opacity = String(clamp(seg(t, 5.7, 6.15)) * (1 - clamp(seg(t, 7.2, 7.55))));
+  } else {
+    setPet([Math.floor(t / 0.8) % 2 ? 'pIdle0' : 'pIdle2']);
+    id('bubble').style.opacity = '0';
+  }
+  const pet = id('pJump0').parentNode; // stage children order for camera transform
+
+  // hearts burst between 4.6 and 6.1
+  const hb = document.getElementById('hearts');
+  let hearts = '';
+  for (const h of HEARTS) {
+    const start = 4.6 + h.phase;
+    const p = seg(t, start, start + 1.15);
+    if (p <= 0 || p >= 1) continue;
+    const y = 470 - ease(p) * 180;
+    const x = h.x + h.drift * ease(p);
+    const op = p < 0.75 ? 1 : 1 - (p - 0.75) / 0.25;
+    const sc = 0.6 + ease(p) * 0.8;
+    hearts += `<div class="heart" style="left:${x}px;top:${y}px;font-size:${h.size * sc}px;opacity:${op}">♥</div>`;
+  }
+  hb.innerHTML = hearts;
+
+  // --- composer card ---
+  const cardIn = ease(seg(t, 0.9, 1.35));
+  const cardOut = 1 - clamp(seg(t, 8.6, 9.3));
+  id('card').style.opacity = String(cardIn * cardOut);
+  id('card').style.transform = `translateY(${(1 - cardIn) * 34}px) scale(${0.96 + 0.04 * cardIn})`;
+
+  // --- user typing 1.1 → 2.35 ---
+  const full = '/krohn: dime qué queda hoy';
+  const n = Math.floor(clamp((t - 1.1) / 1.1, 0, 1) * full.length);
+  id('userText').textContent = full.slice(0, n);
+  id('caret').style.opacity = t < 2.6 ? (Math.floor(t * 1.8) % 2 ? '1' : '.15') : '0';
+  id('userBubble').style.display = t < 9.2 ? 'block' : 'none';
+
+  // --- tools 2.7 → 4.6 ---
+  id('tools').style.display = t >= 2.7 ? 'block' : 'none';
+  const toolAt = [2.75, 3.25, 3.75];
+  const okAt   = [3.15, 3.65, 4.15];
+  for (let i = 0; i < 3; i++) {
+    id(`tool${i}`).style.opacity = String(seg(t, toolAt[i], toolAt[i] + 0.12));
+    id(`tool${i}`).style.transform = `translateX(${(1 - seg(t, toolAt[i], toolAt[i] + 0.2)) * -16}px)`;
+    id(`ok${i}`).style.opacity = String(seg(t, okAt[i], okAt[i] + 0.15));
+  }
+
+  // --- agent reply 4.35 → 4.6 fade, stays ---
+  id('agentBubble').style.display = t >= 4.35 ? 'block' : 'none';
+  id('agentBubble').style.opacity = String(seg(t, 4.35, 4.75));
+
+  // --- cursor path ---
+  const cur = id('cursor');
+  const pIn = seg(t, 1.0, 1.5);
+  const pClick = seg(t, 2.5, 2.9);   // press the send-ish spot
+  const pEnd = seg(t, 5.2, 5.7);
+  let cx = lerp(330, 690, ease(pIn));
+  let cy = lerp(350, 402, ease(pIn));
+  if (pClick > 0) {
+    const p2 = ease(pClick);
+    cx = lerp(690, 700, p2);
+    cy = lerp(402, 425, p2);
+  }
+  if (pEnd > 0) {
+    const p3 = ease(pEnd);
+    cx = lerp(700, 1210, p3);
+    cy = lerp(425, 515, p3);
+  }
+  cur.style.left = `${cx}px`;
+  cur.style.top = `${cy}px`;
+  cur.style.opacity = String(seg(t, 0.9, 1.15) * (1 - clamp(seg(t, 5.4, 5.9))));
+  const press = Math.sin(clamp(seg(t, 2.55, 2.75)) * Math.PI);
+  cur.style.transform = `scale(${1 - press * 0.14})`;
+
+  // --- end card 8.7 → 10 ---
+  const ec = id('endcard');
+  ec.style.opacity = String(clamp(seg(t, 8.7, 9.35)));
+  ec.style.transform = `scale(${0.94 + 0.06 * clamp(seg(t, 8.7, 9.6))})`;
+}
+window.seek = seek;
+seek(0);
+</script>
+</body>
+</html>

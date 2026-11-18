@@ -1088,6 +1088,8 @@ export const en: Translations = {
         scaleDesc: 'Resize the floating mascot. Applies everywhere instantly.',
         roamTitle: 'Roam',
         roamDesc: 'Let the pet wander the window on its own while idle.',
+        desktopTitle: 'Pop out to desktop',
+        desktopDesc: 'Shift-click the pet to move it to a floating desktop window that stays visible (and draggable) while KROHN is minimized.',
         chooseTitle: 'Choose a pet',
         chooseDesc: 'Picking one installs it (if needed) and makes it active.',
         searchPlaceholder: 'Search pets…',

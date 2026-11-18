@@ -1125,6 +1125,8 @@ export const deOverrides = {
         scaleDesc: 'Ändert die Größe des schwebenden Maskottchens. Wirkt überall sofort.',
         roamTitle: 'Herumstreifen',
         roamDesc: 'Das Haustier wandert im Leerlauf selbstständig durch das Fenster.',
+        desktopTitle: 'Auf den Desktop lösen',
+        desktopDesc: 'Umschalt+Klick auf das Haustier, damit es als verschiebbares Fenster über dem Desktop bleibt – auch wenn KROHN minimiert ist.',
         chooseTitle: 'Haustier auswählen',
         chooseDesc: 'Auswählen installiert eines (falls nötig) und macht es aktiv.',
         searchPlaceholder: 'Haustiere suchen…',

@@ -30,7 +30,7 @@ export function SidebarFooter({ status }: SidebarFooterProps) {
         name="footer-right"
         fallback={
           <a
-            href="https://nousresearch.com"
+            href="https://github.com/pureform132/krohn"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(

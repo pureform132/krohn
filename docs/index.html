@@ -7,11 +7,11 @@
 <meta name="description" content="Documentación oficial de KROHN: instalación en Windows, onboarding, CLI y TUI, desktop, configuración de proveedores (DeepSeek, Gemini, NVIDIA, OpenRouter, Nous, Ollama, LM Studio), MCP, gateways, skills y cron.">
 <meta name="keywords" content="KROHN documentación, KROHN guía, KROHN instalar Windows, KROHN CLI, KROHN TUI, KROHN desktop, KROHN configuración, KROHN proveedor modelo, KROHN MCP, KROHN gateways, KROHN skills, KROHN cron">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://krohn.netlify.app/docs/">
+<link rel="canonical" href="https://krohn-docs.netlify.app/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="KROHN · Documentación">
 <meta property="og:description" content="Guía completa de KROHN para Windows.">
-<meta property="og:url" content="https://krohn.netlify.app/docs/">
+<meta property="og:url" content="https://krohn-docs.netlify.app/">
 <meta property="og:image" content="https://krohn.netlify.app/assets/og-1200x630.png">
 <meta property="og:site_name" content="KROHN">
 <meta name="twitter:card" content="summary_large_image">
@@ -47,6 +47,12 @@ code.inline{background:#14110E;border:1px solid var(--rule);border-radius:4px;pa
 .card h3{font-size:15px}.card p{font-size:12px;color:#C7BAA2;margin-top:6px}
 a{color:var(--accent-2)}
 .footer{border-top:1px solid var(--rule);padding:28px 0 60px;color:var(--dim);font-size:12px}
+.hero-img{width:100%;border:1px solid var(--rule);border-radius:12px;margin:18px 0;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.img-caption{font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;font-family:Inter,system-ui,sans-serif;margin:-8px 0 14px}
+.pet-grid{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.pet-cell{width:110px;background:#F2EAD9;border-radius:10px;padding:6px;text-align:center}
+.pet-cell img{width:100%;image-rendering:auto}
+.pet-cell small{display:block;color:#14110E;font-family:Inter,system-ui,sans-serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
 :focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
 </style>
 </head>
@@ -63,6 +69,7 @@ a{color:var(--accent-2)}
       <li><a href="#instalar">Instalar en Windows</a></li>
       <li><a href="#primer-arranque">Primer arranque y proveedores</a></li>
       <li><a href="#uso-basico">Uso básico (CLI · TUI · Desktop)</a></li>
+      <li><a href="#mascota">La mascota Ultrón (Desktop)</a></li>
     </ul>
     <h3>Referencia</h3>
     <ul>
@@ -86,6 +93,8 @@ a{color:var(--accent-2)}
     <h1>Documentación de KROHN</h1>
     <p class="muted">KROHN es el primer agente que simula la conciencia: fork libre de Hermes Agent (MIT), rediseñado con identidad propia y voz española. Esta guía cubre todo lo que necesitas para instalar, configurar y extender KROHN.</p>
     <span class="tag">v1.0.0 · Windows 10/11 · MIT</span>
+    <img class="hero-img" src="assets/screens/home.png" alt="KROHN Desktop: la consola del agente corriendo en Windows" width="1600" height="900">
+    <p class="img-caption">KROHN Desktop 1.0 — la app real, captura local</p>
 
     <h2 id="instalar">Instalar en Windows</h2>
     <p>Descarga el instalador desde <a href="https://github.com/pureform132/krohn/releases/latest">Releases</a> y ejecútalo. KROHN prepara Python, Node, pnpm y sus dependencias vía PM (pinned, hash-verificado). Sin Node previo ni certificados de administrador.</p>
@@ -112,6 +121,25 @@ krohn cron            # programador en lenguaje natural
 krohn model           # cambiar proveedor/modelo
 krohn doctor          # diagnóstico</pre>
 
+    <h2 id="mascota">La mascota Ultrón (Desktop)</h2>
+    <p>KROHN Desktop incluye una <b>mascota Ultrón chibi</b> de arte propio: un sprite animado que vive en la ventana (o en tu escritorio) y reacciona en tiempo real a lo que hace el agente — ejecutar una herramienta, razonar, cometer un error, terminar una tarea.</p>
+    <div class="pet-grid">
+      <span class="pet-cell"><img src="assets/pet_running_0.png" alt="Trabajando"><small>RUN · herramienta</small></span>
+      <span class="pet-cell"><img src="assets/pet_waving_0.png" alt="Avisando"><small>WAVE · al aviso</small></span>
+      <span class="pet-cell"><img src="assets/pet_jumping_2.png" alt="Celebrando"><small>JUMP · tarea lista</small></span>
+      <span class="pet-cell"><img src="assets/pet_waiting_2.png" alt="Esperando"><small>WAIT · aprobación</small></span>
+      <span class="pet-cell"><img src="assets/pet_failed_0.png" alt="Error"><small>FAILED · tool error</small></span>
+    </div>
+    <p><b>Cómo se usa</b></p>
+    <ol>
+      <li>Ajustes → Mascota → activar. El spritesheet se descarga del gateway (<code class="inline">pet.info</code>); no requiere red extra.</li>
+      <li>La mascota sigue el estado real del turno: <code class="inline">running</code> al empezar una herramienta, <code class="inline">review</code> al razonar, <code class="inline">failed</code> si una herramienta falla, <code class="inline">jump</code> al completar el turno y <code class="inline">waiting</code> si KROHN espera tu aprobación.</li>
+      <li><b>Shift + clic</b> sobre la mascota la convierte en una ventana flotante del escritorio: siempre visible, arrastrable con el ratón, y persiste entre reinicios. <b>Mayús + rueda</b> cambia su tamaño.</li>
+      <li>Ajustes → Mascota → <b>Mover al escritorio</b> alterna ese modo sin tocar la ventana principal.</li>
+      <li>Si no te apetece verla, desactívala: la mascota es 100% opt-in y no altera el agente en nada.</li>
+    </ol>
+    <p class="muted">El spritesheet y su manifiesto viven en el repo: <code class="inline">packaging/pets/krohn-ultron-chibi/</code> (pet.json + spritesheet.png, formato 9 filas × 8 columnas, celdas 192×208).</p>
+
     <h2 id="config">config.yaml y .env</h2>
     <p>El estado vive en <code class="inline">%LOCALAPPDATA%\krohn\krohn_home\config.yaml</code>; los secretos, en <code class="inline">.env</code> del mismo directorio. Configura proveedores, <code class="inline">mcp_servers</code>, temas y transporte por plataforma.</p>
 
@@ -133,6 +161,9 @@ krohn doctor          # diagnóstico</pre>
     <h2 id="subagents">Subagentes</h2>
     <p>Delega tareas aisladas (cada una con su worktree), providers, regímenes de aprobación y cuotas propias. Desktop → Settings → Model → Subagents.</p>
 
+    <img class="hero-img" loading="lazy" src="assets/screens/cron.png" alt="KROHN Desktop: programador cron en lenguaje natural" width="1600" height="900">
+    <p class="img-caption">Cron en lenguaje natural — “cada viernes a las 15:00”</p>
+
     <h2 id="seguridad">Seguridad y sandbox</h2>
     <p>Sandbox por defecto, aprobación humana antes de cualquier acción externa, logs auditables, <code class="inline">write-approval</code>, <code class="inline">path-security</code>, <code class="inline">sandbox_scope</code>. KROHN jamás toca nada externo sin tu confirmación cuando la acción sale del entorno.</p>
 
@@ -145,6 +176,6 @@ krohn doctor          # diagnóstico</pre>
     <p>MIT — ver <a href="https://github.com/pureform132/krohn/blob/master/LICENSE">LICENSE</a>. KROHN deriva de Hermes Agent © Nous Research, publicado bajo MIT. Atribución completa en <a href="https://github.com/pureform132/krohn/blob/master/NOTICE.md">NOTICE.md</a>. KROHN no está afiliado ni con Nous Research ni con OpenAI, Google, Anthropic, NVIDIA o DeepSeek.</p>
   </div>
 </main>
-<footer class="footer"><div class="wrap">© 2026 KROHN · MIT · <a href="https://github.com/pureform132/krohn">pureform132/krohn</a> · <a href="/">krohn.netlify.app</a></div></footer>
+<footer class="footer"><div class="wrap">© 2026 Cesar D. Ciprian · KROHN · MIT · <a href="https://github.com/pureform132/krohn">pureform132/krohn</a> · <a href="https://krohn.netlify.app/">krohn.netlify.app</a> · Creado por Cesar D. Ciprian</div></footer>
 </body>
 </html>

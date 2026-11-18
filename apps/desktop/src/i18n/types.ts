@@ -894,6 +894,8 @@ export interface Translations extends NoticeTranslations {
         scaleDesc: string
         roamTitle: string
         roamDesc: string
+        desktopTitle: string
+        desktopDesc: string
         chooseTitle: string
         chooseDesc: string
         searchPlaceholder: string

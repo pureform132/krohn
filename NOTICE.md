@@ -26,3 +26,10 @@ se conservan intencionadamente: no son la marca del producto.
 Updater automático: desactivado a propósito. KROHN jamás se auto-reemplaza por el producto aguas arriba.
 
 Contacto solo para KROHN: https://github.com/pureform132/krohn (no es Nous Research).
+
+---
+
+**KROHN es un proyecto de [Cesar D. Ciprian](https://github.com/pureform132).**
+El código original pertenece a Nous Research y se conserva bajo MIT. La obra derivada
+(rebranding, identidad KROHN, persona, tema visual, mascota Ultrón chibi, sitio y documentación)
+es de Cesar D. Ciprian, publicado también bajo MIT.

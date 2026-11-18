@@ -1127,6 +1127,8 @@ export const esOverrides = {
         scaleDesc: 'Cambia el tamaño de la mascota flotante. Se aplica al instante en todas partes.',
         roamTitle: 'Moverse libremente',
         roamDesc: 'Permite que la mascota recorra la ventana por su cuenta cuando esté inactiva.',
+        desktopTitle: 'Mover al escritorio',
+        desktopDesc: 'Mayús+clic en la mascota para convertirla en una ventana flotante del escritorio que se puede arrastrar y permanece visible aunque KROHN esté minimizado.',
         chooseTitle: 'Elige una mascota',
         chooseDesc: 'Al elegir una, se instala si es necesario y queda activa.',
         searchPlaceholder: 'Buscar mascotas…',

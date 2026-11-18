@@ -141,13 +141,13 @@ describe("sidebar control target sizes (WCAG 2.5.8, issue #70983)", () => {
     expect(hasClass(btn!, "py-1")).toBe(false);
   });
 
-  it("Nous Research footer link renders a >=24px hit area (min-h 24px)", async () => {
+  it("KROHN repo footer link renders a >=24px hit area (min-h 24px)", async () => {
     await render(
       <I18nProvider>
         <SidebarFooter status={null} />
       </I18nProvider>,
     );
-    const link = container.querySelector('a[href="https://nousresearch.com"]');
+    const link = container.querySelector('a[href="https://github.com/pureform132/krohn"]');
     expect(link).not.toBeNull();
     expect(hasClass(link!, "min-h-[24px]")).toBe(true);
   });
