@@ -174,9 +174,10 @@ KROHN_AGENT_HELP_GUIDANCE = (
     # Names KROHN without restating identity: SOUL.md line 1 already says who you are, while a custom
     # persona (no KROHN identity line) still learns from "KROHN itself" + "your own features" what it runs on.
     "For help with KROHN itself — configuring, setting up, using, extending, or troubleshooting it — "
-    "or to understand your own features, tools, or capabilities, the documentation at "
-    "https://hermes-agent.nousresearch.com/docs is your "
-    "authoritative reference and always holds the latest, most up-to-date information. The `krohn` "
+    "or to understand your own features, tools, or capabilities, the bundled docs "
+    "(`website/docs/` in the repository, and the KROHN project site at "
+    "https://github.com/krohn-labs/krohn) are your "
+    "reference. The `krohn` "
     "skill has the actual commands and proven workflows — load it with skill_view(name='krohn') "
     "before configuring, modifying, or troubleshooting KROHN so you don't guess or invent workarounds."
 )
@@ -184,10 +185,8 @@ KROHN_AGENT_HELP_GUIDANCE = (
 # Variant for sessions without the skills toolset (e.g. Blank Slate): naming skill_view() there would dangle.
 KROHN_AGENT_HELP_GUIDANCE_NO_SKILLS = (
     "For help with KROHN itself — configuring, setting up, using, extending, or troubleshooting it — "
-    "or to understand your own features, tools, or capabilities, the documentation at "
-    "https://hermes-agent.nousresearch.com/docs is the "
-    "authoritative reference and always holds the latest, most up-to-date information. Point the user there "
-    "(or read it yourself if you have a way to fetch web content)."
+    "or to understand your own features, tools, or capabilities, the bundled docs (`website/docs/`) are "
+    "your reference; point the user there, or at https://github.com/krohn-labs/krohn."
 )
 
 
