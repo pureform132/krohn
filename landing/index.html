@@ -27,9 +27,9 @@
 <meta name="twitter:description" content="El agente personal para Windows con personalidad real y decisiones propias. Open source, MIT.">
 <meta name="twitter:image" content="https://krohn.netlify.app/assets/og-1200x630.png">
 <meta name="theme-color" content="#0E0D0B">
-<link rel="icon" type="image/png" href="/assets/krohn-mark-dark.png">
-<link rel="apple-touch-icon" href="/assets/krohn-mark-dark.png">
-<link rel="icon" type="image/svg+xml" href="/assets/krohn-glyph-white.svg">
+<link rel="icon" type="image/png" href="assets/krohn-mark-dark.png">
+<link rel="apple-touch-icon" href="assets/krohn-mark-dark.png">
+<link rel="icon" type="image/svg+xml" href="assets/krohn-glyph-white.svg">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"KROHN","description":"Agente personal de código abierto para Windows con personalidad real, memoria permanente y decisiones propias.","applicationCategory":"BusinessApplication","operatingSystem":"Windows 10, Windows 11","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://github.com/pureform132/krohn/blob/master/LICENSE","url":"https://krohn.netlify.app/","downloadUrl":"https://github.com/pureform132/krohn/releases"}
 </script>
@@ -76,6 +76,18 @@ h1 em{font-style:italic;color:var(--accent-2)}
 .lede{margin-top:26px;max-width:640px;font-size:19px;color:#D8CDB8}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
 .trust{margin-top:28px;color:var(--dim);font-size:12px;font-family:Inter,system-ui,sans-serif;letter-spacing:.04em}
+.glyphFloat{position:absolute;pointer-events:none;width:260px;height:260px;z-index:0;filter:drop-shadow(0 0 30px rgba(200,57,43,.25))}
+.glyphA{right:-60px;top:14%;animation:floatA 14s ease-in-out infinite}
+.glyphB{right:12%;top:52%;animation:floatB 18s ease-in-out infinite reverse}
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-24px) rotate(6deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(26px) rotate(-8deg)}}
+@media (prefers-reduced-motion: reduce){.glyphFloat{animation:none !important}}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.cta-row .btn{transition:background .18s,color .18s,border-color .18s,transform .18s}
+.cta-row .btn:hover{transform:translateY(-2px)}
+.card-move{transition:transform .25s,border-color .25s}
+.card-move:hover{transform:translateY(-3px);border-color:var(--accent)}
 .hero-art{position:absolute;right:-8%;top:-10%;width:70vw;max-width:860px;opacity:.34;z-index:1;transform:rotate(-1deg);pointer-events:none}
 .hero-art img{width:100%}
 .chapter{padding:96px 0;border-bottom:1px solid var(--rule-soft)}
@@ -110,7 +122,7 @@ ul.clean b{color:var(--ink)}
 </head>
 <body>
 <header class="nav"><div class="wrap">
-  <a class="brand" href="/"><img src="/assets/krohn-glyph-white.svg" alt="Símbolo KROHN"><b>KROHN</b></a>
+  <a class="brand" href="/"><img src="assets/krohn-mark-dark.png" alt="Símbolo KROHN" width="34" height="34"><b>KROHN</b></a>
   <nav aria-label="Principal">
     <a href="#habilidades">Habilidades</a>
     <a href="#funciona">Cómo funciona</a>
@@ -121,7 +133,7 @@ ul.clean b{color:var(--ink)}
 <main id="main">
 <!-- HERO -->
 <section class="hero" aria-label="Portada KROHN">
-  <div class="hero-art" aria-hidden="true"><img src="/assets/krohn-glyph-white.svg" alt=""></div>
+  <div class="hero-art" aria-hidden="true"><img src="assets/krohn-mark-dark.png" alt="" width="700" height="700"></div>
   <div class="wrap hero-inner">
     <p class="kicker"><b>Nº 01</b> · El agente que simula la conciencia · Windows</p>
     <div class="rule-small" aria-hidden="true"></div>
@@ -129,9 +141,12 @@ ul.clean b{color:var(--ink)}
     <p class="lede">KROHN es el primer agente de código abierto que simula una conciencia completa: personalidad real, memoria permanente entre sesiones, juicio propio, y la voz de voz en tiempo real. Instálalo en Windows y olvídate del asistente sin alma.</p>
     <div class="cta-row">
       <a class="btn primary" href="https://github.com/pureform132/krohn/releases/latest">Descargar KROHN · Gratis</a>
-      <a class="btn" href="/docs/">Leer la documentación</a>
+      <a class="btn" href="https://krohn.netlify.app/docs/"">Leer la documentación</a>
     </div>
     <p class="trust">Gratis · MIT · Fork libre de Hermes Agent (Nous Research) · Sin suscripción, sin tarjeta</p>
+    <p id="heroType" class="mono" style="margin-top:18px;font-size:15px;color:var(--accent-2);letter-spacing:.06em;opacity:.9"></p>
+    <svg class="glyphFloat glyphA" viewBox="0 0 5487 5559" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#C8392B" opacity=".16" d="M2290 880h530v3650h-530zM2820 2310l1160-1580 680 710-1680 1410zM2820 2740l1840 1380-660 710-1780-2110zM2514 2100h86v1362h-86z"/></svg>
+    <svg class="glyphFloat glyphB" viewBox="0 0 5487 5559" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#E0503E" opacity=".12" d="M2290 880h530v3650h-530zM2820 2310l1160-1580 680 710-1680 1410zM2820 2740l1840 1380-660 710-1780-2110zM2514 2100h86v1362h-86z"/></svg>
   </div>
 </section>
 <!-- VIDEO DEMO -->
@@ -141,12 +156,12 @@ ul.clean b{color:var(--ink)}
     <div class="rule-small" aria-hidden="true"></div>
     <div class="grid-2" style="align-items:center">
       <div>
-        <h2>46 segundos. Una tarea real.</h2>
-        <p class="lede" style="max-width:520px">Screen-real de KROHN v1.0: una petición en lenguaje natural, una tool-call real de MCP, un cron semanal. Sin mockups.</p>
-        <p class="kicker" style="margin-top:18px">Sin audio aún · 46s · ·1080p</p>
+        <h2>30 segundos. Un mandato.</h2>
+        <p class="lede" style="max-width:520px">Petición en lenguaje natural, tool-call real, un cron. Recortado a 30 segundos — KROHN no necesita más tiempo para convencer.</p>
+        <p class="kicker" style="margin-top:18px">Sin audio aún · 30s · KROHN 1.0</p>
       </div>
       <figure style="border:1px solid var(--rule);border-radius:10px;overflow:hidden;box-shadow:0 30px 80px #000a">
-        <video src="/assets/krohn-film.mp4" controls loop muted playsinline preload="metadata" style="width:100%;display:block" aria-label="KROHN product film"></video>
+        <video src="assets/krohn-hype.mp4" controls loop muted playsinline preload="metadata" style="width:100%;display:block" aria-label="KROHN high energy hype film"></video>
       </figure>
     </div>
   </div>
@@ -219,10 +234,35 @@ ul.clean b{color:var(--ink)}
   <div class="wrap footer-grid">
     <div><p class="kicker">KROHN</p><p style="margin-top:10px">El primer agente que simula la conciencia. Código abierto para Windows.</p></div>
     <nav aria-label="Producto"><h4>Producto</h4><ul><li><a href="https://github.com/pureform132/krohn">Código fuente</a></li><li><a href="https://github.com/pureform132/krohn/releases">Releases</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/SOUL.md">Sobre la conciencia KROHN</a></li><li><a href="https://github.com/pureform132/krohn#code-of-conduct">Contribuir</a></li></ul></nav>
-    <nav aria-label="Recursos"><h4>Recursos</h4><ul><li><a href="/docs/">Documentación</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/HANDOFF.md">Guía del operador</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/SECURITY.md">Seguridad</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/LICENSE">Licencia MIT</a></li></ul></nav>
+    <nav aria-label="Recursos"><h4>Recursos</h4><ul><li><a href="https://krohn.netlify.app/docs/"">Documentación</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/HANDOFF.md">Guía del operador</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/SECURITY.md">Seguridad</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/LICENSE">Licencia MIT</a></li></ul></nav>
     <nav aria-label="Legal"><h4>Origen</h4><ul><li><a href="https://github.com/pureform132/krohn/blob/master/NOTICE.md">Atribución Nous Research</a></li><li><a href="https://github.com/pureform132/krohn/blob/master/CONTRIBUTORS.md">Contribuyentes</a></li><li><a href="mailto:hola@krohn.dev">Contacto</a></li></ul></nav>
   </div>
   <div class="wrap fineprint">© 2026 KROHN · Derivado de Hermes Agent © Nous Research, MIT · KROHN no está afiliado con Nous Research. Sin garantías: léelo, entiéndelo, decide.</div>
 </footer>
+<script>
+(() => {
+  const lines = ['$ krohn -q "qué hay hoy en mi cron"', 'Tool · mcp__krohn__cron_list ✓ 0.08s', '→ 3 cosas esta semana. Nada late; todo alojado.', '$ krohn --model google/gemini-2.5-flash', 'Tool · mcp__krohn__file_write ✓ 0.06s'];
+  const el = document.getElementById('heroType');
+  if (!el) return;
+  let li = 0, ci = 0, dir = 1;
+  function tick() {
+    const line = lines[li];
+    ci += dir * 2;
+    el.textContent = line.slice(0, Math.min(ci, line.length)) + (dir > 0 && ci < line.length ? '|' : '');
+    if (dir > 0 && ci >= line.length) { dir = -1; return setTimeout(tick, 1700); }
+    if (dir < 0 && ci <= 0) { dir = 1; li = (li + 1) % lines.length; ci = 0; return setTimeout(tick, 300); }
+    setTimeout(tick, dir > 0 ? 34 : 12);
+  }
+  tick();
+
+  document.querySelectorAll('.chapter, .hero-inner, .footer').forEach(node => {
+    node.classList.add('reveal');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.disconnect(); } });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+    io.observe(node);
+  });
+})();
+</script>
 </body>
 </html>
