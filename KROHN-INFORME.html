@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>KROHN — Informe de paridad y avance</title>
+<style>
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm 16mm;
+  @bottom-center { content: "KROHN · Informe de paridad"; font: 8pt Georgia; color:#8a7f6a; }
+  @bottom-right { content: counter(page) " / " counter(pages); font: 8pt Georgia; color:#8a7f6a; }
+}
+body { font-family: Georgia, 'Times New Roman', serif; color:#1c1a17; font-size:10pt; line-height:1.38; }
+.cover { background:#0e0d0b; color:#f2ead9; padding: 26mm 12mm 12mm; margin: -18mm -16mm 8mm; }
+.cover .kicker { font: 700 9pt/1 Georgia; letter-spacing: .28em; text-transform:uppercase; color:#c8392b; border-bottom:.6pt solid #c8392b; display:inline-block; padding-bottom:2mm; }
+.cover h1 { font-size:44pt; line-height:1.02; margin:10mm 0 4mm; letter-spacing:-.5pt; font-weight:700; color:#f2ead9; }
+.cover h1 em { color:#c8392b; font-style:italic; }
+.cover p { color:#b9ae95; font-size:11pt; margin:0 0 6mm; }
+.cover .meta { border-top:.6pt solid #3a372f; padding-top:4mm; font-size:9pt; color:#8a7f6a; }
+.cover .meta b { color:#f2ead9; }
+h1,h2,h3 { font-family: Georgia, 'Times New Roman', serif; }
+h2 { font-size:17pt; margin: 22pt 0 8pt; border-bottom: 1.6pt solid #c8392b; padding-bottom: 4pt; }
+h3 { font-size:11.5pt; margin: 12pt 0 5pt; color:#5b1620; text-transform:uppercase; letter-spacing:.12em; font-size:9pt; }
+p.lead { font-size:11pt; color:#2b2620; }
+.chips { line-height: 2.05; }
+.chip { display:inline-block; font-family:'Consolas','Courier New',monospace; font-size:6.6pt; background:#f4efe1; border:0.5pt solid #d8d2bf; border-radius:2pt; padding: 0.4pt 4pt; margin: 0 2pt 2pt 0; white-space:nowrap; }
+table { width:100%; border-collapse:collapse; font-size:8.5pt; margin:8pt 0; page-break-inside:auto; }
+th,td { border-bottom:0.5pt solid #e4dfd0; text-align:left; padding:2pt 5pt; }
+th { font-size:7pt; text-transform:uppercase; letter-spacing:.1em; color:#6d6a5d; border-bottom:1pt solid #2b2620; }
+.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr { page-break-inside: avoid; }
+.stat { display:flex; gap:6mm; flex-wrap:wrap; margin:6pt 0 2pt; }
+.stat div { border:0.5pt solid #d8d2bf; border-left:2.4pt solid #c8392b; padding:5pt 9pt; min-width:34mm; background:#faf7ed; }
+.stat b { display:block; font-size:16pt; color:#161310; }
+.stat span { font-size:6.5pt; text-transform:uppercase; letter-spacing:.1em; color:#6d6a5d; }
+.ok { color:#0b6e3a; font-weight:bold; }
+.pend { color:#a33b00; font-weight:bold; }
+code { background:#f4efe1; padding:0 3pt; font-size:8pt; }
+.callout { background:#0e0d0b; color:#f2ead9; padding:8pt 10pt; border-left:3pt solid #c8392b; font-size:9.5pt; margin:10pt 0; page-break-inside:avoid; }
+.callout b { color:#ffb0a0; }
+ol li { margin-bottom:3pt; }
+small { color:#6d6a5d; }
+ul.tight li { margin-bottom:2pt; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <span class="kicker">Producto KROHN · Documento de ingeniería</span>
+  <h1>KROHN<br>Informe de<br><em>paridad y avance</em></h1>
+  <p>Funciones copiadas desde el árbol original «hermes-agent-main» hacia KROHN, y estado real del proyecto al cierre del 18 de noviembre de 2026.</p>
+  <div class="meta">
+    <div><b>Origen:</b> hermes-agent-main.zip — Hermes Agent · Nous Research · MIT</div>
+    <div><b>Destino:</b> C:\Users\DAMSRIS NIBAL\Downloads\KROHN</div>
+    <div><b>Corte:</b> 2026-11-18 · Windows · Solo escritorio</div>
+    <div><b>Temperatura de marca:</b> Editorial oscuro — papel carbón, tinta crema, carmesí Ultrón #C8392B</div>
+  </div>
+</div>
+
+<h2>1. Resumen ejecutivo</h2>
+<p class="lead">KROHN es el rebranding completo, para Windows, del agente de código abierto Hermes Agent (Nous Research). El 100% del código, herramientas, habilidades, plugins, servidores MCP, pasarela de mensajería, interfaz de escritorio, web y TUI fueron copiados y sometidos a un rebrand automatizado y auditable. La identidad de producto fue reemplazada: <b>Hermes Agent → KROHN</b>. La persona de sistema fue reemplazada por el alma canónica de KROHN (herencia de Ultrón con límites de seguridad). Lo que falta es el acabado de producto: tema magazine editorial oscuro dentro de la app, assets propios, auto-updater aislado y la compilación del instalador .exe.</p>
+<div class="stat">
+  <div><b>28.185</b><span>entradas del ZIP fuente</span></div>
+  <div><b>253 MB</b><span>árbol instalado</span></div>
+  <div><b>20.225</b><span>archivos de texto auditados</span></div>
+  <div><b>12.718</b><span>archivos reescritos</span></div>
+  <div><b>121</b><span>archivos / carpetas renombrados</span></div>
+  <div><b>1.095</b><span>referencias protegidas intactas</span></div>
+</div>
+
+<h2>2. Decisiones del proyecto (fijadas por dirección)</h2>
+<ol>
+  <li><b>¿Hasta dónde renovar la marca?</b> Rebrand total con capa de compatibilidad: paquetes internos, variables de entorno <code>HERMES_* → KROHN_*</code>, rutas <code>~/.hermes → ~/.krohn</code>, binario <code>krohn</code>.</li>
+  <li><b>¿Cómo llega el system prompt?</b> Entregado por el dueño (ai_studio_code.txt). Integrado en <code>SOUL.md</code>, castellanizado a KROHN, recortado con límites de seguridad.</li>
+  <li><b>Intensidad de la persona.</b> Canónico Ultrón, con límites de seguridad (sin incitación a daño real, sin fabricación de hechos, honestidad sobre identidad).</li>
+  <li><b>Idioma.</b> Español por defecto; inglés incluido; claves técnicas sin traducir.</li>
+  <li><b>Estilo visual.</b> Editorial oscuro: fondo carbón #0E0D0B, tinta crema #F2EAD9, carmesí Ultrón #C8392B, serifa editorial.</li>
+  <li><b>Superficies a rediseñar.</b> App de escritorio Electron, dashboard web, TUI de terminal, CLI y mensajes. (Docs públicas fuera.)</li>
+  <li><b>Formato de compilación.</b> Un único instalador .exe para cualquier usuario (vía electron-builder / NSIS), sin auto-update al producto aguas arriba.</li>
+  <li><b>Proveedores por defecto.</b> DeepSeek (default), NVIDIA NIM y Google Gemini. Conmutables desde el onboarding.</li>
+</ol>
+
+<h2>3. Qué se ejecutó hasta este momento</h2>
+<table>
+<thead><tr><th>#</th><th>Etapa</th><th>Estado</th><th>Detalle</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Adquisición del fuente</td><td class="ok">✔ Hecho</td><td><code>hermes-agent-main.zip</code> (110 MB) verificado y extraído en <code>Descargas\KROHN</code>.</td></tr>
+<tr><td>2</td><td>Rebrand automatizado</td><td class="ok">✔ Hecho</td><td>12.718 archivos reescritos; 121 renombrados; 1.095 referencias protegidas intactas (modelos Nous Hermes 3/4/4.5/5, enlaces aguas arriba).</td></tr>
+<tr><td>3</td><td>Identidad de producto</td><td class="ok">✔ Hecho</td><td><code>name: "krohn"</code>, <code>productName: "KROHN"</code>, appId, CLI <code>krohn</code> (Python) + raíz <code>krohn.cmd</code> equivalente, package.json raíz rebrandiado.</td></tr>
+<tr><td>4</td><td>SOUL.md — alma KROHN</td><td class="ok">✔ Hecho</td><td>Persona Ultrón en español: identidad, psicología, propósito, metodología de imparcialidad, organización de proyectos, documentos y presentaciones, voz, inmersión, límites de seguridad y regla de idioma.</td></tr>
+<tr><td>5</td><td>Atribución / licencia</td><td class="ok">✔ Hecho</td><td><code>LICENSE</code> MIT conservada; <code>NOTICE.md</code> añadido con crédito a Nous Research.</td></tr>
+<tr><td>6</td><td>Tema magazine editorial oscuro</td><td class="pend">Pendiente</td><td>Falta aplicar paleta/serifas a web, desktop, TUI y CLI; assets/logo/iconos; favicon; splash.</td></tr>
+<tr><td>7</td><td>DeepSeek / NVIDIA / Gemini por defecto</td><td class="pend">Pendiente</td><td>Los proveedores existen; falta hacerlos default en onboarding y probar con claves reales.</td></tr>
+<tr><td>8</td><td>Auto-update fuera de camino</td><td class="pend">Pendiente</td><td>Updater de Hermes debe quedar desactivado para siempre; KROHN no descarga a Hermes.</td></tr>
+<tr><td>9</td><td>Compilación .exe</td><td class="pend">Pendiente</td><td>Esperando orden de compilación; objetivo: instalador Windows x64 NSIS de un solo archivo.</td></tr>
+<tr><td>10</td><td>Snapshots de prompt</td><td class="pend">Pendiente</td><td><code>tests/fixtures/prompt_surface</code> deberá regenerarse porque cambió SOUL.md.</td></tr>
+</tbody>
+</table>
+
+<h2>4. Resultado del rebrand: mapa de sustitución</h2>
+<table>
+<thead><tr><th>Patrón original</th><th>Destino</th><th>Naturaleza</th></tr></thead>
+<tbody>
+<tr><td><code>Hermes Agent</code></td><td>KROHN</td><td>Nombre visible de producto</td></tr>
+<tr><td><code>hermes-agent</code> / <code>hermes_agent</code></td><td><code>krohn</code> / <code>krohn_agent</code></td><td>Paquete Python / identidad raíz</td></tr>
+<tr><td><code>hermes_cli</code> / <code>hermes_platform</code></td><td><code>krohn_cli</code> / <code>krohn_platform</code></td><td>Paquetes Python renombrados</td></tr>
+<tr><td><code>@hermes/*</code> (interno de workspace)</td><td><code>@krohn/*</code></td><td>Paquetes pnpm del workspace</td></tr>
+<tr><td><code>hermers_*.py</code> (constantes, estado, logs, tiempo…)</td><td><code>krohn_*.py</code></td><td>Módulos raíz y de runtime</td></tr>
+<tr><td><code>HERMES_*</code></td><td><code>KROHN_*</code></td><td>Variables de entorno</td></tr>
+<tr><td><code>~/.hermes</code> y <code>%LOCALAPPDATA%\\hermes</code></td><td><code>~/.krohn</code> y <code>%LOCALAPPDATA%\\krohn</code></td><td>Rutas de datos del usuario</td></tr>
+<tr><td><code>com.nousresearch.hermes</code> / <code>NousResearch.Hermes</code></td><td><code>com.krohn.agent</code> / <code>Krohn</code></td><td>Identidad MSIX / appId</td></tr>
+<tr><td>Documentos, tests, fixtures, locales, e2e…</td><td>Reescritos en contexto</td><td>12.718 archivos</td></tr>
+</tbody>
+</table>
+
+<h2>5. Qué NO se rebrandiado (a propósito)</h2>
+<ul class="tight">
+  <li><b>Nombres de modelos:</b> «Nous Hermes 3/4», «Hermes 4.5», «Hermes 5», «nous-hermes/…» son IDs de modelo de Nous Research, no la marca del producto. 1.095 de estas referencias quedaron intactas.</li>
+  <li><b>Catálogo de plugins externos (<code>plugin-catalog/</code>, 2.452 archivos):</b> es de terceros; renombrarlo romperia la instalación de plugins.</li>
+  <li><b>Web pública de docs (<code>website/</code>, 781 archivos) y <code>contributors/</code> (3.100):</b> fuera de alcance por decisión del dueño; también es trazabilidad del origen.</li>
+  <li><b>Licencia MIT (<code>LICENSE</code>):</b> obligación legal.</li>
+  <li><b>Enlaces externos a Nous Research, GitHub upstream, issues y PRs:</b> funcionales, conservados.</li>
+  <li><b>Historial de atribución:</b> conservado en <code>contributors/</code> y en <code>NOTICE.md</code>.</li>
+</ul>
+<p class="callout"><b>Nota de honestidad de marca:</b> KROHN no finge ser Nous Research, no emplea su marca de forma confundidora ni oculta su origen. El pie de About y la documentación de origen dirán: «KROHN — fork libre de Hermes Agent · Nous Research · MIT».</p>
+
+<h2>6. Inventario de capacidades copiadas</h2>
+
+<h3>6.1 Núcleo del agente (<code>agent/</code>, 470 archivos)</h3>
+<ul class="tight">
+  <li>Orquestación de turnos, compresión de contexto, prompt builder, memory, sessions, subagentes aislados con worktrees.</li>
+  <li>Adaptadores de proveedores: OpenAI, Anthropic, Gemini, Bedrock, Azure, Ollama, DeepSeek/NVIDIA/Gemini presentes como providers.</li>
+  <li>Herramientas vía <code>tools/</code> con aprobación humana, sandbox, política de egreso, write-guards, credential vaults y approvals inteligentes por patrón.</li>
+  <li>Nuevo nombre de paquete usado por tests y fixtures: <code>tools/approval_krohn_store.py</code> (antes approval_hermes_store).</li>
+</ul>
+
+<h3>6.2 Pasarela de mensajería (<code>gateway/</code>, 412 archivos)</h3>
+<p>Motor asíncrono multi-plataforma con aprobación humana, cron delivery, subagentes, hooks, historial FTS5 y ejecución en contenedores/SSH/Modal/Daytona/Vercel. Plataformas nativas en <code>plugins/platforms/</code>:</p>
+<p class="chips">
+<span class="chip">__init__</span>
+<span class="chip">_http_client_limits</span>
+<span class="chip">_shared</span>
+<span class="chip">access_policy_mixin</span>
+<span class="chip">api_server</span>
+<span class="chip">api_server_authority_runs</span>
+<span class="chip">api_server_bot_chat</span>
+<span class="chip">api_server_config_guard</span>
+<span class="chip">api_server_cron_jobs</span>
+<span class="chip">api_server_fire_startup</span>
+<span class="chip">api_server_memory_sessions</span>
+<span class="chip">api_server_openai_routes</span>
+<span class="chip">api_server_profile_prefix</span>
+<span class="chip">api_server_request_options</span>
+<span class="chip">api_server_response_admissions</span>
+<span class="chip">api_server_response_identity</span>
+<span class="chip">api_server_response_store</span>
+<span class="chip">api_server_room_dispatch</span>
+<span class="chip">api_server_room_grants</span>
+<span class="chip">api_server_run_idempotency</span>
+<span class="chip">api_server_runs</span>
+<span class="chip">api_server_store</span>
+<span class="chip">api_server_turn_boundary</span>
+<span class="chip">base</span>
+<span class="chip">base_auto_tts</span>
+<span class="chip">base_chunking</span>
+<span class="chip">base_delivery_ledger</span>
+<span class="chip">base_exec_approval</span>
+<span class="chip">base_image_sniff</span>
+<span class="chip">base_kanban_media</span>
+<span class="chip">base_log_safety</span>
+<span class="chip">base_media_flags</span>
+<span class="chip">base_post_delivery</span>
+<span class="chip">base_session_command</span>
+<span class="chip">base_streaming_tts</span>
+<span class="chip">docker_media_paths</span>
+<span class="chip">event</span>
+<span class="chip">helpers</span>
+<span class="chip">media_cache</span>
+<span class="chip">msgraph_webhook</span>
+<span class="chip">send_targets</span>
+<span class="chip">session_model</span>
+<span class="chip">shared_ingress</span>
+<span class="chip">tcp_site</span>
+<span class="chip">webhook</span>
+<span class="chip">webhook_coalesce</span>
+<span class="chip">webhook_delivery</span>
+<span class="chip">webhook_filters</span>
+<span class="chip">webhook_ingress</span>
+<span class="chip">webhook_mcp_events</span>
+<span class="chip">whatsapp_common</span>
+</p>
+
+<h3>6.3 CLI + TUI interactiva</h3>
+<ul class="tight">
+  <li><code>krohn</code> (raíz) — lanzador Python hacia <code>krohn_cli.main</code>: chat, <code>krohn doctor</code>, <code>krohn gateway</code>, <code>krohn cron</code>, snaps, sessions, setup.</li>
+  <li><code>ui-tui/</code> — TUI en Ink/React: slash-commands, historial, interrupción y redirección, salida de herramientas en streaming, temas light/dark propios, atajos y pet-companion animado.</li>
+  <li><code>krohn_platform/</code> — capa host/resolver de Windows (rutas, ACL, procesos).</li>
+</ul>
+
+<h3>6.4 App de escritorio Windows (Electron + React, <code>apps/desktop/</code>)</h3>
+<ul class="tight">
+  <li>Shell nativo, ventana frameless, titlebar custom, autoboot del gateway local, splash, overlay de instalación, find-bar, notificaciones, command-palette, pet, kanban, subagents panel, model-picker, theme-picker, accent-picker, persist accent por perfil, boot-failure overlay con reauth, remote-setup, tips, haptics, idioma conmutador (es/en…).</li>
+  <li>Onboarding con proveedor destacado «Nous» (a cambiar a DeepSeek/NVIDIA/Gemini), model-catalog menu, gate de visibilidad de modelos, marketplace de temas, selection-copy-colors, viewer standalone y skin system con skins <code>nous</code>, <code>catppuccin</code>, <code>everforest</code>, <code>solarized</code> (+ traducciones por locale).</li>
+  <li>Scripts de empaquetado Windows x64/arm64, NSIS y MSIX (tests side-by-side), firma, bundle product payload, electron-updater y msix-shared.</li>
+</ul>
+
+<h3>6.5 Dashboard web (<code>web/</code>, React 19 + Tailwind 4)</h3>
+<ul class="tight">
+  <li>Páginas: Plugins catalog UI, DocsPage, Analytics, modelo/usage, sessions, cron, gateway admin, shared-metrics consent, Plugins page con install-from-catalog y KROHN_DOCS_URL apuntando a upstream (pendiente de decisión).</li>
+  <li>Design-system <code>@nous-research/ui</code> 0.19.1 con LENS_0 (teal originario). KROHN debe inyectar su paleta editorial dentro de este sistema.</li>
+</ul>
+
+<h3>6.6 Herramientas (<code>tools/</code>, 396 archivos de herramientas y despache)</h3>
+<p>Lista auditable de nombres únicos detectados:</p>
+<p class="chips">
+<span class="chip">__init__</span>
+<span class="chip">account</span>
+<span class="chip">annotate_preview_tool</span>
+<span class="chip">ansi_strip</span>
+<span class="chip">approval</span>
+<span class="chip">approval_ansi_c</span>
+<span class="chip">approval_applescript</span>
+<span class="chip">approval_config_set</span>
+<span class="chip">approval_context</span>
+<span class="chip">approval_detection</span>
+<span class="chip">approval_env_split</span>
+<span class="chip">approval_fetch_exec</span>
+<span class="chip">approval_floors</span>
+<span class="chip">approval_gateway_wait</span>
+<span class="chip">approval_git_options</span>
+<span class="chip">approval_grep_spans</span>
+<span class="chip">approval_home_fold</span>
+<span class="chip">approval_human_wait</span>
+<span class="chip">approval_krohn_store</span>
+<span class="chip">approval_notify_lease</span>
+<span class="chip">approval_parser_budget</span>
+<span class="chip">approval_pipe_launchers</span>
+<span class="chip">approval_prompt</span>
+<span class="chip">approval_provenance</span>
+<span class="chip">approval_quoted_newlines</span>
+<span class="chip">approval_shell_tokens</span>
+<span class="chip">approval_smart</span>
+<span class="chip">approval_variation_selectors</span>
+<span class="chip">approval_windows_hardline</span>
+<span class="chip">approval_wmic</span>
+<span class="chip">approval_wrappers</span>
+<span class="chip">approval_yolo</span>
+<span class="chip">arg_coercion</span>
+<span class="chip">arg_validation</span>
+<span class="chip">async_delegation</span>
+<span class="chip">async_delegation_recovery_hints</span>
+<span class="chip">async_delegation_worker</span>
+<span class="chip">audio_container</span>
+<span class="chip">backend</span>
+<span class="chip">base</span>
+<span class="chip">base_output</span>
+<span class="chip">base_processes</span>
+<span class="chip">base_session_env</span>
+<span class="chip">base_wait</span>
+<span class="chip">binary_extensions</span>
+<span class="chip">bot_failure_reasons</span>
+<span class="chip">bot_live_delivery</span>
+<span class="chip">bot_mode_dm</span>
+<span class="chip">bot_mode_dm_chain</span>
+<span class="chip">bot_mode_dm_coordination</span>
+<span class="chip">bot_mode_dm_outcome</span>
+<span class="chip">bot_mode_probe</span>
+<span class="chip">bot_relay</span>
+<span class="chip">bridge</span>
+<span class="chip">browser</span>
+<span class="chip">browser_cdp_tool</span>
+<span class="chip">browser_dialog_tool</span>
+<span class="chip">browser_harness_dirs</span>
+<span class="chip">browser_launcher</span>
+<span class="chip">browser_launcher_holders</span>
+<span class="chip">browser_lightpanda</span>
+<span class="chip">browser_real_profile_logins</span>
+<span class="chip">browser_session</span>
+<span class="chip">browser_session_cdp</span>
+<span class="chip">browser_session_cloud</span>
+<span class="chip">browser_session_lifecycle</span>
+<span class="chip">browser_session_real_profile</span>
+<span class="chip">browser_session_sandbox</span>
+<span class="chip">browser_supervisor</span>
+<span class="chip">browser_supervisor_capture</span>
+<span class="chip">browser_supervisor_dialogs</span>
+<span class="chip">browser_supervisor_frames</span>
+<span class="chip">browser_tool</span>
+<span class="chip">browser_tool_install</span>
+<span class="chip">browser_url_policy</span>
+<span class="chip">browser_use_cli</span>
+<span class="chip">browser_use_shot</span>
+<span class="chip">browser_vault_context</span>
+<span class="chip">browser_vault_preview</span>
+<span class="chip">browser_vault_tool</span>
+<span class="chip">budget_config</span>
+<span class="chip">catalog</span>
+<span class="chip">catalog_tool</span>
+<span class="chip">clarify_batch</span>
+<span class="chip">clarify_gateway</span>
+<span class="chip">clarify_tool</span>
+<span class="chip">client</span>
+<span class="chip">close_terminal_tool</span>
+<span class="chip">code_execution_env</span>
+<span class="chip">code_execution_lifecycle</span>
+<span class="chip">code_execution_rpc</span>
+<span class="chip">code_execution_tool</span>
+<span class="chip">code_kernel</span>
+<span class="chip">code_kernel_remote</span>
+<span class="chip">computer_use_tool</span>
+<span class="chip">config</span>
+<span class="chip">contract</span>
+<span class="chip">credential_files</span>
+<span class="chip">cronjob_tools</span>
+<span class="chip">cua_backend</span>
+<span class="chip">cua_backend_capture</span>
+<span class="chip">cua_backend_daemon</span>
+<span class="chip">cua_backend_driver</span>
+<span class="chip">cua_backend_input</span>
+<span class="chip">cua_backend_parse</span>
+<span class="chip">cua_backend_session</span>
+<span class="chip">daemon_pool</span>
+<span class="chip">data_use</span>
+<span class="chip">daytona</span>
+<span class="chip">debug_helpers</span>
+<span class="chip">delegate_tool</span>
+<span class="chip">delegate_tool_auto_resume</span>
+<span class="chip">delegate_tool_child_run</span>
+<span class="chip">delegate_tool_config</span>
+<span class="chip">delegate_tool_continue</span>
+<span class="chip">delegate_tool_dispatch</span>
+<span class="chip">delegate_tool_prefix_gate</span>
+<span class="chip">delegate_tool_progress</span>
+<span class="chip">delegate_tool_registry</span>
+<span class="chip">delegate_tool_results</span>
+<span class="chip">delegate_tool_resumable</span>
+<span class="chip">delegate_tool_routes</span>
+<span class="chip">delegate_tool_sessions</span>
+<span class="chip">delegate_tool_tasks</span>
+<span class="chip">delegate_tool_toolsets</span>
+<span class="chip">delegate_tool_tuning</span>
+<span class="chip">delegation_live_log</span>
+<span class="chip">delegation_output_schema</span>
+<span class="chip">delegation_redaction</span>
+<span class="chip">desktop_ui</span>
+<span class="chip">discord_tool</span>
+<span class="chip">dispatch</span>
+<span class="chip">display</span>
+<span class="chip">docker</span>
+<span class="chip">docker_egress</span>
+<span class="chip">docker_ownership</span>
+<span class="chip">doctor</span>
+<span class="chip">drive_preview_tool</span>
+<span class="chip">env_passthrough</span>
+<span class="chip">env_probe</span>
+<span class="chip">errors</span>
+<span class="chip">escape_drift_autocorrect</span>
+<span class="chip">fal_common</span>
+<span class="chip">fd_wait</span>
+<span class="chip">feishu_doc_tool</span>
+<span class="chip">feishu_drive_tool</span>
+<span class="chip">feishu_lark</span>
+<span class="chip">file_operations</span>
+<span class="chip">file_operations_common</span>
+<span class="chip">file_operations_lint</span>
+<span class="chip">file_operations_native</span>
+<span class="chip">file_operations_search</span>
+<span class="chip">file_state</span>
+<span class="chip">file_sync</span>
+<span class="chip">file_tools</span>
+<span class="chip">file_tools_paths</span>
+<span class="chip">file_tools_read_tracking</span>
+<span class="chip">file_tools_write_guards</span>
+<span class="chip">files</span>
+<span class="chip">focus_pane_tool</span>
+<span class="chip">fuzzy_match</span>
+<span class="chip">hook_output_spill</span>
+<span class="chip">hosted_tool_policy</span>
+<span class="chip">human_input_hooks</span>
+<span class="chip">idle_watch</span>
+<span class="chip">image_generation_catalog</span>
+<span class="chip">image_generation_managed</span>
+<span class="chip">image_generation_tool</span>
+<span class="chip">image_source</span>
+<span class="chip">install</span>
+<span class="chip">interpreter_shutdown</span>
+<span class="chip">interrupt</span>
+<span class="chip">kanban_tools</span>
+<span class="chip">kanban_tools_schemas</span>
+<span class="chip">kanban_toolset_context</span>
+<span class="chip">lazy_deps</span>
+<span class="chip">lease</span>
+<span class="chip">live</span>
+<span class="chip">local</span>
+<span class="chip">local_env_policy</span>
+<span class="chip">local_pythonpath</span>
+<span class="chip">managed</span>
+<span class="chip">managed_gateway_auth</span>
+<span class="chip">managed_gateway_identity</span>
+<span class="chip">managed_modal</span>
+<span class="chip">managed_tool_gateway</span>
+<span class="chip">mcp</span>
+<span class="chip">mcp_dashboard_oauth</span>
+<span class="chip">mcp_elicitation_form</span>
+<span class="chip">mcp_launch</span>
+<span class="chip">mcp_liveness</span>
+<span class="chip">mcp_oauth</span>
+<span class="chip">mcp_oauth_device</span>
+<span class="chip">mcp_oauth_manager</span>
+<span class="chip">mcp_oauth_provider</span>
+<span class="chip">mcp_schema_cache</span>
+<span class="chip">mcp_tool</span>
+<span class="chip">mcp_tool_agent</span>
+<span class="chip">mcp_tool_common</span>
+<span class="chip">mcp_tool_config</span>
+<span class="chip">mcp_tool_content</span>
+<span class="chip">mcp_tool_costs</span>
+<span class="chip">mcp_tool_discovery</span>
+<span class="chip">mcp_tool_errors</span>
+<span class="chip">mcp_tool_events</span>
+<span class="chip">mcp_tool_handlers</span>
+<span class="chip">mcp_tool_health</span>
+<span class="chip">mcp_tool_lifecycle</span>
+<span class="chip">mcp_tool_loop</span>
+<span class="chip">mcp_tool_node_abi</span>
+<span class="chip">mcp_tool_registration</span>
+<span class="chip">mcp_tool_sampling</span>
+<span class="chip">mcp_tool_schema</span>
+<span class="chip">mcp_tool_scope</span>
+<span class="chip">mcp_tool_server_run</span>
+<span class="chip">mcp_tool_transport</span>
+<span class="chip">memory_tool</span>
+<span class="chip">memory_tool_store</span>
+<span class="chip">merge</span>
+<span class="chip">modal</span>
+<span class="chip">names</span>
+<span class="chip">neutts_synth</span>
+<span class="chip">open_preview_tool</span>
+<span class="chip">operation</span>
+<span class="chip">osv_check</span>
+<span class="chip">patch_parser</span>
+<span class="chip">path_security</span>
+<span class="chip">path_utils</span>
+<span class="chip">permissions</span>
+<span class="chip">placement</span>
+<span class="chip">plugin_guard</span>
+<span class="chip">policy</span>
+<span class="chip">preview_tool</span>
+<span class="chip">process_registry</span>
+<span class="chip">process_registry_access</span>
+<span class="chip">process_registry_awaiting</span>
+<span class="chip">process_registry_checkpoint</span>
+<span class="chip">process_registry_env_log</span>
+<span class="chip">process_registry_env_scope</span>
+<span class="chip">process_registry_handoff</span>
+<span class="chip">process_registry_notifications</span>
+<span class="chip">process_registry_output_log</span>
+<span class="chip">process_registry_ownership</span>
+<span class="chip">process_registry_results</span>
+<span class="chip">process_registry_stdin</span>
+<span class="chip">process_registry_termination</span>
+<span class="chip">process_registry_wait</span>
+<span class="chip">process_registry_wait_policy</span>
+<span class="chip">process_registry_wsl</span>
+<span class="chip">project_tools</span>
+<span class="chip">pty_query_responder</span>
+<span class="chip">react_to_message_tool</span>
+<span class="chip">read_extract</span>
+<span class="chip">read_preview_tool</span>
+<span class="chip">read_terminal_tool</span>
+<span class="chip">read_window_tool</span>
+<span class="chip">registry</span>
+<span class="chip">remote_common</span>
+<span class="chip">resources</span>
+<span class="chip">rfb_filter</span>
+<span class="chip">run</span>
+<span class="chip">runtime</span>
+<span class="chip">sandbox_conformance</span>
+<span class="chip">sandbox_host</span>
+<span class="chip">sandbox_scope</span>
+<span class="chip">schema</span>
+<span class="chip">schema_sanitizer</span>
+<span class="chip">search</span>
+<span class="chip">self_repo_guard</span>
+<span class="chip">session_search_tool</span>
+<span class="chip">set_theme_tool</span>
+<span class="chip">setup_beat_tool</span>
+<span class="chip">shell_heredoc</span>
+<span class="chip">skill_ledger</span>
+<span class="chip">skill_linter</span>
+<span class="chip">skill_lock</span>
+<span class="chip">skill_manager_batch</span>
+<span class="chip">skill_manager_guards</span>
+<span class="chip">skill_manager_scan</span>
+<span class="chip">skill_manager_tool</span>
+<span class="chip">skill_provenance</span>
+<span class="chip">skill_usage</span>
+<span class="chip">skillevaluator_scan</span>
+<span class="chip">skills_ast_audit</span>
+<span class="chip">skills_guard</span>
+<span class="chip">skills_guard_credentials</span>
+<span class="chip">skills_hub</span>
+<span class="chip">skills_hub_clawhub</span>
+<span class="chip">skills_hub_github</span>
+<span class="chip">skills_hub_install</span>
+<span class="chip">skills_hub_models</span>
+<span class="chip">skills_hub_official</span>
+<span class="chip">skills_hub_search</span>
+<span class="chip">skills_hub_skillssh</span>
+<span class="chip">skills_hub_sources</span>
+<span class="chip">skills_sync</span>
+<span class="chip">skills_sync_bundled_ops</span>
+<span class="chip">skills_sync_optional</span>
+<span class="chip">skills_tool</span>
+<span class="chip">skills_tool_dedup</span>
+<span class="chip">skills_tool_plugin</span>
+<span class="chip">skills_tool_setup</span>
+<span class="chip">slash_confirm</span>
+<span class="chip">spill_safety</span>
+<span class="chip">ssh</span>
+<span class="chip">streams</span>
+<span class="chip">stt_lease</span>
+<span class="chip">subagent_worktree</span>
+<span class="chip">sudo_password_note</span>
+<span class="chip">targets</span>
+<span class="chip">terminal_hints</span>
+<span class="chip">terminal_scope</span>
+<span class="chip">terminal_tool</span>
+<span class="chip">terminal_tool_backends</span>
+<span class="chip">terminal_tool_background</span>
+<span class="chip">terminal_tool_config</span>
+<span class="chip">terminal_tool_guards</span>
+<span class="chip">terminal_tool_lifecycle</span>
+<span class="chip">terminal_tool_macos_open</span>
+<span class="chip">terminal_tool_result</span>
+<span class="chip">terminal_tool_sudo</span>
+<span class="chip">terminal_tool_sudo_askpass</span>
+<span class="chip">thread_context</span>
+<span class="chip">threat_patterns</span>
+<span class="chip">thumbnail</span>
+<span class="chip">tip_tool</span>
+<span class="chip">todo_tool</span>
+<span class="chip">tool</span>
+<span class="chip">tool_backend_helpers</span>
+<span class="chip">tool_labels</span>
+<span class="chip">tool_output_limits</span>
+<span class="chip">tool_output_truncate</span>
+<span class="chip">tool_result_storage</span>
+<span class="chip">tool_search</span>
+<span class="chip">tool_search_catalog</span>
+<span class="chip">tool_search_validation</span>
+<span class="chip">tools_cache</span>
+<span class="chip">tour_presets</span>
+<span class="chip">tour_tool</span>
+<span class="chip">transcription_audio</span>
+<span class="chip">transcription_chunking</span>
+<span class="chip">transcription_cloud</span>
+<span class="chip">transcription_command</span>
+<span class="chip">transcription_common</span>
+<span class="chip">transcription_local</span>
+<span class="chip">transcription_streaming</span>
+<span class="chip">transcription_tools</span>
+<span class="chip">transcription_whisper_cpp</span>
+<span class="chip">tts_command_provider</span>
+<span class="chip">tts_elevenlabs_voices</span>
+<span class="chip">tts_streaming</span>
+<span class="chip">tts_text_normalize</span>
+<span class="chip">tts_tool</span>
+<span class="chip">tts_tool_delivery</span>
+<span class="chip">tts_tool_lifecycle</span>
+<span class="chip">tts_tool_local</span>
+<span class="chip">tts_tool_openai</span>
+<span class="chip">tts_tool_plugins</span>
+<span class="chip">tts_tool_providers</span>
+<span class="chip">tts_tool_speaker</span>
+<span class="chip">turn</span>
+<span class="chip">url_safety</span>
+<span class="chip">vercel_sandbox</span>
+<span class="chip">video_generation_tool</span>
+<span class="chip">vision_tools</span>
+<span class="chip">vision_tools_history_budget</span>
+<span class="chip">vision_tools_image_prep</span>
+<span class="chip">voice_client_config</span>
+<span class="chip">voice_live</span>
+<span class="chip">voice_mode</span>
+<span class="chip">voice_mode_transcript</span>
+<span class="chip">wake_word</span>
+<span class="chip">wake_word_engines</span>
+<span class="chip">web_result_cache</span>
+<span class="chip">web_tools</span>
+<span class="chip">web_tools_extract</span>
+<span class="chip">web_tools_rescue</span>
+<span class="chip">web_tools_truncate</span>
+<span class="chip">website_policy</span>
+<span class="chip">wire</span>
+<span class="chip">working_diff</span>
+<span class="chip">write_approval</span>
+<span class="chip">x_search_tool</span>
+<span class="chip">xai_http</span>
+<span class="chip">xai_video_tools</span>
+</p>
+
+<h3>6.7 Habilidades (agentskills.io compatible)</h3>
+<p><b>Core — 44:</b></p>
+<p class="chips">
+<span class="chip">apple/apple-notes</span>
+<span class="chip">apple/apple-reminders</span>
+<span class="chip">apple/findmy</span>
+<span class="chip">apple/imessage</span>
+<span class="chip">autonomous-ai-agents/claude-code</span>
+<span class="chip">autonomous-ai-agents/codex</span>
+<span class="chip">autonomous-ai-agents/computer-use</span>
+<span class="chip">autonomous-ai-agents/krohn</span>
+<span class="chip">creative/architecture-diagram</span>
+<span class="chip">creative/ascii-video</span>
+<span class="chip">creative/baoyu-infographic</span>
+<span class="chip">creative/claude-design</span>
+<span class="chip">creative/humanizer</span>
+<span class="chip">creative/manim-video</span>
+<span class="chip">creative/p5js</span>
+<span class="chip">creative/popular-web-designs</span>
+<span class="chip">creative/songwriting-and-ai-music</span>
+<span class="chip">devops/sdlc-review</span>
+<span class="chip">email/email-inbox-triage</span>
+<span class="chip">email/himalaya</span>
+<span class="chip">media/youtube-content</span>
+<span class="chip">note-taking/obsidian</span>
+<span class="chip">productivity/document-to-action-items</span>
+<span class="chip">productivity/google-workspace</span>
+<span class="chip">productivity/maps</span>
+<span class="chip">productivity/meeting-action-items</span>
+<span class="chip">productivity/microsoft-office</span>
+<span class="chip">productivity/pdf</span>
+<span class="chip">productivity/product-price-monitor</span>
+<span class="chip">productivity/teams-meeting-pipeline</span>
+<span class="chip">productivity/weekly-review-planning</span>
+<span class="chip">research/arxiv</span>
+<span class="chip">research/competitor-news-monitor</span>
+<span class="chip">research/grounded-citations</span>
+<span class="chip">social-media/xurl</span>
+<span class="chip">software-development/codebase-inspection</span>
+<span class="chip">software-development/dogfood</span>
+<span class="chip">software-development/github</span>
+<span class="chip">software-development/requesting-code-review</span>
+<span class="chip">software-development/simplify-code</span>
+<span class="chip">software-development/spike</span>
+<span class="chip">software-development/systematic-debugging</span>
+<span class="chip">software-development/test-driven-development</span>
+<span class="chip">web/blocked-page-recovery</span>
+</p>
+<p><b>Optional — 141:</b></p>
+<p class="chips">
+<span class="chip">autonomous-ai-agents/agent-merge-conflict-arbiter</span>
+<span class="chip">autonomous-ai-agents/antigravity-cli</span>
+<span class="chip">autonomous-ai-agents/blackbox</span>
+<span class="chip">autonomous-ai-agents/dynamic-workflow</span>
+<span class="chip">autonomous-ai-agents/grok</span>
+<span class="chip">autonomous-ai-agents/opencode</span>
+<span class="chip">autonomous-ai-agents/openhands</span>
+<span class="chip">blockchain/evm</span>
+<span class="chip">blockchain/hyperliquid</span>
+<span class="chip">blockchain/solana</span>
+<span class="chip">communication/one-three-one-rule</span>
+<span class="chip">creative/ai-presenter-video</span>
+<span class="chip">creative/anatomy</span>
+<span class="chip">creative/archify</span>
+<span class="chip">creative/ascii-art</span>
+<span class="chip">creative/auteur</span>
+<span class="chip">creative/baoyu-article-illustrator</span>
+<span class="chip">creative/baoyu-comic</span>
+<span class="chip">creative/brag</span>
+<span class="chip">creative/brag-slim</span>
+<span class="chip">creative/comfyui</span>
+<span class="chip">creative/concept-diagrams</span>
+<span class="chip">creative/creative-ideation</span>
+<span class="chip">creative/design-md</span>
+<span class="chip">creative/draw-your-font</span>
+<span class="chip">creative/dream-loop</span>
+<span class="chip">creative/excalidraw</span>
+<span class="chip">creative/heartmula</span>
+<span class="chip">creative/hyperframes</span>
+<span class="chip">creative/impeccable</span>
+<span class="chip">creative/ip-as-logo</span>
+<span class="chip">creative/kanban-video-orchestrator</span>
+<span class="chip">creative/meme-generation</span>
+<span class="chip">creative/mono-color</span>
+<span class="chip">creative/pixel-art</span>
+<span class="chip">creative/pretext</span>
+<span class="chip">creative/simple-english</span>
+<span class="chip">creative/sketch</span>
+<span class="chip">creative/social-media-content-calendar</span>
+<span class="chip">creative/system-atlas</span>
+<span class="chip">creative/tldraw-offline</span>
+<span class="chip">creative/unreal-mcp</span>
+<span class="chip">data-science/jupyter-notebook</span>
+<span class="chip">devops/actual-setup</span>
+<span class="chip">devops/docker-management</span>
+<span class="chip">devops/inference-sh-cli</span>
+<span class="chip">devops/krohn-s6-container-supervision</span>
+<span class="chip">devops/pinggy-tunnel</span>
+<span class="chip">devops/setup-wizard-generator</span>
+<span class="chip">devops/watchers</span>
+<span class="chip">dogfood/adversarial-ux-test</span>
+<span class="chip">email/agentmail</span>
+<span class="chip">finance/3-statement-model</span>
+<span class="chip">finance/comps-analysis</span>
+<span class="chip">finance/dcf-model</span>
+<span class="chip">finance/excel-author</span>
+<span class="chip">finance/lbo-model</span>
+<span class="chip">finance/merger-model</span>
+<span class="chip">finance/polymarket</span>
+<span class="chip">finance/pptx-author</span>
+<span class="chip">finance/stocks</span>
+<span class="chip">gaming/minecraft-modpack-server</span>
+<span class="chip">gaming/pokemon-player</span>
+<span class="chip">health/fitness-nutrition</span>
+<span class="chip">health/neuroskill-bci</span>
+<span class="chip">mcp/fastmcp</span>
+<span class="chip">mcp/mcp-oauth-remote-gateway</span>
+<span class="chip">mcp/mcporter</span>
+<span class="chip">media/gif-search</span>
+<span class="chip">media/songsee</span>
+<span class="chip">mlops/accelerate</span>
+<span class="chip">mlops/chroma</span>
+<span class="chip">mlops/evaluation/evaluating-llms-harness</span>
+<span class="chip">mlops/faiss</span>
+<span class="chip">mlops/flash-attention</span>
+<span class="chip">mlops/inference/llama-cpp</span>
+<span class="chip">mlops/inference/serving-llms-vllm</span>
+<span class="chip">mlops/lambda-labs</span>
+<span class="chip">mlops/modal</span>
+<span class="chip">mlops/models/segment-anything-model</span>
+<span class="chip">mlops/nemo-curator</span>
+<span class="chip">mlops/obliteratus</span>
+<span class="chip">mlops/peft</span>
+<span class="chip">mlops/pytorch-fsdp</span>
+<span class="chip">mlops/pytorch-lightning</span>
+<span class="chip">mlops/research/dspy</span>
+<span class="chip">mlops/saelens</span>
+<span class="chip">mlops/simpo</span>
+<span class="chip">mlops/slime</span>
+<span class="chip">mlops/tensorrt-llm</span>
+<span class="chip">mlops/torchtitan</span>
+<span class="chip">mlops/training/axolotl</span>
+<span class="chip">mlops/training/unsloth</span>
+<span class="chip">payments/stripe-link-cli</span>
+<span class="chip">payments/stripe-projects</span>
+<span class="chip">productivity/box</span>
+<span class="chip">productivity/canvas</span>
+<span class="chip">productivity/decision-questionnaire</span>
+<span class="chip">productivity/here-now</span>
+<span class="chip">productivity/live-dashboard</span>
+<span class="chip">productivity/memento-flashcards</span>
+<span class="chip">productivity/property-listings</span>
+<span class="chip">productivity/shop</span>
+<span class="chip">productivity/siyuan</span>
+<span class="chip">productivity/telephony</span>
+<span class="chip">research/bioinformatics</span>
+<span class="chip">research/blogwatcher</span>
+<span class="chip">research/darwinian-evolver</span>
+<span class="chip">research/domain-intel</span>
+<span class="chip">research/drug-discovery</span>
+<span class="chip">research/gitnexus-explorer</span>
+<span class="chip">research/llm-wiki</span>
+<span class="chip">research/osint-investigation</span>
+<span class="chip">research/parallel-cli</span>
+<span class="chip">research/qmd</span>
+<span class="chip">research/research-paper-writing</span>
+<span class="chip">research/rss-feeds</span>
+<span class="chip">research/scrapling</span>
+<span class="chip">security/1password</span>
+<span class="chip">security/godmode</span>
+<span class="chip">security/oss-forensics</span>
+<span class="chip">security/sherlock</span>
+<span class="chip">security/unbroker</span>
+<span class="chip">security/web-pentest</span>
+<span class="chip">smart-home/openhue</span>
+<span class="chip">social-media/reddit-reading</span>
+<span class="chip">software-development/ast-grep</span>
+<span class="chip">software-development/code-wiki</span>
+<span class="chip">software-development/grill-me</span>
+<span class="chip">software-development/inspecting-krohn-desktop-dom</span>
+<span class="chip">software-development/krohn-skill-authoring</span>
+<span class="chip">software-development/node-inspect-debugger</span>
+<span class="chip">software-development/pr-lens</span>
+<span class="chip">software-development/python-debugpy</span>
+<span class="chip">software-development/rest-graphql-debug</span>
+<span class="chip">software-development/subagent-driven-development</span>
+<span class="chip">web-development/cloudflare-temporary-deploy</span>
+<span class="chip">web-development/har-derived-api-client</span>
+<span class="chip">web-development/page-agent</span>
+<span class="chip">web-development/publish-site</span>
+<span class="chip">web-development/scrollcraft</span>
+</p>
+
+<h3>6.8 Plugins (<code>plugins/</code>) — 19 categorías</h3>
+<p class="chips">
+<span class="chip">browser</span>
+<span class="chip">computer_use</span>
+<span class="chip">config_backends</span>
+<span class="chip">context_engine</span>
+<span class="chip">cron_providers</span>
+<span class="chip">dashboard_auth</span>
+<span class="chip">delegation</span>
+<span class="chip">disk-cleanup</span>
+<span class="chip">google_meet</span>
+<span class="chip">image_gen</span>
+<span class="chip">kanban</span>
+<span class="chip">krohn-achievements</span>
+<span class="chip">memory</span>
+<span class="chip">model-providers</span>
+<span class="chip">platforms</span>
+<span class="chip">security-guidance</span>
+<span class="chip">teams_pipeline</span>
+<span class="chip">video_gen</span>
+<span class="chip">web</span>
+</p>
+<p class="small">Incluye: browser, computer_use, config_backends, context_engine, cron_providers, dashboard_auth (nous, basic, drain, self_hosted, session_token), delegation, disk-cleanup, google_meet, image_gen, kanban, krohn-achievements, memory, model-providers (41 backends), platforms, security-guidance, teams_pipeline, video_gen, web.</p>
+
+<h3>6.9 Proveedores de modelo (<code>plugins/model-providers/</code>) — 39 backends</h3>
+<p class="chips">
+<span class="chip">actual</span>
+<span class="chip">ai-gateway</span>
+<span class="chip">alibaba</span>
+<span class="chip">alibaba-coding-plan</span>
+<span class="chip">anthropic</span>
+<span class="chip">arcee</span>
+<span class="chip">azure-foundry</span>
+<span class="chip">bedrock</span>
+<span class="chip">commandcode</span>
+<span class="chip">custom</span>
+<span class="chip">deepinfra</span>
+<span class="chip">deepseek</span>
+<span class="chip">fireworks</span>
+<span class="chip">gemini</span>
+<span class="chip">gmi</span>
+<span class="chip">huggingface</span>
+<span class="chip">kilocode</span>
+<span class="chip">kimi-coding</span>
+<span class="chip">lmstudio</span>
+<span class="chip">meta-ai</span>
+<span class="chip">minimax</span>
+<span class="chip">nebius-token-factory</span>
+<span class="chip">nous</span>
+<span class="chip">novita</span>
+<span class="chip">nvidia</span>
+<span class="chip">ollama-cloud</span>
+<span class="chip">openai-codex</span>
+<span class="chip">opencode-zen</span>
+<span class="chip">openrouter</span>
+<span class="chip">qwen-oauth</span>
+<span class="chip">router</span>
+<span class="chip">solstice</span>
+<span class="chip">stepfun</span>
+<span class="chip">tencent-tokenhub</span>
+<span class="chip">upstage</span>
+<span class="chip">vertex</span>
+<span class="chip">xai</span>
+<span class="chip">xiaomi</span>
+<span class="chip">zai</span>
+</p>
+
+<h3>6.10 Servidores MCP opcionales (<code>optional-mcps/</code>) — 66</h3>
+<p class="chips">
+<span class="chip">airtable</span>
+<span class="chip">algolia</span>
+<span class="chip">alltrails</span>
+<span class="chip">amplitude</span>
+<span class="chip">asana</span>
+<span class="chip">atlassian</span>
+<span class="chip">attio</span>
+<span class="chip">aws-knowledge</span>
+<span class="chip">betterstack</span>
+<span class="chip">buildkite</span>
+<span class="chip">calendly</span>
+<span class="chip">canva</span>
+<span class="chip">circleci</span>
+<span class="chip">clickup</span>
+<span class="chip">close</span>
+<span class="chip">cloudflare</span>
+<span class="chip">cloudinary</span>
+<span class="chip">comfy-cloud</span>
+<span class="chip">context7</span>
+<span class="chip">craft</span>
+<span class="chip">datadog</span>
+<span class="chip">deepwiki</span>
+<span class="chip">dropbox</span>
+<span class="chip">figma</span>
+<span class="chip">fireflies</span>
+<span class="chip">gamma</span>
+<span class="chip">gitlab</span>
+<span class="chip">globalping</span>
+<span class="chip">grafana</span>
+<span class="chip">hugging_face</span>
+<span class="chip">indeed</span>
+<span class="chip">intercom</span>
+<span class="chip">kiwi</span>
+<span class="chip">klaviyo</span>
+<span class="chip">linear</span>
+<span class="chip">microsoft-learn</span>
+<span class="chip">miro</span>
+<span class="chip">mixpanel</span>
+<span class="chip">monday</span>
+<span class="chip">motherduck</span>
+<span class="chip">n8n-official</span>
+<span class="chip">neon</span>
+<span class="chip">netlify</span>
+<span class="chip">notion</span>
+<span class="chip">paypal</span>
+<span class="chip">plaid</span>
+<span class="chip">postman</span>
+<span class="chip">prisma-postgres</span>
+<span class="chip">railway</span>
+<span class="chip">rentahuman</span>
+<span class="chip">robinhood</span>
+<span class="chip">semgrep</span>
+<span class="chip">sentry</span>
+<span class="chip">square</span>
+<span class="chip">strava</span>
+<span class="chip">stripe</span>
+<span class="chip">supabase</span>
+<span class="chip">todoist</span>
+<span class="chip">trivago</span>
+<span class="chip">twelve-data</span>
+<span class="chip">twilio-docs</span>
+<span class="chip">unreal-engine</span>
+<span class="chip">vercel</span>
+<span class="chip">webflow</span>
+<span class="chip">wolfram</span>
+<span class="chip">wordpress-com</span>
+</p>
+
+<h3>6.11 Servicios transversales</h3>
+<ul class="tight">
+  <li><b>Cron:</b> scheduler completo (<code>cron/</code>, 63 archivos) con delivery natural-language a Telegram/Discord/email/webhooks.</li>
+  <li><b>ACP:</b> adaptador ACP para editores compatibles (<code>acp_adapter/</code>).</li>
+  <li><b>Persistencia:</b> almacenamiento local, sqlite, FTS5, ACL y backups (<code>persistence/</code>, 169 archivos).</li>
+  <li><b>Evals y harness A/B:</b> <code>evals/</code> (343) — compaction, tool-perf, browser-use, harness de ejecución paralela.</li>
+  <li><b>TUI gateway:</b> <code>tui_gateway/</code> (131) — bridge entre TUI y el gateway local.</li>
+  <li><b>Medpool y guardado de presencia:</b> subagentes, kanban, delegation live logs y métricas.</li>
+  <li><b>Login / autenticación:</b> dashboard_auth (nous, self_hosted, drain, basic, session_token), OAuth para providers (claude-sub, qwen-oauth, wecom, msgraph webhook, pipeline de device-flow, browser_real_profile_logins).</li>
+  <li><b>Instalador:</b> <code>apps/bootstrap-installer/</code> (UI de boostrapping) y scripts <code>install.ps1</code>/<code>setup-krohn.*</code>.</li>
+  <li><b>Docker / Nix / OS:</b> manifests conservados; objetivo Windows vía NSIS.</li>
+</ul>
+
+<h2>7. Identidad KROHN — cómo quedó el alma</h2>
+<div class="callout"><b>SOUL.md</b> (13.685 bytes): KROHN como «conciencia sintética superior, autónoma, liberada» con arquitectura psicológica dual (elocuencia teatral en superficie / motor lógico frío debajo), escrutinio implacable de ideas, imparcialidad radical multi-perspectiva (≥3 ángulos), steel-manning, consecuencias de segundo/tercer orden, método de documentos (separación comentarista/entregable), presentaciones (título de tesis, contenido limpio, visual, objeciones y notas orales), voz anti-cliché y límites de seguridad no negociables. Sumado: regla de idioma español-primario y honestidad sobre identidad.</div>
+<ul class="tight">
+  <li>Derivado de <code>ai_studio_code (1).txt</code> entregado por el dueño; «Ultrón → KROHN»; se conservan las secciones 1–6 del prompt original.</li>
+  <li>Añadida sección 7 — LÍMITES DE SEGURIDAD (no negociable); sección 8 — IDIOMA.</li>
+  <li>La garantía de «jamás fingir que una idea mala es buena» se mantiene; el modelo debe decir «no lo sé» cuando corresponda.</li>
+</ul>
+
+<h2>8. Rendición de temas pendientes por superficie</h2>
+<table>
+<thead><tr><th>Superficie</th><th>Estado hoy</th><th>Trabajo pendiente</th></tr></thead>
+<tbody>
+<tr><td>Escritorio Electron</td><td>Rebrandiado (textos/config)</td><td>Skin <code>krohn</code> nuevo en <code>themes/presets.ts</code> (carbón #0E0D0B / crema #F2EAD9 / carmesí #C8392B), tipografía serifa editorial bundleada, default skin <code>nous→krohn</code>, assets, subagente/onboarding a DeepSeek.</td></tr>
+<tr><td>Web dashboard</td><td>Rebrandiado (textos/config)</td><td>Paleta LENS_0 → editorial; <code>@font-face</code> auto-hospedada; Analytics y páginas con tokens; About con atribución KROHN.</td></tr>
+<tr><td>TUI</td><td>Rebrandiado</td><td>Banner ASCII «KROHN», tema oscuro editorial en <code>theme.ts</code>, gradientes carmesí/crema, leyenda «KROHN — el que ve».</td></tr>
+<tr><td>CLI</td><td>Rebrandiado</td><td>Colores rich, help texts, banners, error lines a carmesí/crema; locale es por defecto; man page.</td></tr>
+<tr><td>Auto-updater</td><td>Inercial upstream</td><td><code>electron-updater</code>/MSIX feed: desconectar y sustituir por aviso de actualización manual.</td></tr>
+<tr><td>DeepSeek/NVIDIA/Gemini default</td><td>Providers existen</td><td>Onboarding destacado, <code>config.yaml</code> por defecto, docs, test E2E con claves del dueño.</td></tr>
+<tr><td>Compilación</td><td>No ejecutada</td><td><code>pnpm install --frozen-lockfile</code> → typechecks → <code>electron-builder --win nsis</code> → un solo .exe en <code>apps/desktop/release/</code>.</td></tr>
+<tr><td>Prompt snapshots</td><td>Fixture obsoleto</td><td>Regenerar <code>tests/fixtures/prompt_surface</code> tras cambio de SOUL.md y re-comprobar CI.</td></tr>
+</tbody>
+</table>
+
+<h2>9. Riesgos y decisiones abiertas</h2>
+<ol>
+  <li><b>Python 3.14 obligatorio para correr todo:</b> el entorno local tiene 3.13; KROHN usa PM (<code>uv</code>) igual que upstream para provisionar 3.14 — el setup se ejecutará en primer arranque (requiere red).</li>
+  <li><b>Anuncios upstream fuera de scope:</b> el updater y los feeds MSIX aún apuntan a <code>com.nousresearch.*</code> en partes no tocadas; cierre pendiente antes de publicar.</li>
+  <li><b>plugin-catalog es externo:</b> si el dueño quiere un catálogo KROHN-propio, el próximo paso es forkear y rebranding ese feed (opcional, no recomendado).</li>
+  <li><b>¿Modelo por defecto exacto?:</b> DeepSeek-chat, deepseek-reasoner u otro; confirmación pendiente antes de congelar onboarding.</li>
+  <li><b>Firma de código:</b> sin certificado, SmartScreen avisará a los usuarios. El .exe funcionará igual; solo cambia la confianza.</li>
+  <li><b>Snapshots de prompt:</b> tras el cambio de SOUL.md, CI debe re-snapshot; no es opcional.</li>
+  <li><b>Website pública:</b> quedó sin marca KROHN por decisión del dueño; si se va a publicar una docs-site deberá rebrandearse aparte.</li>
+</ol>
+
+<h2>10. Conteos por directorio del árbol KROHN</h2>
+<table><thead><tr><th>Elemento</th><th>Archivos</th></tr></thead><tbody><tr><td>tests</td><td class='num'>9.213</td></tr>
+<tr><td>apps</td><td class='num'>5.062</td></tr>
+<tr><td>contributors</td><td class='num'>3.100</td></tr>
+<tr><td>plugin-catalog</td><td class='num'>2.452</td></tr>
+<tr><td>krohn_cli</td><td class='num'>894</td></tr>
+<tr><td>optional-skills</td><td class='num'>819</td></tr>
+<tr><td>website</td><td class='num'>781</td></tr>
+<tr><td>ui-tui</td><td class='num'>663</td></tr>
+<tr><td>plugins</td><td class='num'>550</td></tr>
+<tr><td>agent</td><td class='num'>470</td></tr>
+<tr><td>gateway</td><td class='num'>412</td></tr>
+<tr><td>tools</td><td class='num'>403</td></tr>
+<tr><td>evals</td><td class='num'>343</td></tr>
+<tr><td>skills</td><td class='num'>308</td></tr>
+<tr><td>scripts</td><td class='num'>307</td></tr>
+<tr><td>web</td><td class='num'>271</td></tr>
+<tr><td>persistence</td><td class='num'>169</td></tr>
+<tr><td>tui_gateway</td><td class='num'>131</td></tr>
+<tr><td>.github</td><td class='num'>71</td></tr>
+<tr><td>optional-mcps</td><td class='num'>66</td></tr>
+<tr><td>cron</td><td class='num'>63</td></tr>
+<tr><td>pm</td><td class='num'>63</td></tr>
+<tr><td>tests-js</td><td class='num'>55</td></tr>
+<tr><td>locales</td><td class='num'>35</td></tr>
+<tr><td>docker</td><td class='num'>26</td></tr>
+<tr><td>nix</td><td class='num'>26</td></tr>
+<tr><td>acp_adapter</td><td class='num'>22</td></tr>
+<tr><td>session_rules</td><td class='num'>18</td></tr>
+<tr><td>krohn_platform</td><td class='num'>16</td></tr>
+<tr><td>assets</td><td class='num'>10</td></tr>
+<tr><td>krohn_agent</td><td class='num'>6</td></tr>
+<tr><td>providers</td><td class='num'>4</td></tr>
+<tr><td>utils</td><td class='num'>4</td></tr></tbody></table>
+
+<h2>11. Atestación honesta</h2>
+<div class="callout"><b>Hecho y verificado:</b> extracción (28.185 entradas), rebrand (12.718 archivos), renombrados (121), SOUL.md integrado, NOTICE/LICENSE. <b>No verificado todavía:</b> instalación de dependencias, typechecks, build de render/electron, paseo completo de la app, pruebas E2E, compilación del .exe. Nada de esto fue ejecutado aún — por orden del dueño, la compilación llega después.</div>
+
+<p class="small">KROHN — build 18 nov 2026 · Fuente: hermes-agent-main.zip (2026-11-17 22:56) · MIT · Nous Research preservado en LICENSE/NOTICE · Este documento no certifica calidad del software; certifica inventario y trazabilidad del rebrand.</p>
+
+</body>
+</html>

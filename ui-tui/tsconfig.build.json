@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@krohn/ink": ["src/types/krohn-ink.d.ts"]
+    }
+  }
+}
