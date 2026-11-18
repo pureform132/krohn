@@ -1,6 +1,6 @@
 # KROHN — Handoff (qué debes saber y hacer tú)
 
-Última actualización: 2026-11-18 sesión 4 — estado verificado del fork.
+Última actualización: 2026-11-18 sesión 5 — mascota conectada, webs en carpetas independientes, créditos.
 
 ## Estado verificado por capa
 
@@ -9,45 +9,47 @@
 | Rebrand Hermes→KROHN | ✅ | 12.718 archivos reescritos, 121 renombrados |
 | Iconos, banner, fuentes | ✅ | Glifo KROHN propio; .ico/.icns regenerados; banner editorial |
 | Tema editorial oscuro (desktop/web/TUI/CLI) | ✅ | `krohn` como skin por defecto; carmesí/crema/carbón |
-| Plugin marketplace | ⛔ desactivado | Opt-in con `plugins.marketplace.enabled: true` en `config.yaml` cuando existan un repo de plugins propio. Compilado: cero plugin store en web/onboarding. |
-| Prompt surface | ✅ regenerado | snapshot 9 surfaces committed; `python scripts/ci/prompt_surface.py render` |
+| Plugin marketplace | ⛔ desactivado | Opt-in con `plugins.marketplace.enabled: true` cuando exista un catálogo propio |
+| Prompt surface | ✅ regenerado | snapshot 9 surfaces committed tras limpieza de URLs (`pureform132/krohn`) |
+| **Mascota Ultrón chibi** | ✅ | spritesheet en `packaging/pets/krohn-ultron-chibi/`; `display.pet.slug=krohn-ultron-chibi` y `display.pet.enabled=true` activos; eventos del agente → animaciones ya wired (tool.start/generating→`running`, reasoning→`review`, tool error→`failed`, turno completo→`jump`, clarify→`waiting`); arrastrable + Shift+clic → ventana siempre visible; tests pet: **79/79 ✅** |
+| Toggle "Mover al escritorio" | ✅ | Ajustes → Mascota → "Mover al escritorio" (desktop pop-out sin tocar Shift+clic); i18n añadida (es/en/de/fr/ja/ru/zh/zh-hant) |
+| Webs (Netlify) | ✅ **movidas** | `landing/` y `docs/` salieron del repo → `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\`. Deploy: 2 sites Netlify (arrastrar cada carpeta; `netlify.toml` ya incluido) |
 | Instalador Windows | 🕓 no compilado | NSIS x64 configurado (`KROHN-Setup-1.0.0.exe`); **pendiente tu orden** |
 | Repo | ✅ público | https://github.com/pureform132/krohn (rama `master`) |
+| Créditos | ✅ | "Creado por Cesar D. Ciprian" en landing, docs, README, NOTICE, JSON-LD, product-identity (`appId: com.krohn.krohn`, MSIX `Krohn.*`), `author` de package.json de escritorio |
 
-## Qué tú debes hacer AHORA (en orden)
+## Compilación del .exe (cuando des la orden)
 
-1. **Holgura del llavero**
-   - Revoca (rotate) las claves expuestas en este entorno: la **Gemini API key de AI Studio** que me entregaste y cualquier otra credencial visible en tu entorno (`NVIDIA_API_KEY`, `OPENROUTER_API_KEY`, `HERMES_HOME`). Fueron usadas durante pruebas pero no las publicamos en el repo; aun así, cámbialas.
-   - Buscaremos claves en los paths `…\medussa_test_home\state\api_keys.json` y `…\medussa_codex_home\state\api_keys.json` en `%TEMP%\opencode\` (archivos que no creamos nosotros): recomendado revocar el par asociado también.
+- `node scripts/build.mjs` (render + Electron + nativos) → demostrada ✅
+- `pnpm run dist:nsis` → `release/KROHN-Setup-1.0.0.exe`
+- El repo verificado hoy: tests pet 79/79, i18n keys completas, prompt surface regenerado y pushed.
+- **Disco: solo ~7.9 GB libres en C:** (115.6 GB en total). Recomendado liberar espacio antes de compilar (los objetos de build y `release/` rondan 2–4 GB). No limpies `node_modules` sin rallarpm/lockfile; en cambio borra cachés (`%TEMP%`, `node_modules/.vite`, `.build-cache` si existe).
+- Sin certificado → SmartScreen avisará "editor desconocido". Funcional igual.
 
-2. **Just integrado**
-   - `just` 1.59.0 instalado (WinGet). El `lefthook` pre-commit usa `just check`. Si `git` falla con `just: command not found`, abre una terminal nueva (PATH actualizado) o usa `git commit --no-verify` con revisión propia.
+## Deploy de las webs (cuando des la orden)
 
-3. **We debió cambiar**
-   - Contamos con Skills, Plugins, MCP y herramientas heredados, pero el catalogo de plugins está apagado. Si activas `plugins.marketplace.enabled: true` sin catálogo propio, KROHN ofrecerá sistemas incompletos/no probados — no lo hagas aún.
+Dos sitios Netlify estáticos, sin build:
 
-4. **Compilación del .exe** (cuando des la orden)
-   - `node scripts/build.mjs` (compilación del render + Electron + nativos) → ya demostrado ✅
-   - `pnpm run dist:nsis` → `release/KROHN-Setup-1.0.0.exe`
-   - Nota de plataforma: esta máquina tiene 3.7 GB de RAM; el typecheck completo del renderer de escritorio agota el heap. La verificación efectiva es la **compilación completa**, no `tsc --noEmit`.
-   - Sin certificado de firma → SmartScreen avisará "editor desconocido". Funcional igual.
+1. **Landing**: sube `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\landing\` → sitio `krohn.netlify.app` (o el nombre que elijas). `netlify.toml` incluido.
+2. **Docs**: sube `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\docs\` → sitio separado, ej. `krohn-docs.netlify.app`.
 
-5. **Navegador / web testing**
-   - Cuando levantes el dashboard: `krohn dashboard` (requiere Python + env). Para las pruebas del frontend corriendo en dev: `cd web && pnpm dev`. El build de produce a `krohn_cli/web_dist/` automáticamente con `pnpm run build`.
+Notas: los enlaces cruzados ya apuntan a `https://krohn-docs.netlify.app/` y `https://krohn.netlify.app/`. Los assets son relativos; funciona en cualquier base path. El video de la mascota (`krohn-pet-10s.mp4`, 10s, sin audio) está incrustado en la sección "La diferencia". **Re-verificación visual obligatoria antes de publicar** — el sitio fue rehecho estilo Qoder adaptado a la marca editorial oscura (Fraunces, carmesí, capturas reales, animated cursors over UI, marquee de specs reales, cero métricas inventadas).
 
-6. **DeepSeek/NVIDIA/Gemini por defecto**
-   - quedó acordado en "configurable en el onboarding" — hoy KROHN abre la puerta a elegir proveedor en el primer arranque. `deepseek`/`nvidia`/`gemini` ya existen como provider ids válidos; definir un destacado implicaría editar `apps/desktop/src/components/onboarding/index.tsx`.
+## Capturas: aviso honesto
 
-## Qué NO debes hacer
+Las 4 capturas de UI (`screens/`) son reales, tomadas de KROHN Desktop, **pero** el pie de la barra lateral ("Nous Research") se retocó con PIL para leer "KROHN" (era un artefacto pre-rebrand; todo el código fuente ya renderiza KROHN). El resto es la captura original sin editar.
 
-- **No** hagas `krohn update` en el repo todavía: el updater está pensado para pasar por el fork; tu release aún no existe — el comando podría caer en behaviors inesperados.
-- **No** actives el marketplace sin catálogo propio (`plugins.marketplace.enabled: true`).
-- **No** hagas `git push --force` al repo: la rama `master` es pública.
-- **No** copies/secretas en / sitio web hacia Chrome WXT u otros stores plugins hermes-* de terceros.
-- **No** tomes "Hermes-agent.nousresearch.com" como documentación oficial de KROHN: en este repo las URLs de docs apuntaron al fork (`github.com/pureform132/krohn/tree/master/website/docs`). La documentación aguas arriba **sirve como referencia de comportamiento**, pero no está afiliada.
+## We debió cambiar / Qué NO debes hacer
 
-## Riesgos a tener en cuenta
+- Plugin marketplace desactivado por defecto. No activar sin catálogo propio.
+- `git push --force` prohibido; `master` pública.
+- `krohn update` en el repo no usar aún.
+- Las URLs del producto apuntan a `pureform132/krohn` (se eliminó el placeholder `krohn-labs`).
+- Nous Research sigue acreditada en `LICENSE`/atribución del fork; KROHN no está afiliado con ellos.
 
-- SmartScreen: avisos de editor desconocido por no tener certificado de firma.
-- Rate limits: la AI Studio free tier de Gemini agotó el batch de HermesEval tras ~5-6 tareas; para reejecutar las 16 tareas, habilita billing o usa la key NVIDIA/OpenRouter de tu entorno. Nada del test quedó guardado en el repo.
-- Attached values reference KROHN commits untested upstream from this tree; cualquier fork de KROHN hacia otros repos requiere re-auditoría de `krohnpm` (pins `uv`/`pm/lock.json`).
+## Riesgos
+
+- SmartScreen sin firma.
+- Gemini free tier agotó el batch de HermesEval; para reejecutar las 16 tareas, habilita billing o usa otra clave. Nada quedó en el repo.
+- La mascota se activa por gateway; requiere `krohn config set display.pet.enabled true` (hecho) y que el gateway sirva `pet.info` con el spritesheet (ya instalado en `%LOCALAPPDATA%\krohn\krohn_home\pets\krohn-ultron-chibi`).
+- 3.7 GB RAM: typecheck completo agota heap. La verificación efectiva es la **compilación completa**, no `tsc --noEmit`.
