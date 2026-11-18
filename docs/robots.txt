@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://krohn.netlify.app/docs/sitemap.xml
