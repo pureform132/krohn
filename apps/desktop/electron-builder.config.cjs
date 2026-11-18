@@ -257,7 +257,7 @@ module.exports = {
     shortcutName: 'KROHN',
     installerIcon: 'assets/icon.ico',
     uninstallerIcon: 'assets/icon.ico',
-    installerHeader: 'assets/icon-dark.png',
+    installerHeader: 'assets/installer-header.bmp',
     installerHeaderIcon: 'assets/icon.ico',
     deleteAppDataOnUninstall: false
   },
