@@ -14,7 +14,7 @@
 | **Mascota Ultrón chibi** | ✅ | spritesheet en `packaging/pets/krohn-ultron-chibi/`; `display.pet.slug=krohn-ultron-chibi` y `display.pet.enabled=true` activos; eventos del agente → animaciones ya wired (tool.start/generating→`running`, reasoning→`review`, tool error→`failed`, turno completo→`jump`, clarify→`waiting`); arrastrable + Shift+clic → ventana siempre visible; tests pet: **79/79 ✅** |
 | Toggle "Mover al escritorio" | ✅ | Ajustes → Mascota → "Mover al escritorio" (desktop pop-out sin tocar Shift+clic); i18n añadida (es/en/de/fr/ja/ru/zh/zh-hant) |
 | Webs (Netlify) | ✅ **desplegadas** | Sitios vivos: https://krohn1.netlify.app/ (landing, verificada: 200 en /, /en.html, assets, sitemap, robots, llms.txt) y https://krohn-docs.netlify.app/ (docs, idem). El repo no contiene las webs; tu copia local de `KROHN-Web` ya no existe — si hay que editar de nuevo, hay que regenerar los sitios o devolverte las fuentes. |
-| Instalador Windows | 🕓 no compilado | NSIS x64 configurado (`KROHN-Setup-1.0.0.exe`); **pendiente tu orden** |
+| Instalador Windows | ✅ compilado y publicado | `KROHN-Setup-1.0.0.exe` (139 MB, SHA256 C8BAB2B643B073F1579ACB905673E7C5A8A28CC099230D9E890B8CFB2F41D5E2), NSIS x64 per-machine, sin certificado (SmartScreen avisa). Renderer build OK (con `RAYON_NUM_THREADS=1` por RAM limitada); paquete sin firmar |
 | Repo | ✅ público | https://github.com/pureform132/krohn (rama `master`) |
 | Créditos | ✅ | "Creado por Cesar D. Ciprian" en landing, docs, README, NOTICE, JSON-LD, product-identity (`appId: com.krohn.krohn`, MSIX `Krohn.*`), `author` de package.json de escritorio |
 
