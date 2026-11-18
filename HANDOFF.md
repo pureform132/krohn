@@ -13,7 +13,7 @@
 | Prompt surface | ✅ regenerado | snapshot 9 surfaces committed tras limpieza de URLs (`pureform132/krohn`) |
 | **Mascota Ultrón chibi** | ✅ | spritesheet en `packaging/pets/krohn-ultron-chibi/`; `display.pet.slug=krohn-ultron-chibi` y `display.pet.enabled=true` activos; eventos del agente → animaciones ya wired (tool.start/generating→`running`, reasoning→`review`, tool error→`failed`, turno completo→`jump`, clarify→`waiting`); arrastrable + Shift+clic → ventana siempre visible; tests pet: **79/79 ✅** |
 | Toggle "Mover al escritorio" | ✅ | Ajustes → Mascota → "Mover al escritorio" (desktop pop-out sin tocar Shift+clic); i18n añadida (es/en/de/fr/ja/ru/zh/zh-hant) |
-| Webs (Netlify) | ✅ **movidas** | `landing/` y `docs/` salieron del repo → `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\`. Deploy: 2 sites Netlify (arrastrar cada carpeta; `netlify.toml` ya incluido) |
+| Webs (Netlify) | ✅ **desplegadas** | Sitios vivos: https://krohn1.netlify.app/ (landing, verificada: 200 en /, /en.html, assets, sitemap, robots, llms.txt) y https://krohn-docs.netlify.app/ (docs, idem). El repo no contiene las webs; tu copia local de `KROHN-Web` ya no existe — si hay que editar de nuevo, hay que regenerar los sitios o devolverte las fuentes. |
 | Instalador Windows | 🕓 no compilado | NSIS x64 configurado (`KROHN-Setup-1.0.0.exe`); **pendiente tu orden** |
 | Repo | ✅ público | https://github.com/pureform132/krohn (rama `master`) |
 | Créditos | ✅ | "Creado por Cesar D. Ciprian" en landing, docs, README, NOTICE, JSON-LD, product-identity (`appId: com.krohn.krohn`, MSIX `Krohn.*`), `author` de package.json de escritorio |
@@ -30,10 +30,10 @@
 
 Dos sitios Netlify estáticos, sin build:
 
-1. **Landing**: sube `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\landing\` → sitio `krohn.netlify.app` (o el nombre que elijas). `netlify.toml` incluido.
+1. **Landing**: sube `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\landing\` → sitio `krohn1.netlify.app` (o el nombre que elijas). `netlify.toml` incluido.
 2. **Docs**: sube `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Web\docs\` → sitio separado, ej. `krohn-docs.netlify.app`.
 
-Notas: los enlaces cruzados ya apuntan a `https://krohn-docs.netlify.app/` y `https://krohn.netlify.app/`. Los assets son relativos; funciona en cualquier base path. El video de la mascota (`krohn-pet-10s.mp4`, 10s, sin audio) está incrustado en la sección "La diferencia". **Re-verificación visual obligatoria antes de publicar** — el sitio fue rehecho estilo Qoder adaptado a la marca editorial oscura (Fraunces, carmesí, capturas reales, animated cursors over UI, marquee de specs reales, cero métricas inventadas).
+Notas: los enlaces cruzados ya apuntan a `https://krohn-docs.netlify.app/` y `https://krohn1.netlify.app/`. Los assets son relativos; funciona en cualquier base path. El video de la mascota (`krohn-pet-10s.mp4`, 10s, sin audio) está incrustado en la sección "La diferencia". **Re-verificación visual obligatoria antes de publicar** — el sitio fue rehecho estilo Qoder adaptado a la marca editorial oscura (Fraunces, carmesí, capturas reales, animated cursors over UI, marquee de specs reales, cero métricas inventadas).
 
 ## Capturas: aviso honesto
 
