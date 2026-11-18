@@ -79,6 +79,50 @@ def _pin_environment() -> None:
     socket.socket.connect = refuse  # type: ignore[method-assign]
     socket.create_connection = refuse  # type: ignore[assignment]
     socket.getaddrinfo = refuse  # type: ignore[assignment]
+
+    # Windows hosts must not import the Linux psutil path selected by the linux pin.
+    # Stub psutil with the small surface the imported modules touch at import time;
+    # the snapshot pins out every real psutil read.
+    import types
+
+    _psutil = types.ModuleType("psutil")
+
+    class _NoSuchProcess(Exception):
+        pass
+
+    _psutil.NoSuchProcess = _NoSuchProcess
+    _psutil.AccessDenied = _NoSuchProcess
+    _psutil.ZombieProcess = _NoSuchProcess
+
+    class _Process:
+        def __init__(self, *_a, **_k):
+            pass
+
+        def as_dict(self, *_a, **_k):
+            return {}
+
+        def cmdline(self):
+            return []
+
+        def name(self):
+            return ""
+
+        def exe(self):
+            return ""
+
+        def cwd(self):
+            return ""
+
+    _psutil.Process = _Process
+    _psutil.boot_time = lambda: 0
+    _psutil.cpu_count = lambda *_a, **_k: 1
+    _psutil.virtual_memory = lambda: types.SimpleNamespace(total=0, available=0, percent=0)
+    _psutil.disk_usage = lambda _p: types.SimpleNamespace(total=0, used=0, free=0, percent=0)
+    _psutil.swap_memory = lambda: types.SimpleNamespace(total=0, used=0, free=0, percent=0)
+    _psutil.cpu_percent = lambda *_a, **_k: 0.0
+
+    sys.modules["psutil"] = _psutil
+
     sys.platform = "linux"  # skills index ``platforms:`` gate
 
     import krohn_time
@@ -207,6 +251,10 @@ def render(out: Path) -> int:
             "TMPDIR": tmp, "PYTHONDONTWRITEBYTECODE": "1",
         }
         for key in ("KROHN_RUNTIME_DIR", "SYSTEMROOT"):
+            if os.environ.get(key):
+                env[key] = os.environ[key]
+        # Windows: the krohn home resolver reads USERPROFILE/APPDATA/LOCALAPPDATA
+        for key in ("USERPROFILE", "APPDATA", "LOCALAPPDATA", "COMPUTERNAME"):
             if os.environ.get(key):
                 env[key] = os.environ[key]
         proc = subprocess.run(

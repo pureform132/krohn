@@ -878,6 +878,8 @@ export default function PluginsPage() {
           </CardContent>
         </Card>
 
+        {/* KROHN: plugin marketplace disabled — the store is removed entirely. Re-enable by removing this gate and the closing brace. */}
+        {false && (
         <div className="flex flex-col gap-3" data-testid="plugin-catalog-section">
 
           <h3 className="font-mondwest text-display text-xs tracking-[0.12em] text-text-secondary">
@@ -930,6 +932,7 @@ export default function PluginsPage() {
             </ul>
           )}
         </div>
+        )}
 
         <div className="flex flex-col gap-3">
 

@@ -24,7 +24,6 @@ import {
 
 import { NameCard, OptionsCard } from './beat-cards'
 import { CARD_LABEL_CLASS } from './card-type'
-import { PluginsCard } from './plugins-card'
 import {
   SETUP_BEAT_SHELL_CLASS,
   type SetupBeatOutcome,
@@ -60,12 +59,9 @@ function BeatBody({ answer, request }: { answer: (picks: SetupBeatAnswer) => boo
       return <LayoutPickerCard onContinue={layout => commit(applyAppearance({ layout }).success, { layout })} />
 
     case 'plugins':
-      return (
-        <PluginsCard
-          names={card.plugins ?? []}
-          onContinue={(installed, titles) => answer({ installed, label: titles.join(', ') })}
-        />
-      )
+      // KROHN: plugin marketplace removed — the store is disabled, so this beat
+      // is skipped (returns nothing; the beat tool drops it silently).
+      return null
 
     case 'tour':
       return (

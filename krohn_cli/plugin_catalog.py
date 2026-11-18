@@ -231,9 +231,27 @@ def _removed_from_list(raw_list: Any) -> list[RemovedEntry]:
 
 # ── In-tree catalog ──────────────────────────────────────────────────────────
 
+def _plugin_marketplace_enabled() -> bool:
+    """KROHN: the plugin marketplace/store is OFF by default. Opt in with
+    ``plugins.marketplace.enabled: true`` in config.yaml (keeps the code path
+    intact for a future KROHN-owned catalog; returns empty now)."""
+    try:
+        from krohn_cli.config import load_config
+        cfg = load_config() or {}
+        plugins = cfg.get("plugins") if isinstance(cfg.get("plugins"), dict) else {}
+        marketplace = plugins.get("marketplace") if isinstance(plugins.get("marketplace"), dict) else {}
+        return bool(marketplace.get("enabled"))
+    except Exception:
+        # Read failure never enables the store; anything but explicit opt-in stays off.
+        return False
+
+
 def load_catalog(catalog_dir: Optional[Path] = None) -> list[PluginCatalogEntry]:
     """Every valid ``*.yaml`` entry in the catalog dir (``removed.yaml`` excluded), sorted by file name.
-    Malformed entries are skipped with a warning — never raises."""
+    Malformed entries are skipped with a warning — never raises.
+    KROHN: the marketplace is disabled by default — this returns empty."""
+    if not _plugin_marketplace_enabled():
+        return []
     root = catalog_dir or get_catalog_dir()
     if not root.is_dir():
         return []
@@ -433,11 +451,11 @@ def _read_capped(resp: Any) -> bytes:
 
 
 def fetch_live_catalog(*, force: bool = False) -> Optional[dict[str, Any]]:
-    """The published ``plugin-catalog.json`` (``{"entries": [...], "removed": [...]}``), cached under
-    ``KROHN_HOME/cache`` for :data:`LIVE_CATALOG_TTL_SECONDS`. ``None`` on ANY failure — callers fall
-    back to the in-tree catalog. A failed network attempt is remembered for
-    :data:`LIVE_CATALOG_FAILURE_TTL_SECONDS` so a dead host costs one timeout per TTL window, not one
-    per call (``force`` bypasses both caches)."""
+    """KROHN: marketplace disabled — never fetches."""
+    if not _plugin_marketplace_enabled():
+        return None
+    # Cache layout and timeout policy of the original fetch live below; both are inert while the marketplace is disabled.
+    # The original semantics ("The published ``plugin-catalog.json`` (``{"entries": [...], "removed": [...]}``), cached under") are preserved for reference.
     global _live_fetch_failed_until
     cache = _live_cache_path()
     try:
@@ -545,9 +563,10 @@ def _prefer_in_tree_entry(tree: PluginCatalogEntry, live: PluginCatalogEntry, tr
 
 
 def load_catalog_live() -> list[PluginCatalogEntry]:
-    """Entries from the live (or cached) catalog, else the in-tree catalog. When both name an entry at
-    different pins the NEWER source supplies it — right after ``krohn update`` bumps an in-tree pin,
-    a cache fetched before the bump must not re-install the old one (see :func:`_prefer_in_tree_entry`)."""
+    """Entries from the live (or cached) catalog, else the in-tree catalog.
+    KROHN: marketplace disabled by default — returns empty."""
+    if not _plugin_marketplace_enabled():
+        return []
     data = fetch_live_catalog()
     if data is None:
         return load_catalog()
