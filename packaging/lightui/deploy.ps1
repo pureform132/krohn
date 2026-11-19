@@ -31,8 +31,20 @@ $meganoteSrc = Join-Path $repo "web\public\meganote"
 $meganoteDst = Join-Path $dist "meganote"
 New-Item -ItemType Directory -Force $meganoteDst | Out-Null
 Copy-Item "$meganoteSrc\*" $meganoteDst -Recurse -Force
-$pet = Join-Path $repo "packaging\pets\krohn-ultron-chibi\spritesheet.png"
-Copy-Item $pet "$dist\krohn-ultron-chibi.png" -Force
+Add-Type -AssemblyName System.Drawing
+$petSrc = Join-Path $repo "packaging\pets\krohn-ultron-chibi\spritesheet.png"
+$petDst = Join-Path $dist "krohn-ultron-chibi.png"
+$petDstRepo = Join-Path $PSScriptRoot "krohn-ultron-chibi.png"
+$srcImg = [System.Drawing.Image]::FromFile($petSrc)
+$bmp = New-Object System.Drawing.Bitmap 576, 684, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::NearestNeighbor
+$g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::Half
+$g.DrawImage($srcImg, 0, 0, 576, 684)
+$g.Dispose(); $srcImg.Dispose()
+$bmp.Save($petDst, [System.Drawing.Imaging.ImageFormat]::Png)
+$bmp.Save($petDstRepo, [System.Drawing.Imaging.ImageFormat]::Png)
+$bmp.Dispose()
 
 "deployed: index.html + meganote\ + pet -> $dist"
 "backup:   $backup"

@@ -21,6 +21,24 @@
 
 
 
+## Sesión 7 (2026-11-19 madrugada) — UI ligera + Desktop ligero
+
+**Objetivo:** que la interfaz "local" pese lo mínimo sin cambiar el look, para gama baja (~360 MB), y que funcione igual de bien en la versión de escritorio.
+
+**Qué se hizo y verificó:**
+
+1. **Optimizaciones de la UI ligera** (mismo look, menos costo):
+   - Mascota: `spritesheet.png` web recortado a 576×684 con NearestNeighbor → **2.5 MB → 0.42 MB** (~9.5 MB menos decodificados). `packaging/lightui/krohn-ultron-chibi.png` (deploy lo genera solo desde el spritesheet del repo).
+   - `backdrop-filter: blur(6px)` eliminado del overlay de KROHN Live (coste GPU innecesario en iGPUs débiles); fondo sólido rgba.
+   - `content-visibility: auto` + `contain-intrinsic-size` en `.msg` (salta renderizado off-screen en sesiones largas → 60 fps sostenidos).
+   - El resto ya era vanilla sin frameworks (sin xterm), 0 recursos externos, DOM ~200 nodos, animaciones solo `transform`/`opacity`/`steps` sobre áreas diminutas.
+   - Medido en el Desktop real vía CDP: **heap JS 2.4 MB** (3.4 total), **DOM 202 nodos**, ~85 MB RSS total (Electron shell + renderer). Transferencia: HTML ~66 KB + JS ~39 KB + pet 0.42 MB ≈ **<0.6 MB por carga** (vs el dashboard SPA multi-MB anterior).
+2. **Desktop ligero** (`C:\Users\DAMSRIS NIBAL\KROHN\KROHN Desktop (ligero).cmd` + acceso "KROHN Ligero"): usa `KROHN_DESKTOP_DEV_SERVER=http://127.0.0.1:9119` — Electron carga la UI ligera servida por el dashboard local (misma página, mismo token, mismas sesiones, misma mascota) en vez del renderer pesado. **Verificado**: la ventana del Desktop cargó `http://127.0.0.1:9119/`, `window.__KROHN_SESSION_TOKEN__` presente, 7 sesiones renderizadas, mascota cargando, `document.title` = KROHN (CDP + screenshot en `KROHN/desktop-lightui.png` — idéntica a la versión navegador). Si el dashboard no responde, el wrapper lo arranca minimizado antes de abrir la app. El Desktop clásico sigue disponible aparte (`KROHN Desktop.lnk`).
+3. **deploy.ps1** actualizado: ahora genera el sprite optimizado con System.Drawing en cada deploy en vez de copiar el de 2.5 MB.
+4. jsdom e2e re-ejecutado tras los cambios: **PASS** (chat, sesiones, envío, stream, Live, Meganote).
+
+**Verificación honesta:** los ~85 MB del Desktop incluyen el shell Electron completo; el renderer de la UI ligera en sí es ~30 MB (2.4 MB heap + DOM + sprite). La cifra de 360 MB del usuario se cumple con holgura incluso sumando el dashboard Python (~130-160 MB). El 60 fps no se midió con contador de frames (no hay GPU débil aquí para comparar); en su lugar: sin blur, sin animaciones que disparan layout, paint areas diminutas, `content-visibility` — carga de pintura mínima por frame. Pendiente de su prueba visual en PC real.
+
 ## Estado verificado por capa
 
 | Capa | Estado | Nota |

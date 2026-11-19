@@ -91,8 +91,8 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .chip-q{font-size:12px;color:var(--dim);border:1px solid var(--line-2);background:var(--panel-2);border-radius:999px;padding:7px 13px;transition:all .15s}
 .chip-q:hover{color:var(--cream);border-color:var(--accent);transform:translateY(-1px)}
 
-/* messages */
-.msg{display:flex;margin:10px 0}
+/* messages (content-visibility keeps 60fps on long sessions; row height is hinted) */
+.msg{display:flex;margin:10px 0;content-visibility:auto;contain-intrinsic-size:auto 48px}
 .msg.user{justify-content:flex-end}
 .user-bubble{background:var(--panel-3);border:1px solid var(--line);border-radius:18px 18px 4px 18px;padding:10px 14px;max-width:75%;white-space:pre-wrap;word-break:break-word}
 .assistant{width:100%}
@@ -205,7 +205,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .icon-btn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--dim);border:1px solid var(--line-2);background:var(--panel-3);transition:all .15s;flex:none}
 .icon-btn:hover{color:var(--cream);border-color:var(--accent)}
 .icon-btn svg{width:17px;height:17px}
-.live-overlay{position:fixed;inset:0;z-index:60;background:rgba(6,5,4,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.live-overlay{position:fixed;inset:0;z-index:60;background:rgba(6,5,4,.9);display:none;align-items:center;justify-content:center;padding:20px}
 .live-overlay.show{display:flex}
 .live-card{width:min(720px,100%);background:var(--panel);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden}
 .live-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
