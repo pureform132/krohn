@@ -103,6 +103,12 @@ KROHN Desktop incluye una **mascota Ultrón chibi** propia: un sprite pixel anim
 - El spritesheet y su manifiesto viven en el repo: [`packaging/pets/krohn-ultron-chibi/`](packaging/pets/krohn-ultron-chibi/).
 - Documentación completa: **https://krohn-docs.netlify.app/#mascota**
 
+## MEGANOTE y KROHN Live
+
+KROHN incluye **MEGANOTE**, la app de notas propia del proyecto: local-first, en español, inspirada en Notion (fork de [takenotes](https://github.com/pureform132/takenotes), MIT), con bloques, bases de datos, kanban, búsqueda e importación. Vive de serie embebida en la interfaz web (icono de libro en la barra lateral). El agente **tiene acceso total de lectura y escritura**: todo el workspace es un único `meganote.json` en el KROHN home y la skill [`meganote`](skills/meganote/SKILL.md) enseña al agente a leerlo y modificarlo con seguridad.
+
+**KROHN Live** — voz en tiempo real (full-duplex) con **Gemini Live**: habla con KROHN y responde con voz, con interrupciones naturales al estilo de un modo de voz tipo ChatGPT Voice. Botón de micrófono en el compositor. **GPT Live** (OpenAI Realtime) está previsto y aislado, pendiente de tu `OPENAI_API_KEY` — sin clave, no aparece como funcional.
+
 ## Contribuir
 
 Ver [CONTRIBUTING.md](CONTRIBUTING.md). Regla heredada del origen: todo cambio al sistema de prompts exige regenerar `tests/fixtures/prompt_surface/`; el núcleo conserva su cintura estrecha y la extensión vive en el borde —plugins, skills, CLI—, no en el encaje.

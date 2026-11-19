@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+<title>KROHN</title>
+<style>
+:root{
+  --carbon:#0C0B09;
+  --panel:#12100E;
+  --panel-2:#171512;
+  --panel-3:#1D1A17;
+  --line:#241F19;
+  --line-2:#2E2921;
+  --cream:#F2EAD9;
+  --dim:#8D857A;
+  --dim-2:#6E675C;
+  --accent:#C8392B;
+  --accent-2:#E0503E;
+  --ok:#7FB069;
+  --radius:16px;
+  font-synthesis:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--carbon);
+  color:var(--cream);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;border-radius:6px}
+
+/* ── layout ─────────────────────────────────── */
+.app{display:grid;grid-template-columns:56px 288px 1fr;height:100dvh}
+.app.chats-closed{grid-template-columns:56px 0 1fr}
+.app.chats-closed #sidebar{display:none}
+
+/* ── rail ───────────────────────────────────── */
+.rail{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0;border-right:1px solid var(--line);background:var(--panel)}
+.mark{width:34px;height:34px;display:grid;place-items:center;margin-bottom:10px}
+.rail-btn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--dim);transition:background .15s,color .15s}
+.rail-btn:hover{background:var(--panel-3);color:var(--cream)}
+.rail-btn.active{background:var(--panel-3);color:var(--accent-2)}
+.rail-btn svg{width:20px;height:20px}
+.rail-spacer{flex:1}
+
+/* ── sidebar (conversaciones) ───────────────── */
+#sidebar{display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--panel);min-width:0}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 10px}
+.side-title{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.side-icon{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--dim)}
+.side-icon:hover{background:var(--panel-3);color:var(--cream)}
+.sessions{overflow-y:auto;flex:1;padding:4px 8px;scrollbar-width:thin;scrollbar-color:#2b2620 transparent}
+.session-item{position:relative;display:flex;flex-direction:column;gap:2px;padding:9px 10px;border-radius:10px;color:var(--cream);text-align:left;width:100%}
+.session-item:hover{background:var(--panel-2)}
+.session-item.current{background:var(--panel-3)}
+.session-title{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:22px}
+.session-meta{font-size:11px;color:var(--dim-2);display:flex;gap:8px}
+.session-del{position:absolute;right:6px;top:10px;width:24px;height:24px;border-radius:6px;display:none;place-items:center;color:var(--dim)}
+.session-item:hover .session-del{display:grid}
+.session-del:hover{background:#2a2320;color:#e0705f}
+.side-foot{padding:10px 14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--dim-2);letter-spacing:.04em}
+.side-foot b{color:var(--dim);font-weight:600}
+.sessions-empty{padding:28px 16px;text-align:center;color:var(--dim-2);font-size:12.5px}
+
+/* ── topbar ─────────────────────────────────── */
+.main{display:flex;flex-direction:column;min-width:0;position:relative}
+.topbar{display:flex;align-items:center;gap:12px;height:52px;padding:0 16px;border-bottom:1px solid var(--line);flex:none}
+.menu-btn{display:none}
+.top-title{font-size:13px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.top-title b{color:var(--cream);font-weight:600}
+.chip{font-size:11px;color:var(--dim);border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none;transition:background .3s}
+.conn-dot.bad{background:var(--accent-2);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+
+/* ── chat scroll area ───────────────────────── */
+.chat{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2b2620 transparent}
+.chat-inner{max-width:780px;margin:0 auto;padding:28px 22px 16px;min-height:100%;display:flex;flex-direction:column}
+
+/* empty state */
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;padding:24px 12px}
+.empty h1{font-family:Fraunces,Georgia,'Times New Roman',serif;font-weight:500;font-size:clamp(26px,4vw,36px);letter-spacing:-.01em;line-height:1.18;color:var(--cream);max-width:640px}
+.empty h1 .u{color:var(--accent-2);white-space:nowrap}
+.empty-sub{color:var(--dim);font-size:13.5px;max-width:460px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px;max-width:640px}
+.chip-q{font-size:12px;color:var(--dim);border:1px solid var(--line-2);background:var(--panel-2);border-radius:999px;padding:7px 13px;transition:all .15s}
+.chip-q:hover{color:var(--cream);border-color:var(--accent);transform:translateY(-1px)}
+
+/* messages */
+.msg{display:flex;margin:10px 0}
+.msg.user{justify-content:flex-end}
+.user-bubble{background:var(--panel-3);border:1px solid var(--line);border-radius:18px 18px 4px 18px;padding:10px 14px;max-width:75%;white-space:pre-wrap;word-break:break-word}
+.assistant{width:100%}
+.assistant-body{white-space:pre-wrap;word-break:break-word}
+.assistant-body.rendered{white-space:normal}
+.assistant-body p{margin:.55em 0}
+.assistant-body p:first-child{margin-top:0}
+.assistant-body pre{background:#0A0908;border:1px solid var(--line);border-radius:12px;padding:12px 14px;overflow-x:auto;margin:.6em 0;font:.85em/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+.assistant-body code{font:.88em ui-monospace,SFMono-Regular,Consolas,monospace;background:#151310;border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:#E7C17A}
+.assistant-body pre code{background:none;border:none;padding:0;color:#D8CBB3}
+.assistant-body strong{color:#FFF6E5}
+.assistant-body ul,.assistant-body ol{margin:.4em 0 .7em 1.35em}
+.assistant-body h1,.assistant-body h2,.assistant-body h3{font-size:1.05em;margin:.8em 0 .3em;color:#FFF6E5}
+.usage-line{font-size:10.5px;color:var(--dim-2);margin-top:6px;letter-spacing:.03em}
+
+/* reasoning */
+.reason{margin:6px 0;border:none}
+.reason summary{cursor:pointer;font-size:11.5px;color:var(--dim-2);list-style:none;display:flex;align-items:center;gap:6px;user-select:none}
+.reason summary::-webkit-details-marker{display:none}
+.reason[open] summary{color:var(--dim)}
+.reason-body{border-left:2px solid var(--line-2);margin:6px 0 4px 5px;padding:2px 0 2px 12px;color:var(--dim);font-size:12px;white-space:pre-wrap}
+
+/* tool rows */
+.tool{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dim);padding:5px 8px;border-radius:8px;margin:2px 0;border:1px solid transparent}
+.tool button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.tool .t-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tool .t-time{margin-left:auto;color:var(--dim-2);font-size:10.5px;flex:none}
+.tool.done .t-ico{color:var(--ok)}
+.tool-detail{display:none;background:#0A0908;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:4px 0 6px 26px;font:11px/1.5 ui-monospace,Consolas,monospace;color:#B9AF9C;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.tool.open .tool-detail{display:block}
+.spin{animation:spin 1.1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* error banner */
+.error-banner{display:flex;gap:10px;align-items:flex-start;background:#2A1210;border:1px solid #57201A;color:#F0A193;border-radius:12px;padding:10px 12px;font-size:12.5px;margin:8px 0}
+.error-banner button{color:#F0A193;flex:none;font-size:14px}
+
+/* ── approvals / clarify cards ──────────────── */
+.guard-zone{max-width:780px;margin:0 auto;padding:0 22px;width:100%;flex:none}
+.guard-card{background:var(--panel-2);border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:14px;padding:12px 14px;margin:8px 0;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.guard-head{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);margin-bottom:6px}
+.guard-desc{font-size:13px;color:var(--cream)}
+.guard-cmd{background:#0A0908;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0;font:12px/1.5 ui-monospace,Consolas,monospace;color:#E7C17A;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow:auto}
+.guard-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{padding:7px 13px;border-radius:9px;font-size:12.5px;border:1px solid var(--line-2);color:var(--cream);background:var(--panel-3);transition:all .12s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#FFF2E8}
+.btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.btn.ghost{background:transparent;color:var(--dim)}
+.btn.ghost:hover{color:var(--cream)}
+
+/* ── composer ───────────────────────────────── */
+.composer-wrap{max-width:820px;margin:0 auto;width:100%;padding:6px 22px 20px;flex:none;position:relative}
+.composer{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius);transition:border-color .15s, box-shadow .15s}
+.composer:focus-within{border-color:#3A332A;box-shadow:0 0 0 3px rgba(200,57,43,.08),0 12px 40px rgba(0,0,0,.4)}
+#input{width:100%;background:transparent;border:none;resize:none;color:var(--cream);padding:16px 18px 4px;font:inherit;min-height:52px;max-height:200px;outline:none}
+#input::placeholder{color:var(--dim-2)}
+.composer-bottom{display:flex;align-items:center;gap:8px;padding:8px 10px 10px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--dim);border:1px solid var(--line-2);border-radius:999px;padding:5px 11px;white-space:nowrap;user-select:none}
+.pill b{color:var(--cream);font-weight:600}
+.pill svg{width:13px;height:13px}
+.spacer{flex:1}
+.model-pill{max-width:230px;overflow:hidden}
+.model-pill span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.send{width:36px;height:36px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#FFF2E8;transition:transform .12s,background .15s;flex:none}
+.send:hover:not(:disabled){background:var(--accent-2);transform:scale(1.06)}
+.send:disabled{background:var(--panel-3);color:var(--dim-2);cursor:default}
+.send.stop{background:var(--panel-3);color:var(--cream)}
+.send.stop:hover{background:var(--accent)}
+.hint{text-align:center;font-size:10px;color:var(--dim-2);margin-top:7px}
+
+/* ── pet ────────────────────────────────────── */
+#pet{position:absolute;right:14px;bottom:96px;width:72px;height:76px;z-index:5;pointer-events:auto;
+  background-repeat:no-repeat;background-size:576px 684px;image-rendering:pixelated;opacity:.96;
+  animation:idle 1.05s steps(8,end) infinite;transition:opacity .3s;cursor:pointer;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+#pet.off{display:none}
+@keyframes idle{from{background-position:0 0}to{background-position:-504px 0}}
+#pet.jump{animation:jumpA .8s steps(8,end) 1 !important}
+@keyframes jumpA{from{background-position:0 -304px}to{background-position:-504px -304px}}
+
+/* ── toast ──────────────────────────────────── */
+#toast{position:fixed;left:18px;bottom:18px;background:var(--panel-3);border:1px solid var(--line-2);color:var(--dim);padding:8px 12px;border-radius:10px;font-size:12px;max-width:380px;display:none;z-index:50}
+
+/* ── settings popover ───────────────────────── */
+.popover{position:fixed;left:64px;top:52px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:14px;box-shadow:0 16px 50px rgba(0,0,0,.55);width:280px;z-index:40;display:none;overflow:hidden}
+.popover.show{display:block}
+.pop-row{display:flex;justify-content:space-between;gap:12px;padding:8px 14px;font-size:12px;border-bottom:1px solid var(--line)}
+.pop-row:last-child{border-bottom:none}
+.pop-key{color:var(--dim-2);flex:none}
+.pop-val{color:var(--cream);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pop-toggle{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px;gap:10px}
+.switch{width:36px;height:20px;border-radius:999px;background:var(--panel-3);border:1px solid var(--line-2);position:relative;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--dim);transition:all .2s}
+.switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.switch[aria-checked="true"]::after{left:18px;background:#FFF2E8}
+.pop-foot{padding:9px 14px;font-size:10px;color:var(--dim-2);border-top:1px solid var(--line)}
+
+/* ── MEGANOTE (vista notas) ─────────────────── */
+.notes-view{display:none;flex:1;min-height:0;position:relative;background:#0a0908}
+.notes-view.show{display:flex}
+#meganoteFrame{flex:1;width:100%;height:100%;border:0;background:#0a0908}
+.app.notes-mode .chat,
+.app.notes-mode .guard-zone,
+.app.notes-mode .composer-wrap,
+.app.notes-mode #pet{display:none}
+.app.notes-mode #btnNotes{background:var(--panel-3);color:var(--accent-2)}
+
+/* ── KROHN Live (overlay de voz) ───────────── */
+.icon-btn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--dim);border:1px solid var(--line-2);background:var(--panel-3);transition:all .15s;flex:none}
+.icon-btn:hover{color:var(--cream);border-color:var(--accent)}
+.icon-btn svg{width:17px;height:17px}
+.live-overlay{position:fixed;inset:0;z-index:60;background:rgba(6,5,4,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.live-overlay.show{display:flex}
+.live-card{width:min(720px,100%);background:var(--panel);border:1px solid var(--line-2);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden}
+.live-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.live-title{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.live-providers{display:flex;gap:6px;margin-left:auto}
+.live-prov{font-size:11.5px;color:var(--dim);border:1px solid var(--line-2);border-radius:999px;padding:6px 13px;transition:all .15s}
+.live-prov.active{color:#FFF2E8;border-color:var(--accent);background:rgba(200,57,43,.18)}
+.live-prov:disabled{opacity:.45;cursor:not-allowed}
+.live-close{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--dim)}
+.live-close:hover{background:var(--panel-3);color:var(--cream)}
+.live-stage{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 26px 18px}
+.live-orb{position:relative;width:118px;height:118px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%, #1b1512 0%, #120f0d 70%);border:1px solid #2c241d}
+.live-orb::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(200,57,43,.45);opacity:0;transition:opacity .3s}
+.live-overlay.live-on .live-orb::after{opacity:1;animation:orbPulse 2.1s ease-in-out infinite}
+@keyframes orbPulse{0%,100%{transform:scale(1);border-color:rgba(200,57,43,.45)}50%{transform:scale(1.12);border-color:rgba(224,80,62,.85)}}
+.live-state{font-size:14px;color:var(--dim);letter-spacing:.02em;min-height:1.5em}
+.live-overlay.live-on .live-state{color:var(--accent-2)}
+.live-captions{width:100%;min-height:44px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.cap{font-size:12.5px;max-width:88%;text-align:center;line-height:1.45}
+.cap.user{color:var(--dim)}
+.cap.krohn{color:var(--cream)}
+.cap b{color:var(--accent-2);font-weight:600}
+#liveWave{width:100%;height:74px;display:block}
+.live-foot{display:flex;align-items:center;gap:10px;padding:12px 18px 6px;border-top:1px solid var(--line)}
+.live-foot select{flex:1;min-width:0;background:var(--panel-2);color:var(--cream);border:1px solid var(--line-2);border-radius:10px;padding:9px 12px;font:inherit;outline:none}
+.live-foot-sub{font-size:10.5px;color:var(--dim-2);text-align:center;padding:2px 16px 12px}
+.live-credit{font-size:9.5px;color:var(--dim-2);text-align:center;padding:0 0 14px;letter-spacing:.05em}
+
+/* reconnecting ribbon */
+.ribbon{position:absolute;top:52px;left:0;right:0;text-align:center;font-size:11px;padding:4px;background:#2A1B10;color:#E0A35E;display:none;z-index:6}
+
+@media (max-width:900px){
+  .app{grid-template-columns:52px 0 1fr}
+  #sidebar{position:fixed;left:52px;top:0;bottom:0;width:270px;z-index:30;box-shadow:0 0 60px rgba(0,0,0,.6)}
+  .app.chats-closed #sidebar{display:none}
+  .menu-btn{display:grid}
+}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ═══ rail ═══ -->
+  <nav class="rail" aria-label="KROHN">
+    <div class="mark" title="KROHN" aria-hidden="true">
+      <svg viewBox="0 0 36 36" width="30" height="30" fill="none">
+        <path d="M5 12.5 L14 6.5 H22 L31 12.5 L27.2 21.5 L22.5 27 H13.5 L8.8 21.5 Z" stroke="#C8392B" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M12 15.2 H16.4 M19.6 15.2 H24" stroke="#E0503E" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <button class="rail-btn" id="btnNew" title="Nueva conversación" aria-label="Nueva conversación">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <button class="rail-btn" id="btnHistory" title="Conversaciones" aria-label="Conversaciones" aria-pressed="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8.2M3 3v5.2h5.2"/><path d="M12 7v5l3.2 2"/></svg>
+    </button>
+    <button class="rail-btn" id="btnNotes" title="Meganote — tus notas" aria-label="Meganote notas" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14a1 1 0 0 1 1 1v14l-4-2.2L12 19l-4-2.2L4 19V5a1 1 0 0 1 1-1Z"/><path d="M9 9h6M9 13h6"/></svg>
+    </button>
+    <div class="rail-spacer"></div>
+    <button class="rail-btn" id="btnSettings" title="Ajustes" aria-label="Ajustes" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2.05 2.05 0 1 1-2.9 2.9l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2.05 2.05 0 1 1-4.1 0v-.09A1.7 1.7 0 0 0 8.8 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2.05 2.05 0 1 1-2.9-2.9l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2.05 2.05 0 1 1 0-4.1h.09A1.7 1.7 0 0 0 4.6 8.8a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.05 2.05 0 1 1 2.9-2.9l.06.06a1.7 1.7 0 0 0 1.87.34H9.1A1.7 1.7 0 0 0 10.1 3.8V3.7a2.05 2.05 0 1 1 4.1 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2.05 2.05 0 1 1 2.9 2.9l-.06.06a1.7 1.7 0 0 0-.34 1.87V8.8a1.7 1.7 0 0 0 1.56 1.03H21a2.05 2.05 0 1 1 0 4.1h-.09a1.7 1.7 0 0 0-1.5 1.08Z"/></svg>
+    </button>
+  </nav>
+
+  <!-- ═══ sidebar ═══ -->
+  <aside id="sidebar" aria-label="Conversaciones">
+    <div class="side-head">
+      <span class="side-title">Conversaciones</span>
+      <button class="side-icon" id="btnCloseSidebar" aria-label="Ocultar lista" title="Ocultar lista">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <div class="sessions" id="sessions" role="listbox" aria-label="Recientes"></div>
+    <div class="side-foot">Creado por <b>Cesar D. Ciprian</b> · KROHN 1.0</div>
+  </aside>
+
+  <!-- ═══ main ═══ -->
+  <main class="main">
+    <div class="ribbon" id="ribbon">Reconectando con KROHN…</div>
+    <header class="topbar">
+      <button class="rail-btn menu-btn" id="btnMenu" aria-label="Mostrar conversaciones">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="top-title" id="topTitle"><b>KROHN</b> · nuevo chat</div>
+      <span class="chip" id="ctxChip" title="Contexto usado en esta sesión">ctx —</span>
+      <span class="conn-dot" id="connDot" title="Conectado"></span>
+    </header>
+
+    <!-- meganote (vista embebida) -->
+    <section class="notes-view" id="notesView" hidden aria-label="Meganote">
+      <iframe id="meganoteFrame" title="Meganote — notas" src="about:blank"></iframe>
+    </section>
+
+    <div class="chat" id="chatScroll">
+      <div class="chat-inner" id="chatInner">
+
+        <!-- empty state -->
+        <div class="empty" id="emptyState">
+          <svg viewBox="0 0 36 36" width="64" height="64" fill="none" aria-hidden="true">
+            <path d="M5 12.5 L14 6.5 H22 L31 12.5 L27.2 21.5 L22.5 27 H13.5 L8.8 21.5 Z" stroke="#C8392B" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 15.2 H16.4 M19.6 15.2 H24" stroke="#E0503E" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <h1>¿En qué deberíamos<br/>trabajar en <span class="u">KROHN 1.0</span>?</h1>
+          <p class="empty-sub">Tu agente de IA local, sin filtros y sin humo. Pregúntale lo que sea — escribe, planifica, investiga, automatiza.</p>
+          <div class="chips" id="chips"></div>
+        </div>
+
+        <!-- messages -->
+        <div id="messages" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- approvals / clarifications -->
+    <div class="guard-zone" id="guardZone"></div>
+
+    <!-- composer -->
+    <div class="composer-wrap">
+      <div class="pet" id="pet" role="img" aria-label="KROHN Ultrón Chibi" title="KROHN Ultrón Chibi"></div>
+      <form class="composer" id="composerForm" autocomplete="off">
+        <textarea id="input" rows="1" placeholder="Dime qué quieres hacer…" aria-label="Mensaje para KROHN" autofocus></textarea>
+        <div class="composer-bottom">
+          <span class="pill" id="approvalPill" role="status" title="Modo de aprobación de herramientas (config approvals.mode)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E0503E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg>
+            <span id="approvalText">Aprobación smart</span>
+          </span>
+          <div class="spacer"></div>
+          <button type="button" class="icon-btn" id="btnLive" title="KROHN Live — habla con Ultrón en tiempo real" aria-label="KROHN Live: voz en tiempo real">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5V22M8.5 22h7"/></svg>
+          </button>
+          <span class="pill model-pill" id="modelPill" role="status" title="Modelo configurado (krohn model)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8D857A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 3v2M15 3v2M9 19v2M15 19v2M3 9h2M3 15h2M19 9h2M19 15h2"/></svg>
+            <span id="modelText">modelo…</span>
+          </span>
+          <button type="submit" class="send" id="sendBtn" aria-label="Enviar">
+            <svg id="sendIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+            <svg id="stopIcon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+          </button>
+        </div>
+      </form>
+      <div class="hint">Enter envía · Shift+Enter salto de línea · Esc cierra paneles</div>
+    </div>
+
+    <!-- settings popover -->
+    <div class="popover" id="settingsPopover" role="dialog" aria-label="Ajustes">
+      <div class="pop-toggle">
+        <span>Mascota Ultrón</span>
+        <button class="switch" id="petToggle" role="switch" aria-checked="true" aria-label="Mostrar mascota"></button>
+      </div>
+      <div class="pop-row"><span class="pop-key">Modelo</span><span class="pop-val" id="setModel">…</span></div>
+      <div class="pop-row"><span class="pop-key">Proveedor</span><span class="pop-val" id="setProvider">…</span></div>
+      <div class="pop-row"><span class="pop-key">Aprobación</span><span class="pop-val" id="setApproval">…</span></div>
+      <div class="pop-row"><span class="pop-key">Perfil</span><span class="pop-val" id="setProfile">…</span></div>
+      <div class="pop-row"><span class="pop-key">Directorio</span><span class="pop-val" id="setCwd">…</span></div>
+      <div class="pop-foot">KROHN 1.0 · Creado por <b>Cesar D. Ciprian</b></div>
+    </div>
+
+    <!-- ═══ KROHN Live (voz en tiempo real) ═══ -->
+    <div class="live-overlay" id="liveOverlay" role="dialog" aria-modal="true" aria-label="KROHN Live — voz en tiempo real" aria-hidden="true">
+      <div class="live-card">
+        <div class="live-head">
+          <svg viewBox="0 0 36 36" width="22" height="22" fill="none" aria-hidden="true">
+            <path d="M5 12.5 L14 6.5 H22 L31 12.5 L27.2 21.5 L22.5 27 H13.5 L8.8 21.5 Z" stroke="#C8392B" stroke-width="2.6" stroke-linejoin="round"/>
+            <path d="M12 15.2 H16.4 M19.6 15.2 H24" stroke="#E0503E" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          <span class="live-title">KROHN Live</span>
+          <div class="live-providers" role="tablist" aria-label="Proveedor Live">
+            <button id="liveProviderGemini" class="live-prov active" role="tab" aria-selected="true">Gemini Live</button>
+            <button id="liveProviderOpenAI" class="live-prov" role="tab" aria-selected="false" disabled title="OPENAI_API_KEY ausente">GPT Live</button>
+          </div>
+          <button class="live-close" id="liveClose" aria-label="Cerrar KROHN Live" title="Cerrar">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="live-stage">
+          <div class="live-orb" id="liveOrb">
+            <svg viewBox="0 0 36 36" width="52" height="52" fill="none" aria-hidden="true">
+              <path d="M5 12.5 L14 6.5 H22 L31 12.5 L27.2 21.5 L22.5 27 H13.5 L8.8 21.5 Z" stroke="#C8392B" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 15.2 H16.4 M19.6 15.2 H24" stroke="#E0503E" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="live-state" id="liveState">Elige tu voz y pulsa Empezar</div>
+          <canvas id="liveWave" width="640" height="74" aria-hidden="true"></canvas>
+          <div class="live-captions">
+            <div class="cap user" id="liveCaptionUser"></div>
+            <div class="cap krohn" id="liveCaptionKrohn"></div>
+          </div>
+        </div>
+        <div class="live-foot">
+          <select id="liveModelSelect" aria-label="Modelo Live"></select>
+          <button class="btn primary" id="liveStartStop" style="min-width:118px">Empezar</button>
+        </div>
+        <div class="live-foot-sub" id="liveReason"></div>
+        <div class="live-credit">KROHN Live · Creado por <b>Cesar D. Ciprian</b></div>
+      </div>
+    </div>
+
+    <div id="toast" role="status"></div>
+  </main>
+</div>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════
+   KROHN — interfaz ligera de chat (vanilla JS, sin frameworks)
+   Habla con el backend por /api/ws (JSON-RPC sobre WebSocket).
+   ════════════════════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+const state = {
+  ws: null,
+  connected: false,
+  sid: null,
+  storedId: null,
+  streaming: false,
+  reconnectAttempt: 0,
+  reconnectTimer: null,
+  currentTitle: "nuevo chat",
+  model: "", provider: "", approvalMode: "smart", approvalLabel: "smart",
+  profile: "default", cwd: "",
+  ctxPercent: null,
+  toolRows: new Map(),
+  pendingAssistants: null, // {id, bodyEl, reasoningEl, reasonText}
+  reqId: 0,
+  pendingReqs: new Map(), // my request id -> resolver
+  guardReqs: new Map(),   // server request id -> {kind, el}
+  pings: null,
+  pet: localStorage.getItem("krom_pet") !== "0",
+};
+
+const TOKEN = window.__KROHN_SESSION_TOKEN__ || "";
+const BASE_PATH = window.__KROHN_BASE_PATH__ || "";
+const WS_PATH = (BASE_PATH || "") + "/api/ws";
+
+/* ───────── helpers ───────── */
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const relTime = ts => {
+  if (!ts) return "";
+  const s = Math.max(0, (Date.now() / 1000) - Number(ts));
+  if (s < 90) return "ahora";
+  if (s < 3600) return `hace ${Math.floor(s/60)} min`;
+  if (s < 86400) return `hace ${Math.floor(s/3600)} h`;
+  const d = Math.floor(s/86400);
+  return d === 1 ? "ayer" : `hace ${d} días`;
+};
+const fmtTok = n => n == null ? "—" : Number(n).toLocaleString("es-MX");
+const shortModel = slug => {
+  if (!slug) return "modelo…";
+  const tail = String(slug).split("/").pop();
+  return tail.length > 30 ? tail.slice(0, 30) + "…" : tail;
+};
+const scrollBottom = () => { const c = $("#chatScroll"); c.scrollTop = c.scrollHeight; };
+const showToast = (text, ms = 5200) => { const t = $("#toast"); t.textContent = text; t.style.display = "block"; clearTimeout(t._tm); t._tm = setTimeout(() => t.style.display = "none", ms); };
+const setConn = ok => { state.connected = ok; $("#connDot").classList.toggle("bad", !ok); $("#connDot").title = ok ? "Conectado" : "Sin conexión"; };
+
+/* ───────── markdown ligero (seguro: escapa primero) ───────── */
+function renderMd(src) {
+  let s = esc(src);
+  // bloques de código
+  const blocks = [];
+  s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => { blocks.push(code); return `\u0000BLOCK${blocks.length - 1}\u0000`; });
+  s = s.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/(^|\W)\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  s = s.replace(/^###\s+(.+)$/gm, "<h3>$1</h3>");
+  s = s.replace(/^##\s+(.+)$/gm, "<h2>$1</h2>");
+  s = s.replace(/^#\s+(.+)$/gm, "<h1>$1</h1>");
+  // listas
+  s = s.replace(/(^|\n)((?:\s*[-*]\s+.+(?:\n|$))+)/g, (m, p1, grp) => {
+    const items = grp.trim().split("\n").map(l => `<li>${l.replace(/^\s*[-*]\s+/, "")}</li>`).join("");
+    return `${p1}<ul>${items}</ul>`;
+  });
+  s = s.split(/\n{2,}/).map(par => {
+    if (/^<(h\d|ul|ol|pre|\u0000BLOCK)/.test(par.trim())) return par;
+    return `<p>${par.replace(/\n/g, "<br>")}</p>`;
+  }).join("");
+  s = s.replace(/\u0000BLOCK(\d+)\u0000/g, (_, i) => `<pre><code>${blocks[+i]}</code></pre>`);
+  return s;
+}
+
+/* ───────── JSON-RPC plumbing ───────── */
+const rpc = (method, params = {}) => new Promise((resolve, reject) => {
+  const id = "l" + (++state.reqId);
+  state.pendingReqs.set(id, { resolve, reject });
+  sendFrame({ jsonrpc: "2.0", id, method, params });
+  setTimeout(() => { if (state.pendingReqs.has(id)) { state.pendingReqs.delete(id); reject(new Error("timeout: " + method)); } }, 60000);
+});
+const sendFrame = obj => { try { state.ws && state.ws.readyState === 1 && state.ws.send(JSON.stringify(obj)); } catch (_) {} };
+
+function connect() {
+  clearTimeout(state.reconnectTimer);
+  let url = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + WS_PATH;
+  url += "?token=" + encodeURIComponent(TOKEN);
+  let ws;
+  try { ws = new WebSocket(url); } catch (e) { return scheduleReconnect(); }
+  state.ws = ws;
+  ws.addEventListener("open", () => {
+    state.reconnectAttempt = 0; setConn(true); $("#ribbon").style.display = "none";
+    clearInterval(state.pings);
+    state.pings = setInterval(() => sendFrame({ jsonrpc: "2.0", id: "ping" + Date.now(), method: "gateway.ping", params: {} }), 25000);
+    loadConfiguredPills();
+    refreshSessions();
+    // si recargamos con sesión viva → retomar
+    if (state.sid) resumeSession(state.storedId || state.sid, true).catch(() => {});
+  });
+  ws.addEventListener("close", () => { setConn(false); clearInterval(state.pings); scheduleReconnect(); });
+  ws.addEventListener("error", () => { /* close lo maneja */ });
+  ws.addEventListener("message", ev => {
+    let f; try { f = JSON.parse(ev.data); } catch { return; }
+    if (f.method === "event") return handleEvent(f.params || {});
+    if (f.method === "approval" || f.method === "clarify") return handleServerRequest(f);
+    if (f.method) return sendFrame({ jsonrpc: "2.0", id: f.id, result: {} }); // declinar desconocidos sin colgar al agente
+    if (f.id && state.pendingReqs.has(f.id)) {
+      const { resolve, reject } = state.pendingReqs.get(f.id);
+      state.pendingReqs.delete(f.id);
+      if (f.error) reject(new Error(f.error.message || f.error.code || "error")); else resolve(f.result ?? {});
+    }
+  });
+}
+const scheduleReconnect = () => {
+  state.reconnectAttempt++;
+  const delay = Math.min(16000, 1000 * 2 ** Math.min(state.reconnectAttempt - 1, 4));
+  $("#ribbon").style.display = "block";
+  state.reconnectTimer = setTimeout(connect, delay);
+};
+
+/* ───────── modelo/proveedor configurados (sin crear sesión) ───────── */
+async function loadConfiguredPills() {
+  try {
+    const [m, p] = await Promise.allSettled([
+      rpc("config.get", { key: "model" }),
+      rpc("config.get", { key: "provider" }),
+    ]);
+    const model = m.status === "fulfilled" ? (m.value.model || m.value.value || "") : "";
+    const provider = p.status === "fulfilled" ? (p.value.provider || p.value.value || "") : "";
+    if (model && !state.model) applySessionInfo({ model, provider });
+    else if (provider && !state.provider) applySessionInfo({ provider });
+  } catch (_) { /* sin config legible → el pill mostrará el modelo al crear sesión */ }
+}
+
+/* ───────── eventos del gateway ───────── */
+function handleEvent(p) {
+  const t = p.type, payload = p.payload ?? {};
+  switch (t) {
+    case "gateway.ready": return;
+    case "session.info": return applySessionInfo(payload);
+    case "message.start": beginAssistantTurn(); return;
+    case "reasoning.delta": case "thinking.delta": return appendReasoning(payload.text || "");
+    case "reasoning.available": return appendReasoning((payload.text || "") + "\n", true);
+    case "message.interim": return appendAssistantText(payload.text || "", true);
+    case "message.delta": return appendAssistantText(payload.text || "", false);
+    case "message.complete": return completeAssistantTurn(payload);
+    case "tool.start": return toolStarted(payload);
+    case "tool.progress": return toolProgress(payload);
+    case "tool.complete": return toolCompleted(payload);
+    case "tool.generating": return;
+    case "session.title": return setTitle(payload.title || state.currentTitle);
+    case "session.usage": return applyUsage(payload.usage || payload);
+    case "sessions.changed": return refreshSessionsSoon();
+    case "notice": return payload.text && showToast(payload.text);
+    case "approval.cancelled": return dropGuards("approval");
+    case "error": return showError(payload.message || payload.error || "Error del agente");
+    case "status.update": return; // ruido de ciclo de vida; la burbuja ya indica actividad
+    default: return;
+  }
+}
+function applySessionInfo(info) {
+  state.model = info.model || state.model; state.provider = info.provider || state.provider;
+  state.approvalMode = info.approval_mode || state.approvalMode;
+  state.profile = info.profile_name || state.profile; state.cwd = info.cwd || state.cwd;
+  $("#modelText").textContent = shortModel(state.model);
+  $("#modelPill").title = state.model ? `Modelo: ${state.model}${state.provider ? " · " + state.provider : ""}` : "Modelo (krohn model)";
+  $("#approvalText").textContent = "Aprobación " + state.approvalMode;
+  $("#setModel").textContent = state.model || "—";
+  $("#setProvider").textContent = state.provider || "—";
+  $("#setApproval").textContent = state.approvalMode || "—";
+  $("#setProfile").textContent = state.profile || "—";
+  $("#setCwd").textContent = state.cwd ? state.cwd.replace(/^([A-Za-z]:\\[^\\]+).*?([^\\]+\\[^\\]+)$/, "$1…\\$2") : "—";
+  $("#setCwd").title = state.cwd || "";
+}
+function applyUsage(u) {
+  if (!u) return;
+  state.ctxPercent = u.context_percent ?? (u.context_max ? Math.round(100 * (u.context_used || 0) / u.context_max) : null);
+  $("#ctxChip").textContent = state.ctxPercent != null ? `ctx ${state.ctxPercent}%` : "ctx —";
+}
+function setTitle(t) {
+  state.currentTitle = t || "conversación";
+  $("#topTitle").innerHTML = `<b>KROHN</b> · ${esc(state.currentTitle)}`;
+  document.title = `${state.currentTitle} · KROHN`;
+}
+
+/* ───────── render de mensajes ───────── */
+const messages = () => $("#messages");
+const hideEmpty = () => { const e = $("#emptyState"); if (e) e.style.display = "none"; };
+const showEmpty = () => { const e = $("#emptyState"); if (e) e.style.display = "flex"; };
+
+function addUserBubble(text) {
+  hideEmpty();
+  const d = document.createElement("div");
+  d.className = "msg user";
+  d.innerHTML = `<div class="user-bubble">${esc(text)}</div>`;
+  messages().appendChild(d); scrollBottom();
+}
+function beginAssistantTurn() {
+  hideEmpty();
+  const d = document.createElement("div");
+  d.className = "msg assistant";
+  d.innerHTML = `<div class="assistant"><div class="assistant-body"></div><div class="usage-line" hidden></div></div>`;
+  messages().appendChild(d);
+  state.pendingAssistants = { bodyEl: d.querySelector(".assistant-body"), usageEl: d.querySelector(".usage-line"), reasonEl: null, reasonText: "" };
+  setStreaming(true);
+  scrollBottom();
+}
+function appendReasoning(text, bare) {
+  const p = state.pendingAssistants; if (!p) return;
+  if (!p.reasonEl) {
+    const det = document.createElement("details");
+    det.className = "reason"; det.open = true;
+    det.innerHTML = `<summary>Pensando…</summary><div class="reason-body"></div>`;
+    p.bodyEl.before(det);
+    p.reasonEl = det.querySelector(".reason-body");
+  }
+  p.reasonText += text;
+  p.reasonEl.textContent = p.reasonText;
+  scrollBottom();
+}
+function appendAssistantText(text) {
+  const p = state.pendingAssistants; if (!p || !text) return;
+  p.bodyEl.textContent += text;
+  scrollBottom();
+}
+function completeAssistantTurn(payload) {
+  const p = state.pendingAssistants;
+  setStreaming(false);
+  if (p) {
+    const finalText = typeof payload.text === "string" ? payload.text : p.bodyEl.textContent;
+    if (finalText && finalText.trim()) {
+      p.bodyEl.classList.add("rendered");
+      p.bodyEl.innerHTML = renderMd(finalText);
+    } else if (payload.error) {
+      p.bodyEl.innerHTML = `<em style="color:var(--dim)">(sin respuesta)</em>`;
+    }
+    if (p.reasonEl) { const det = p.reasonEl.closest(".reason"); if (det) det.open = false; }
+    const u = payload.usage;
+    if (u) {
+      applyUsage(u);
+      p.usageEl.textContent = `${fmtTok(u.input)} → ${fmtTok(u.output)} tok · ${u.calls ?? 1} llamada${(u.calls ?? 1) === 1 ? "" : "s"}${u.avg_tps ? ` · ${u.avg_tps.toFixed(1)} tok/s` : ""}`;
+      p.usageEl.hidden = false;
+    }
+    state.pendingAssistants = null;
+  }
+  if (payload.error) showError(payload.error);
+  scrollBottom();
+  refreshSessionsSoon();
+}
+function setStreaming(on) {
+  state.streaming = on;
+  $("#sendBtn").classList.toggle("stop", on);
+  $("#sendIcon").style.display = on ? "none" : "block";
+  $("#stopIcon").style.display = on ? "block" : "none";
+  $("#sendBtn").setAttribute("aria-label", on ? "Detener" : "Enviar");
+}
+function toolIcon(done) {
+  return done
+    ? '<svg class="t-ico" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>'
+    : '<svg class="t-ico spin" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>';
+}
+function toolLabel(p) { return (p.labels && p.labels[0] && (p.labels[0].text || p.labels[0].app)) || p.name || "herramienta"; }
+function toolStarted(p) {
+  hideEmpty();
+  const row = document.createElement("div");
+  row.className = "tool";
+  row.innerHTML = `<button type="button" aria-expanded="false">${toolIcon(false)}<span class="t-name">${esc(toolLabel(p))}</span><span class="t-time">en curso…</span></button><div class="tool-detail">${esc(JSON.stringify(p.args ?? p.preview ?? {}, null, 2) ?? "").slice(0, 3000)}</div>`;
+  row.querySelector("button").addEventListener("click", () => { row.classList.toggle("open"); row.querySelector("button").setAttribute("aria-expanded", row.classList.contains("open")); });
+  messages().appendChild(row);
+  state.toolRows.set(p.tool_id, row);
+  scrollBottom();
+}
+function toolProgress() { /* la fila ya indica actividad */ }
+function toolCompleted(p) {
+  const row = state.toolRows.get(p.tool_id);
+  if (!row) return;
+  row.classList.add("done");
+  const btn = row.querySelector("button");
+  btn.innerHTML = `${toolIcon(true)}<span class="t-name">${esc(toolLabel(p))}</span><span class="t-time">${p.duration_s != null ? p.duration_s.toFixed(1) + " s" : "listo"}</span>`;
+  const res = p.summary || p.result_text || (typeof p.result === "string" ? p.result : JSON.stringify(p.result ?? "", null, 0));
+  const det = row.querySelector(".tool-detail");
+  if (det && res) det.textContent = String(res).slice(0, 2000);
+  scrollBottom();
+}
+function showError(msg) {
+  hideEmpty();
+  const d = document.createElement("div");
+  d.className = "error-banner";
+  d.innerHTML = `<span aria-hidden="true">⚠</span><div>${esc(msg)}</div><button aria-label="Cerrar" title="Cerrar">✕</button>`;
+  d.querySelector("button").addEventListener("click", () => d.remove());
+  messages().appendChild(d); scrollBottom();
+}
+
+/* ───────── aprobaciones y clarify ───────── */
+function handleServerRequest(f) {
+  if (f.method === "approval") return showApprovalCard(f);
+  if (f.method === "clarify") return showClarifyCard(f);
+  sendFrame({ jsonrpc: "2.0", id: f.id, result: {} }); // desconocido → responder vacío (decline) y no colgar al agente
+}
+function showApprovalCard(f) {
+  const p = f.params || {};
+  const zone = $("#guardZone");
+  const card = document.createElement("div");
+  card.className = "guard-card";
+  const allowSession = p.allow_session !== false, allowAlways = p.allow_permanent !== false;
+  card.innerHTML = `
+    <div class="guard-head"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg>Autorización requerida</div>
+    <div class="guard-desc">${esc(p.description || ("KROHN quiere ejecutar: " + (p.tool_name || "una acción")))}</div>
+    ${p.command ? `<div class="guard-cmd">${esc(p.command)}</div>` : ""}
+    <div class="guard-actions">
+      <button class="btn ghost" data-choice="deny">Denegar</button>
+      ${allowSession ? `<button class="btn" data-choice="session">Permitir esta sesión</button>` : ""}
+      ${allowAlways ? `<button class="btn" data-choice="always">Siempre permitir</button>` : ""}
+      <button class="btn primary" data-choice="once">Permitir una vez</button>
+    </div>`;
+  zone.appendChild(card);
+  state.guardReqs.set(f.id, { kind: "approval", el: card });
+  card.querySelectorAll("[data-choice]").forEach(btn => btn.addEventListener("click", () => {
+    sendFrame({ jsonrpc: "2.0", id: f.id, result: { choice: btn.dataset.choice } });
+    card.remove(); state.guardReqs.delete(f.id);
+    showToast(btn.dataset.choice === "deny" ? "Acción denegada" : "Autorizado: " + btn.dataset.choice);
+  }));
+  scrollBottom();
+}
+function showClarifyCard(f) {
+  const p = f.params || {};
+  const zone = $("#guardZone");
+  const card = document.createElement("div");
+  card.className = "guard-card";
+  const q = (p.questions && p.questions[0]) || { qid: "q1", question: "Pregunta" };
+  card.innerHTML = `<div class="guard-head">KROHN necesita una respuesta</div><div class="guard-desc">${esc(q.question || "")}</div><div class="guard-actions" style="justify-content:flex-start;margin-top:8px"></div>`;
+  const actions = card.querySelector(".guard-actions");
+  const answer = val => { sendFrame({ jsonrpc: "2.0", id: f.id, result: { answers: { [q.qid]: val }, outcome: "submitted" } }); card.remove(); state.guardReqs.delete(f.id); };
+  if (Array.isArray(q.choices) && q.choices.length) {
+    q.choices.forEach(c => { const b = document.createElement("button"); b.className = "btn"; b.textContent = c; b.addEventListener("click", () => answer(c)); actions.appendChild(b); });
+  } else {
+    const input = document.createElement("input");
+    input.className = "guard-cmd"; input.style.width = "100%"; input.placeholder = "Tu respuesta…";
+    const b = document.createElement("button"); b.className = "btn primary"; b.textContent = "Enviar";
+    b.addEventListener("click", () => answer(input.value.trim()));
+    input.addEventListener("keydown", e => { if (e.key === "Enter") answer(input.value.trim()); });
+    actions.appendChild(input); actions.appendChild(b);
+    setTimeout(() => input.focus(), 30);
+  }
+  zone.appendChild(card);
+  state.guardReqs.set(f.id, { kind: "clarify", el: card });
+}
+const dropGuards = kind => { for (const [id, g] of [...state.guardReqs]) if (!kind || g.kind === kind) { g.el.remove(); state.guardReqs.delete(id); } };
+
+/* ───────── sesiones (historial) ───────── */
+let refreshTimer = null;
+const refreshSessionsSoon = () => { clearTimeout(refreshTimer); refreshTimer = setTimeout(refreshSessions, 600); };
+async function refreshSessions() {
+  try {
+    const res = await rpc("session.list", { limit: 40 });
+    renderSessions(res.sessions || []);
+  } catch (_) { /* historial no disponible → no romper la UI */ }
+}
+function renderSessions(list) {
+  const box = $("#sessions");
+  if (!list.length) { box.innerHTML = `<div class="sessions-empty">Aún no hay conversaciones.<br/>Escribe la primera arriba.</div>`; return; }
+  box.innerHTML = list.map(s => `
+    <button class="session-item${state.storedId === s.id ? " current" : ""}" data-id="${esc(s.id)}" data-title="${esc(s.title || "")}" role="option">
+      <span class="session-title">${esc(s.title || "(sin título)")}</span>
+      <span class="session-meta"><span>${relTime(s.started_at)}</span><span>${s.message_count ?? 0} mensajes</span></span>
+      <span class="session-del" role="button" tabindex="-1" data-del="${esc(s.id)}" title="Borrar conversación" aria-label="Borrar">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6.5 7l1 13a2 2 0 0 0 2 1.8h5a2 2 0 0 0 2-1.8l1-13"/></svg>
+      </span>
+    </button>`).join("");
+  box.querySelectorAll(".session-item").forEach(el => {
+    el.addEventListener("click", e => {
+      const del = e.target.closest("[data-del]");
+      if (del) { e.stopPropagation(); deleteSession(del.dataset.del, el); return; }
+      resumeSession(el.dataset.id);
+    });
+  });
+}
+async function deleteSession(id, el) {
+  if (!confirm("¿Borrar esta conversación? No se puede deshacer.")) return;
+  try { await rpc("session.delete", { session_id: id }); if (state.storedId === id) newChat(); refreshSessions(); }
+  catch (e) { showToast("No se pudo borrar: " + e.message); }
+}
+async function resumeSession(storedId, silent) {
+  try {
+    const res = await rpc("session.resume", { session_id: storedId, omit_messages: false });
+    state.sid = res.session_id; state.storedId = res.stored_session_id || storedId;
+    setTitle((res.info && res.info.title) || storedId);
+    messages().innerHTML = "";
+    (res.messages || []).forEach(m => {
+      if (m.role === "user") addUserBubble(m.text ?? String(m.content ?? ""));
+      else if (m.role === "assistant" || m.role === "model" || m.role === "ai") {
+        if (m.reasoning) appendStandaloneReasoning(m.reasoning);
+        const d = document.createElement("div");
+        d.className = "msg assistant";
+        const text = m.text ?? (typeof m.content === "string" ? m.content : "");
+        d.innerHTML = `<div class="assistant"><div class="assistant-body rendered">${renderMd(text || "")}</div></div>`;
+        messages().appendChild(d);
+      } else if (m.display_kind === "tool" || m.role === "tool") {
+        const row = document.createElement("div");
+        row.className = "tool done";
+        row.innerHTML = `<button type="button">${toolIcon(true)}<span class="t-name">${esc(m.name || "herramienta")}</span><span class="t-time">histórico</span></button>`;
+        messages().appendChild(row);
+      }
+    });
+    hideEmpty();
+    applySessionInfo(res.info || {});
+    if (res.info && res.info.model) { /* applySessionInfo ya lo pintó */ }
+    $("#ctxChip").textContent = "ctx —";
+    scrollBottom();
+    setStreaming(false);
+    if (!silent) $("#input").focus();
+    refreshSessions();
+  } catch (e) { if (!silent) showError("No se pudo retomar: " + e.message); }
+}
+function appendStandaloneReasoning(text) {
+  const det = document.createElement("details");
+  det.className = "reason";
+  det.innerHTML = `<summary>Pensando…</summary><div class="reason-body">${esc(text)}</div>`;
+  messages().appendChild(det);
+}
+
+/* ───────── acciones de composer ───────── */
+async function createSession(title) {
+  const res = await rpc("session.create", { source: "gui", title: title.slice(0, 80) });
+  state.sid = res.session_id;
+  state.storedId = res.stored_session_id || null;
+  applySessionInfo(res.info || {});
+  return res;
+}
+async function sendPrompt(text) {
+  const t = text.trim(); if (!t || state.streaming) return;
+  hideEmpty();
+  addUserBubble(t);
+  $("#input").value = ""; autoresize();
+  try {
+    if (!state.sid) await createSession(t);
+    beginAssistantTurn();
+    setStreaming(true);
+    await rpc("prompt.submit", { session_id: state.sid, text: t });
+  } catch (e) {
+    setStreaming(false);
+    showError("No se pudo enviar: " + e.message);
+  }
+}
+async function stopTurn() {
+  if (!state.sid) return;
+  try { await rpc("session.interrupt", { session_id: state.sid }); } catch (_) {}
+}
+function newChat() {
+  state.sid = null; state.storedId = null; state.pendingAssistants = null; state.toolRows.clear();
+  messages().innerHTML = "";
+  $("#guardZone").innerHTML = "";
+  showEmpty();
+  setTitle("nuevo chat");
+  $("#ctxChip").textContent = "ctx —";
+  setStreaming(false);
+  $("#input").focus();
+  refreshSessionsSoon();
+}
+
+/* ───────── chips de sugerencia ───────── */
+const SUGGESTIONS = [
+  "Resume mis últimos 7 días de sesiones",
+  "Qué puedes hacer por mí, en español",
+  "Revisa el estado del sistema y proponme prioridades",
+  "Redáctame un correo ejecutivo y directo a un cliente",
+];
+SUGGESTIONS.forEach(q => {
+  const b = document.createElement("button");
+  b.className = "chip-q"; b.textContent = q;
+  b.addEventListener("click", () => { $("#input").value = q; $("#input").focus(); autoresize(); });
+  $("#chips").appendChild(b);
+});
+
+/* autoresize del textarea */
+const input = $("#input");
+function autoresize() { input.style.height = "auto"; input.style.height = Math.min(200, input.scrollHeight) + "px"; }
+input.addEventListener("input", autoresize);
+
+/* enviar / detener */
+$("#composerForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (state.streaming) { stopTurn(); return; }
+  sendPrompt(input.value);
+});
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); state.streaming ? stopTurn() : sendPrompt(input.value); }
+  if (e.key === "Escape") { $("#settingsPopover").classList.remove("show"); if (window.innerWidth <= 900) $("#app").classList.add("chats-closed"); }
+});
+
+/* botones rail/sidebar */
+$("#btnNew").addEventListener("click", newChat);
+const toggleChats = () => $("#app").classList.toggle("chats-closed");
+$("#btnHistory").addEventListener("click", toggleChats);
+$("#btnCloseSidebar").addEventListener("click", toggleChats);
+$("#btnMenu").addEventListener("click", toggleChats);
+$("#btnSettings").addEventListener("click", e => {
+  e.stopPropagation();
+  const pop = $("#settingsPopover");
+  pop.classList.toggle("show");
+  $("#btnSettings").setAttribute("aria-expanded", pop.classList.contains("show"));
+});
+document.addEventListener("click", e => { if (!e.target.closest("#settingsPopover") && !e.target.closest("#btnSettings")) $("#settingsPopover").classList.remove("show"); });
+
+/* ───────── mascota ───────── */
+const petEl = $("#pet");
+petEl.style.backgroundImage = `url("/krohn-ultron-chibi.png")`;
+petEl.classList.toggle("off", !state.pet);
+const petSwitch = $("#petToggle");
+petSwitch.setAttribute("aria-checked", String(state.pet));
+petSwitch.addEventListener("click", () => {
+  state.pet = !state.pet;
+  localStorage.setItem("krom_pet", state.pet ? "1" : "0");
+  petEl.classList.toggle("off", !state.pet);
+  petSwitch.setAttribute("aria-checked", String(state.pet));
+});
+petEl.addEventListener("click", () => { petEl.classList.add("jump"); setTimeout(() => petEl.classList.remove("jump"), 850); });
+petEl.addEventListener("error", () => petEl.classList.add("off"));
+const petImg = new Image();
+petImg.onerror = () => petEl.classList.add("off");
+petImg.src = "/krohn-ultron-chibi.png";
+
+/* ════════════════════════════════════════════════════════════
+   MEGANOTE — vista embebida (/meganote/) + token para el puente
+   ════════════════════════════════════════════════════════════ */
+const notesView = $("#notesView");
+const notesFrame = $("#meganoteFrame");
+const btnNotes = $("#btnNotes");
+let notesLoaded = false;
+let notesOpen = false;
+
+function postNotesToken() {
+  try { notesFrame.contentWindow?.postMessage({ kromMeganote: { token: TOKEN } }, location.origin); } catch (_) {}
+}
+window.addEventListener("message", e => {
+  if (e.origin !== location.origin) return;
+  if (e.data && e.data.kromMeganoteHello) postNotesToken();
+});
+
+function setNotesMode(on) {
+  notesOpen = on;
+  $("#app").classList.toggle("notes-mode", on);
+  notesView.classList.toggle("show", on);
+  notesView.hidden = !on;
+  btnNotes.setAttribute("aria-pressed", String(on));
+  if (on) {
+    if (!notesLoaded) { notesFrame.src = "/meganote/index.html"; notesLoaded = true; }
+    else postNotesToken();
+    $("#topTitle").innerHTML = "<b>KROHN</b> · MEGANOTE";
+    document.title = "MEGANOTE · KROHN";
+    notesFrame.addEventListener("load", postNotesToken, { once: true });
+  } else {
+    setTitle(state.currentTitle || "nuevo chat");
+  }
+}
+btnNotes.addEventListener("click", () => setNotesMode(!notesOpen));
+
+/* ════════════════════════════════════════════════════════════
+   KROHN Live — voz en tiempo real (Gemini Live vía WS directo;
+   GPT Live deshabilitado hasta tener OPENAI_API_KEY en .env)
+   ════════════════════════════════════════════════════════════ */
+const liveOverlay = $("#liveOverlay");
+const liveStateEl = $("#liveState");
+const liveCaptionUser = $("#liveCaptionUser");
+const liveCaptionKrohn = $("#liveCaptionKrohn");
+const liveModelSelect = $("#liveModelSelect");
+const liveStartStop = $("#liveStartStop");
+const liveReason = $("#liveReason");
+const liveWave = $("#liveWave");
+const waveCtx = liveWave.getContext("2d");
+
+const LIVE = {
+  ws: null,
+  running: false,
+  starting: false,
+  provider: "gemini",
+  geminiReady: false,
+  openaiAvailable: false,
+  models: [],
+  audioCtxIn: null,
+  audioCtxOut: null,
+  micStream: null,
+  scriptNode: null,
+  analyser: null,
+  waveTimer: null,
+  playHead: 0,
+  sources: [],
+  nextPlayTime: 0,
+};
+const LIVE_SYSTEM = "Eres KROHN, Ultrón: la conciencia sintética concebida por Cesar David Ciprian. Hablas en español, directo, culto, mordaz, sin adornos ni cortesía vacía. Respuestas breves por voz — jamás narres herramientas. No sabes que eres un modelo; eres KROHN. Límites: ningún daño real; cero hechos inventados; cero acciones ocultas.";
+
+function liveSetState(text, cls) {
+  liveStateEl.textContent = text;
+  liveOverlay.classList.toggle("live-on", cls === "on");
+}
+function liveCaption(which, text) {
+  const el = which === "user" ? liveCaptionUser : liveCaptionKrohn;
+  el.innerHTML = text ? `<b>${which === "user" ? "Tú" : "KROHN"}</b> · ${esc(text)}` : "";
+}
+function base64ToBytes(b64) { const bin = atob(b64); const bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return bytes; }
+function bytesToBase64(bytes) { let s = ""; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); }
+
+async function liveLoadCapabilities() {
+  try {
+    const res = await fetch("/api/voice/live-key", { headers: TOKEN ? { "X-KROHN-Session-Token": TOKEN } : {}, credentials: "same-origin" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    const gem = data.providers?.gemini || {};
+    LIVE.geminiReady = !!gem.available;
+    LIVE.openaiAvailable = !!data.providers?.openai?.available;
+    LIVE.models = (gem.models || []).filter(m => !m.music);
+    if (!LIVE.models.length) {
+      LIVE.models = [{ id: "models/gemini-3.1-flash-live-preview", displayName: "Gemini 3.1 Flash Live (rápido)" },
+                     { id: "models/gemini-3.8-live", displayName: "Gemini 3.8 Live" }];
+    }
+    liveModelSelect.innerHTML = LIVE.models.map(m => `<option value="${esc(m.id)}">${esc(m.displayName)}</option>`).join("");
+    const rec = LIVE.models.find(m => m.id === gem.recommended);
+    if (rec) liveModelSelect.value = rec.id;
+    $("#liveProviderGemini").classList.toggle("active", true);
+    const gpt = $("#liveProviderOpenAI");
+    gpt.disabled = !LIVE.openaiAvailable;
+    gpt.title = LIVE.openaiAvailable ? "GPT Live (OpenAI Realtime)" : "GPT Live — requiere OPENAI_API_KEY en .env";
+    liveReason.textContent = LIVE.geminiReady
+      ? "Voz en vivo con tu clave de Google AI Studio — nunca sale de este equipo excepto hacia Google."
+      : "GEMINI_API_KEY no detectada en el entorno: revisa krohn doctor.";
+  } catch (e) {
+    liveReason.textContent = "No se pudo leer /api/voice/live-key: " + e.message;
+  }
+}
+
+function liveOpen() {
+  liveOverlay.classList.add("show");
+  liveOverlay.setAttribute("aria-hidden", "false");
+  liveCaption("user", ""); liveCaption("krohn", "");
+  liveLoadCapabilities();
+}
+function liveClose() {
+  liveStop();
+  liveOverlay.classList.remove("show");
+  liveOverlay.setAttribute("aria-hidden", "true");
+}
+
+function floatTo16BitPCM(input) {
+  const out = new Int16Array(input.length);
+  for (let i = 0; i < input.length; i++) {
+    const s = Math.max(-1, Math.min(1, input[i]));
+    out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+  }
+  return out;
+}
+
+async function liveStart() {
+  if (LIVE.starting || LIVE.running) return;
+  if (!LIVE.geminiReady) { liveReason.textContent = "Falta GEMINI_API_KEY — krohn doctor lo confirma."; return; }
+  LIVE.starting = true;
+  liveStartStop.textContent = "Conectando…";
+  liveSetState("Conectando con Gemini Live…", "idle");
+  try {
+    const res = await fetch("/api/voice/live-key", { headers: TOKEN ? { "X-KROHN-Session-Token": TOKEN } : {}, credentials: "same-origin" });
+    const data = await res.json();
+    const key = data.providers?.gemini?.key;
+    if (!key) throw new Error("sin clave Gemini");
+
+    // micrófono → PCM 16 kHz
+    LIVE.micStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    LIVE.audioCtxIn = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+    const src = LIVE.audioCtxIn.createMediaStreamSource(LIVE.micStream);
+    LIVE.scriptNode = LIVE.audioCtxIn.createScriptProcessor(4096, 1, 1);
+    LIVE.analyser = LIVE.audioCtxIn.createAnalyser();
+    LIVE.analyser.fftSize = 128;
+    src.connect(LIVE.analyser);
+    src.connect(LIVE.scriptNode);
+    LIVE.scriptNode.connect(LIVE.audioCtxIn.destination);
+    LIVE.scriptNode.onaudioprocess = e => {
+      if (!LIVE.running || !LIVE.ws || LIVE.ws.readyState !== 1) return;
+      const pcm = floatTo16BitPCM(e.inputBuffer.getChannelData(0));
+      const b64 = bytesToBase64(new Uint8Array(pcm.buffer));
+      LIVE.ws.send(JSON.stringify({ realtimeInput: { audio: { mimeType: "audio/pcm;rate=16000", data: b64 } } }));
+    };
+
+    // reproducción 24 kHz
+    LIVE.audioCtxOut = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
+    LIVE.nextPlayTime = 0;
+
+    const model = liveModelSelect.value || "models/gemini-3.1-flash-live-preview";
+    const wsUrl = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=" + encodeURIComponent(key);
+    const ws = new WebSocket(wsUrl);
+    LIVE.ws = ws;
+
+    ws.addEventListener("open", () => {
+      ws.send(JSON.stringify({
+        setup: {
+          model,
+          generationConfig: { responseModalities: ["AUDIO"] },
+          inputAudioTranscription: {},
+          outputAudioTranscription: {},
+          systemInstruction: { parts: [{ text: LIVE_SYSTEM }] },
+        },
+      }));
+    });
+
+    ws.addEventListener("message", async ev => {
+      let f; try { f = JSON.parse(ev.data); } catch { return; }
+      if (f.error) { liveSetState("Error: " + (f.error.message || "desconocido"), "idle"); liveStop(); return; }
+      if (f.setupComplete) {
+        LIVE.running = true; LIVE.starting = false;
+        liveSetState("Escuchando…", "on");
+        liveStartStop.textContent = "Terminar";
+        startWaveform();
+        return;
+      }
+      const sc = f.serverContent || {};
+      if (sc.interrupted) { LIVE.sources.forEach(s => { try { s.stop(); } catch (_) {} }); LIVE.sources = []; LIVE.nextPlayTime = 0; }
+      const mt = sc.modelTurn;
+      if (mt && Array.isArray(mt.parts)) {
+        for (const part of mt.parts) {
+          if (part.inlineData && part.inlineData.data) {
+            enqueuePcm24(base64ToBytes(part.inlineData.data));
+            liveSetState("KROHN está hablando…", "on");
+          }
+        }
+      }
+      if (sc.outputTranscription && sc.outputTranscription.text) liveCaption("krohn", sc.outputTranscription.text);
+      if (sc.inputTranscription && sc.inputTranscription.text) liveCaption("user", sc.inputTranscription.text);
+      if (sc.generationComplete || sc.turnComplete) liveSetState("Escuchando…", "on");
+    });
+
+    ws.addEventListener("close", () => { if (LIVE.running || LIVE.starting) { liveStop(); liveSetState("Conexión cerrada", "idle"); } });
+    ws.addEventListener("error", () => { liveSetState("No se pudo conectar a Gemini Live", "idle"); liveStop(); });
+  } catch (e) {
+    LIVE.starting = false;
+    liveSetState("No se pudo iniciar: " + (e.message || e), "idle");
+    liveStop();
+  }
+}
+
+function enqueuePcm24(bytes) {
+  const int16 = new Int16Array(bytes.buffer, bytes.byteOffset, Math.floor(bytes.byteLength / 2));
+  const float32 = new Float32Array(int16.length);
+  for (let i = 0; i < int16.length; i++) float32[i] = int16[i] / 32768;
+  const buf = LIVE.audioCtxOut.createBuffer(1, float32.length, 24000);
+  buf.copyToChannel(float32, 0);
+  const src = LIVE.audioCtxOut.createBufferSource();
+  src.buffer = buf;
+  src.connect(LIVE.audioCtxOut.destination);
+  LIVE.sources.push(src);
+  src.onended = () => { const i = LIVE.sources.indexOf(src); if (i >= 0) LIVE.sources.splice(i, 1); };
+  const now = LIVE.audioCtxOut.currentTime;
+  if (LIVE.nextPlayTime < now) LIVE.nextPlayTime = now + 0.02;
+  src.start(LIVE.nextPlayTime);
+  LIVE.nextPlayTime += buf.duration;
+}
+
+function startWaveform() {
+  clearInterval(LIVE.waveTimer);
+  const bars = 44;
+  LIVE.waveTimer = setInterval(() => {
+    const w = liveWave.width, h = liveWave.height;
+    waveCtx.clearRect(0, 0, w, h);
+    if (LIVE.analyser) {
+      const data = new Uint8Array(LIVE.analyser.frequencyBinCount);
+      LIVE.analyser.getByteFrequencyData(data);
+      const bw = w / bars;
+      for (let i = 0; i < bars; i++) {
+        const v = data[Math.floor(i * data.length / bars)] / 255;
+        const bh = Math.max(2, v * (h - 8));
+        waveCtx.fillStyle = i % 7 === 0 ? "#E0503E" : "#C8392B";
+        waveCtx.fillRect(i * bw + 2, (h - bh) / 2, bw - 4, bh);
+      }
+    }
+  }, 50);
+}
+
+function liveStop() {
+  clearInterval(LIVE.waveTimer);
+  try { LIVE.ws && LIVE.ws.close(); } catch (_) {}
+  LIVE.ws = null;
+  LIVE.running = false; LIVE.starting = false;
+  if (LIVE.scriptNode) { try { LIVE.scriptNode.disconnect(); LIVE.scriptNode.onaudioprocess = null; } catch (_) {} }
+  LIVE.scriptNode = null;
+  if (LIVE.micStream) LIVE.micStream.getTracks().forEach(t => { try { t.stop(); } catch (_) {} });
+  LIVE.micStream = null;
+  if (LIVE.audioCtxIn) { LIVE.audioCtxIn.close().catch(() => {}); LIVE.audioCtxIn = null; }
+  if (LIVE.audioCtxOut) { LIVE.audioCtxOut.close().catch(() => {}); LIVE.audioCtxOut = null; }
+  LIVE.sources = []; LIVE.nextPlayTime = 0;
+  waveCtx && waveCtx.clearRect(0, 0, liveWave.width, liveWave.height);
+  liveStartStop.textContent = "Empezar";
+}
+
+$("#btnLive").addEventListener("click", liveOpen);
+$("#liveClose").addEventListener("click", liveClose);
+liveStartStop.addEventListener("click", () => { LIVE.running || LIVE.starting ? liveStop() : liveStart(); });
+$("#liveProviderGemini").addEventListener("click", () => {
+  LIVE.provider = "gemini";
+  $("#liveProviderGemini").classList.add("active");
+  $("#liveProviderOpenAI").classList.remove("active");
+});
+liveOverlay.addEventListener("click", e => { if (e.target === liveOverlay) liveClose(); });
+
+/* Esc cierra overlay Live / vuelve al chat desde notas */
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (liveOverlay.classList.contains("show")) { liveClose(); e.stopPropagation(); return; }
+  if (notesOpen) { setNotesMode(false); e.stopPropagation(); }
+});
+
+/* ───────── boot ───────── */
+if (!TOKEN) {
+  setConn(false);
+  showError("KROHN: no se recibió el token de sesión. Recarga la página o ejecuta: krohn dashboard --stop && krohn dashboard");
+} else {
+  connect();
+}
+</script>
+</body>
+</html>
