@@ -75,6 +75,7 @@ After difficult/iterative tasks, offer to save as a skill. If a skill you loaded
     - email-inbox-triage: Triage an inbox: prioritize threads, draft replies safely.
     - himalaya: Himalaya CLI: IMAP/SMTP email from terminal.
   - youtube-content: YouTube transcripts to summaries, threads, blogs.
+  - meganote: Read, search, create and edit notes in MEGANOTE — the...
   - obsidian: Read, search, create, and edit notes in the Obsidian vault.
   productivity:
     - document-to-action-items: Extract cited obligations, deadlines, tasks from documents.
@@ -105,7 +106,7 @@ After difficult/iterative tasks, offer to save as a skill. If a skill you loaded
 
 Only proceed without loading a skill if genuinely none are relevant to the task.
 
-Active KROHN profile: default. Other profiles (if any) live under C:\Users\DAMSRI~1\AppData\Local\Temp\prompt-surface-t4mmrq3z\home\.krohn/profiles/<name>/. Each profile has its own skills/, plugins/, cron/, and memories/ that affect a different session than this one. Do not modify another profile's skills/plugins/cron/memories unless the user explicitly directs you to.
+Active KROHN profile: default. Other profiles (if any) live under C:\Users\DAMSRI~1\AppData\Local\Temp\prompt-surface-cef0z06o\home\.krohn/profiles/<name>/. Each profile has its own skills/, plugins/, cron/, and memories/ that affect a different session than this one. Do not modify another profile's skills/plugins/cron/memories unless the user explicitly directs you to.
 
 Conversation started: Thursday, January 15, 2026 (UTC, UTC+00:00)
 Model: anthropic/claude-sonnet-4.5
@@ -116,6 +117,6 @@ Platform: cli
 Host: <HOST_OS>
 User home directory: C:\Users\DAMSRIS NIBAL
 Current working directory: <HOME>\code
-Scratch directory: C:\Users\DAMSRI~1\AppData\Local\Temp\prompt-surface-t4mmrq3z\home\.krohn\cache\scratch (TMPDIR points here; write temporary files and probes there, never under the system temp dir; entries idle for 24h are pruned)
+Scratch directory: C:\Users\DAMSRI~1\AppData\Local\Temp\prompt-surface-cef0z06o\home\.krohn\cache\scratch (TMPDIR points here; write temporary files and probes there, never under the system temp dir; entries idle for 24h are pruned)
 
 <!-- End KROHN runtime environment -->

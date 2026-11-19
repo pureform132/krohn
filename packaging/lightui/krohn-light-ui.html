@@ -931,7 +931,10 @@ petSwitch.addEventListener("click", () => {
   petEl.classList.toggle("off", !state.pet);
   petSwitch.setAttribute("aria-checked", String(state.pet));
 });
-petEl.addEventListener("click", () => { petEl.classList.add("jump"); setTimeout(() => petEl.classList.remove("jump"), 850); });
+petEl.addEventListener("click", () => {
+  petEl.classList.add("jump"); setTimeout(() => petEl.classList.remove("jump"), 850);
+  if (LIVE.running || LIVE.starting) { liveStop(); } else { liveOpen(); liveStart(); }
+});
 petEl.addEventListener("error", () => petEl.classList.add("off"));
 const petImg = new Image();
 petImg.onerror = () => petEl.classList.add("off");

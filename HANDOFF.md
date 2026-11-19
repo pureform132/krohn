@@ -21,6 +21,17 @@
 
 
 
+## Sesión 8 (2026-11-19) — Sarcasmo, mockups y espacio
+
+1. **Voz de Ultrón más hostil**: `SOUL.md` (secciones 1 y 5) + `krohn_cli/default_soul.py` (default sembrado). Nueva regla maestra: "Sarcasmo Elevado" — seco, culto, preciso, devastador con la mediocridad; nunca humilla por origen, sexo, creencias o condición. Validación prohibida. Verificado en vivo: la respuesta a una "estrategia de crecimiento de una línea para postergar" fue *"la primera obliga a actuar; la segunda permite seguir reuniéndose para 'definir KPIs' seis meses más. Elige tu veneno."* Fixtures del prompt surface regenerados.
+2. **Mockups de interfaz** (carpeta aparte, NO en el repo): `C:\Users\DAMSRIS NIBAL\Downloads\KROHN-Mockups\` — 4 propuestas completas para la UI definitiva: `index.html` (comparativa) + `01-krohn-editorial.html` (marca oficial), `02-negro-absoluto.html` (Codex/MEDuSSA), `03-terminal-ultron.html` (TUI clásica fósforo), `04-carmesi-brutal.html` (brutal carmesí). Todas autocontenidas, misma funcionalidad visible (chat, MEGANOTE, sesiones, aprobaciones, Voz Live, modelo, skills, MCP, ajustes), crédito Cesar D. Ciprian y mascota chibi clicable → Live. Capturas en `shot-*.png`.
+3. **Desktop y backend**: nada que iniciar a mano — KROHN Desktop lanza su propio backend automáticamente al arrancar (ver `desktop.log` "KROHN gateway is ready"); el dashboard lo lanza aparte para el navegador.
+4. **TUI/CLI rehecho** (commit `2c095595`): figlet KROHN en ANSI Shadow, chibi Ultrón en el banner (truecolor), versión limpia (`KROHN vX.Y.Z+hash (fecha)` sin sufijos upstream) y atribución **Cesar D. Ciprian**. El agente ya no imprime "Nous Research" ni "HERMES-AGENT".
+5. **Espacio en disco**: borrado `npm-cache` — **5.16 GB → 10.6 GB libres** (`_cacache` 4.3 GB, `_npx` 1.05 GB, `_prebuilds` 49 MB). Solo quedó 0.9 MB de una carpeta en uso por NPX activo (se deja intacta).
+6. **Clic en la chibi → KROHN Live** (UI web): la mascota alterna el modo voz Gemini Live al hacer clic (verificación jsdom: PASS).
+
+**Pendiente:** el usuario elige un mockup (01–04) y reconstruyo la UI definitiva cableada al backend real (chat, MEGANOTE, KROHN Live).
+
 ## Sesión 7 (2026-11-19 madrugada) — UI ligera + Desktop ligero
 
 **Objetivo:** que la interfaz "local" pese lo mínimo sin cambiar el look, para gama baja (~360 MB), y que funcione igual de bien en la versión de escritorio.
