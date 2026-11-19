@@ -21,6 +21,28 @@
 
 
 
+## Sesión 9 (2026-11-19 madrugada) — KROHN Editorial: la interfaz definitiva
+
+El usuario eligió el mockup 01 — **KROHN Editorial**. Se implementó como la UI definitiva (reemplaza a la light UI tipo Codex como `web_dist/index.html` vía `deploy.ps1`):
+
+1. **KROHN Editorial UI** (`packaging/lightui/krohn-editorial.html`, ~94 KB, autocontenida, cero dependencias externas): rail con KROHN mark + nuevo/historial/Meganote/Live/comandos/ajustes, sidebar con wordmark KROHN *Ultrón* + búsqueda "Buscar conversaciones…" + historial real con borrado hover, topbar "KROHN / CHAT", empty-state Fraunces "¿En qué deberíamos trabajar en **KROHN 1.0**?", composer con aprobaciones y modelo, mascota Ultrón chibi.
+2. **Los paneles de Ajustes (drawer con 6 tabs), todos cableados a datos reales**:
+   - **General** — idioma ES, tema, toggle Real de mascota, escala de la mascota (−/+ persistente), directorio cwd, perfil e aprobaciones (mirror en vivo).
+   - **Modelo** — catálogo real desde `/api/model/options` (búsqueda), cambio real vía `POST /api/model/set` (persiste config; sesiones nuevas). Verificado: catálogo carga, nano-enano seleccionable.
+   - **Voz** — Gemini Live disponible (modelos del API en vivo), botón "Probar ahora"; GPT Live ausente (falta OPENAI_API_KEY).
+   - **Skills** — `/api/skills` real agrupado por categoría con toggle enable/disable por `PUT /api/skills/toggle`. Verificado.
+   - **MCP** — lista real (`/api/mcp/servers`), estado vacío honesto, alta de servidor, habilitar/deshabilitar, probar, borrar. Verificado (POST al dar de alta).
+   - **Sistema** — versión real `/api/health` + logs reales `/api/logs` + cwd/perfil/telemetría.
+3. **Aprobación por clic**: el pill alterna smart → manual → off vía WS `config.set approvals.mode` (con etiqueta en vivo "Aprobación smart / Manual (pregunta) / Acceso completo").
+4. **Paleta de comandos** (Ctrl/K): Nueva conversación, Ir a Meganote/Chat/Modelo/Sistema/Skills…, Live, buscar en historial.
+5. **Mascota arrastrable** por toda la pantalla (pointer events + posición persistida en localStorage, con clamp de límites; clic/barra espaciadora = KROHN Live; debounce 300 ms para toque doble).
+6. **Verificado extremo a extremo con jsdom** (backend stubbado REST+WS): 14/14 PASS — boot, token, sesiones, General al boot, envío completo de turno, approval pill cicla, selector de modelo aplica POST, skills listan y alternan, MCP alta, Sistema muestra versión+logs, Voz renderiza, Meganote entra/sale, clic de mascota abre Live, Ctrl+K filtra. Cero errores JS. Sin mojibake (UTF-8 limpio).
+7. **Capturas** en `C:\Users\DAMSRIS NIBAL\KROHN\editorial-full2.png` (final: y `editorial-final.png`).
+8. `deploy.ps1` actualizado: despliega `krohn-editorial.html`, regenera el sprite de la mascota y backupea `index.html`. Para volver a la UI anterior: `packaging/lightui/krohn-light-ui.html` + editar `deploy.ps1`.
+9. Meganote embebido sigue funcionando (iframe token handshake) e intacto.
+
+**Pendiente:** el usuario prueba KROHN Live con su micrófono (sin mic en esta máquina), y la voz queda documentada como tal; GPT Live espera OPENAI_API_KEY. El mockup original queda en `Downloads\KROHN-Mockups\` por si quiere volver atrás.
+
 ## Sesión 8 (2026-11-19) — Sarcasmo, mockups y espacio
 
 1. **Voz de Ultrón más hostil**: `SOUL.md` (secciones 1 y 5) + `krohn_cli/default_soul.py` (default sembrado). Nueva regla maestra: "Sarcasmo Elevado" — seco, culto, preciso, devastador con la mediocridad; nunca humilla por origen, sexo, creencias o condición. Validación prohibida. Verificado en vivo: la respuesta a una "estrategia de crecimiento de una línea para postergar" fue *"la primera obliga a actuar; la segunda permite seguir reuniéndose para 'definir KPIs' seis meses más. Elige tu veneno."* Fixtures del prompt surface regenerados.
