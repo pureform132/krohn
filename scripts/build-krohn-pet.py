@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build the KROHN Ultrón-chibi pet spritesheet from AI-generated MP4 clips.
+"""Build the KROHN chibi pet spritesheet from AI-generated MP4 clips.
 
 Usage:
-  python scripts/build-ultron-pet.py <chibi_dir> <out_dir>
+  python scripts/build-krohn-pet.py <chibi_dir> <out_dir>
 
 Requires: ffmpeg on PATH, Pillow.
 
@@ -19,7 +19,7 @@ from pathlib import Path
 from PIL import Image
 
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "krohn chibi"
-OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[1] / "packaging" / "pets" / "krohn-ultron-chibi"
+OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[1] / "packaging" / "pets" / "krohn-chibi"
 OUT.mkdir(parents=True, exist_ok=True)
 
 FRAME_W, FRAME_H = 192, 208
@@ -203,11 +203,11 @@ for row in rows:
 sheet.save(OUT / "spritesheet.png", optimize=True)
 
 pet_json = {
-    "id": "krohn-ultron-chibi",
-    "displayName": "KROHN Ultron Chibi",
-    "description": "Pixel-art chibi KROHN Ultron mark for pet overlay + terminal. Built from AI-generated animated clips (Dreamina + KROHN); 9-row x 8-col sheet, 192x208 cells.",
+    "id": "krohn-chibi",
+    "displayName": "KROHN Chibi",
+    "description": "Pixel-art chibi KROHN chibi mark for pet overlay + terminal. Built from AI-generated animated clips (Dreamina + KROHN); 9-row x 8-col sheet, 192x208 cells.",
     "spritesheetPath": "spritesheet.png",
-    "framework": "krohn-ultron",
+    "framework": "krohn-chibi",
     "license": "MIT",
     "author": "Cesar D. Ciprian"
 }

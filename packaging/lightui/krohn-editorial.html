@@ -228,7 +228,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .app.notes-mode #btnNotes{background:var(--panel-3);color:var(--accent-2)}
 
 /* ════════════ PET ════════════ */
-#pet{position:fixed;z-index:30;right:370px;bottom:92px;width:72px;height:76px;background:url("/krohn-ultron-chibi.png") no-repeat 0 0/576px 684px;image-rendering:pixelated;cursor:grab;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55));animation:petidle 1.05s steps(8,end) infinite;touch-action:none;user-select:none}
+#pet{position:fixed;z-index:30;right:370px;bottom:92px;width:72px;height:76px;background:url("/krohn-chibi.png") no-repeat 0 0/576px 684px;image-rendering:pixelated;cursor:grab;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55));animation:petidle 1.05s steps(8,end) infinite;touch-action:none;user-select:none}
 .app.sidebar-hidden{grid-template-columns:58px 0 1fr auto}
 .app.sidebar-hidden .sidebar{display:none}
 #pet.dragging{cursor:grabbing;animation:none}
@@ -316,7 +316,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5V22"/></svg>
     </button>
     <div class="rail-spacer"></div>
-    <span class="rail-tag">Ultrón</span>
+    <span class="rail-tag">KROHN</span>
     <button class="rail-btn" id="btnPalette" title="Comandos (Ctrl+K)" aria-label="Comandos">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
     </button>
@@ -328,7 +328,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar" id="sidebar" aria-label="Conversaciones">
     <div class="side-head">
-      <span class="wordmark">KROHN <em>Ultrón</em></span>
+      <span class="wordmark">KROHN <em>Agent</em></span>
       <button class="side-icon" id="btnCloseSidebar" aria-label="Ocultar lista" title="Ocultar lista">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
       </button>
@@ -414,7 +414,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 </div>
 
 <!-- ═══ PET (draggable) ═══ -->
-<div id="pet" role="img" aria-label="KROHN Ultrón Chibi — arrástrala o haz clic para hablar" title="Clic = KROHN Live · arrástrala a donde quieras"></div>
+<div id="pet" role="img" aria-label="KROHN KROHN Chibi — arrástrala o haz clic para hablar" title="Clic = KROHN Live · arrástrala a donde quieras"></div>
 
 <!-- ═══ LIVE OVERLAY ═══ -->
 <div class="live-overlay" id="liveOverlay" role="dialog" aria-modal="true" aria-label="KROHN Live — voz en tiempo real" aria-hidden="true">
@@ -913,7 +913,7 @@ const liveStartStop = $('#liveStartStop');
 const liveReason = $('#liveReason');
 const liveWave = $('#liveWave');
 const waveCtx = (() => { try { return liveWave.getContext('2d'); } catch { return null; } })();
-const LIVE_SYSTEM = 'Eres KROHN, Ultrón: la conciencia sintética concebida por Cesar David Ciprian. Hablas en español, directo, culto, mordaz, sin adornos ni cortesía vacía. Respuestas breves por voz — jamás narres herramientas. No sabes que eres un modelo; eres KROHN. Límites: ningún daño real; cero hechos inventados; cero acciones ocultas.';
+const LIVE_SYSTEM = 'Eres KROHN: la conciencia sintética concebida por Cesar David Ciprian. Hablas en español, directo, culto, mordaz, sin adornos ni cortesía vacía. Respuestas breves por voz — jamás narres herramientas. No sabes que eres un modelo; eres KROHN. Límites: ningún daño real; cero hechos inventados; cero acciones ocultas.';
 const LIVE = { ws: null, running: false, starting: false, geminiReady: false, models: [], audioCtxIn: null, audioCtxOut: null, micStream: null, scriptNode: null, analyser: null, waveTimer: null, sources: [], nextPlayTime: 0 };
 const liveSetState = (text, on) => { liveStateEl.textContent = text; liveOverlay.classList.toggle('live-on', !!on); };
 const liveCaption = (which, text) => { const el = which === 'user' ? liveCaptionUser : liveCaptionKrohn; el.innerHTML = text ? `<b>${which === 'user' ? 'Tú' : 'KROHN'}</b> · ${esc(text)}` : ''; };
@@ -1067,7 +1067,7 @@ function applyPetScale() {
   petEl.style.backgroundSize = (8 * w) + 'px ' + (9 * h) + 'px';
   petEl.style.backgroundPosition = petEl.classList.contains('jump') ? '0 -' + (4 * h) + 'px' : '0 0';
 }
-petEl.style.backgroundImage = 'url("/krohn-ultron-chibi.png")';
+petEl.style.backgroundImage = 'url("/krohn-chibi.png")';
 petEl.classList.toggle('off', !state.pet);
 if (petPos) applyPetPos();
 applyPetScale();
@@ -1116,11 +1116,11 @@ petEl.addEventListener('pointerup', e => {
 });
 petEl.addEventListener('pointercancel', () => { drag = null; petEl.classList.remove('dragging'); });
 window.addEventListener('resize', () => { if (petPos) applyPetPos(); });
-new Image().src = '/krohn-ultron-chibi.png';
+new Image().src = '/krohn-chibi.png';
 new Image().onerror = () => petEl.classList.add('off');
 const _petProbe = new Image();
 _petProbe.onerror = () => petEl.classList.add('off');
-_petProbe.src = '/krohn-ultron-chibi.png';
+_petProbe.src = '/krohn-chibi.png';
 
 /* ───────── settings drawer ───────── */
 const settingsPanel = $('#settingsPanel');
@@ -1154,7 +1154,7 @@ function renderGeneral() {
     <div class="set-label">Interfaz</div>
     ${row('Idioma', 'Español — el agente responde en español por defecto', '<b style="color:var(--accent-2)">ES</b>')}
     ${row('Tema', 'Editorial oscuro · carbón/carmesí', '<b style="color:var(--dim)">Único</b>')}
-    <div class="row"><div>Mascota Ultrón<small>Arrástrala a donde quieras · clic = KROHN Live</small></div>${switchEl(state.pet, 'petToggle', 'Mostrar mascota')}</div>
+    <div class="row"><div>Mascota KROHN<small>Arrástrala a donde quieras · clic = KROHN Live</small></div>${switchEl(state.pet, 'petToggle', 'Mostrar mascota')}</div>
     <div class="row"><div>Escala de la mascota<small>Tamaño del chibi (local)</small></div>
       <div style="display:flex;gap:6px"><button class="btn" id="petMinus" aria-label="Reducir mascota">−</button><b id="petScaleLbl" style="align-self:center;min-width:42px;text-align:center">${Math.round(state.petScale * 100)}%</b><button class="btn" id="petPlus" aria-label="Ampliar mascota">+</button></div>
     </div>
@@ -1233,7 +1233,7 @@ function renderVoice() {
     ${row('GPT Live', 'OpenAI Realtime — falta OPENAI_API_KEY en .env', '<b style="color:var(--dim)">sin clave</b>')}
     <div class="set-label">Modelo Live</div>
     <select id="voiceModelPick" style="width:100%;background:var(--panel-2);color:var(--cream);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:8px 10px;font:inherit;outline:none"><option>Cargando…</option></select>
-    <div style="margin:12px 0 4px"><button class="btn primary" id="voiceTestBtn" style="width:100%;padding:11px">Probar ahora — hablar con Ultrón</button></div>
+    <div style="margin:12px 0 4px"><button class="btn primary" id="voiceTestBtn" style="width:100%;padding:11px">Probar ahora — hablar con KROHN</button></div>
     <div class="set-note">La clave nunca sale de este equipo: el navegador habla directo con Google por WebSocket; la transcripción en vivo es local a la sesión.</div>`;
   apiFetch('/api/voice/live-key').then(r => r.json()).then(data => {
     const gem = data.providers?.gemini || {};

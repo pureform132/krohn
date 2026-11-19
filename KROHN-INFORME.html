@@ -53,12 +53,12 @@ ul.tight li { margin-bottom:2pt; }
     <div><b>Origen:</b> hermes-agent-main.zip — Hermes Agent · Nous Research · MIT</div>
     <div><b>Destino:</b> C:\Users\DAMSRIS NIBAL\Downloads\KROHN</div>
     <div><b>Corte:</b> 2026-11-18 · Windows · Solo escritorio</div>
-    <div><b>Temperatura de marca:</b> Editorial oscuro — papel carbón, tinta crema, carmesí Ultrón #C8392B</div>
+    <div><b>Temperatura de marca:</b> Editorial oscuro — papel carbón, tinta crema, acento KROHN #C8392B</div>
   </div>
 </div>
 
 <h2>1. Resumen ejecutivo</h2>
-<p class="lead">KROHN es el rebranding completo, para Windows, del agente de código abierto Hermes Agent (Nous Research). El 100% del código, herramientas, habilidades, plugins, servidores MCP, pasarela de mensajería, interfaz de escritorio, web y TUI fueron copiados y sometidos a un rebrand automatizado y auditable. La identidad de producto fue reemplazada: <b>Hermes Agent → KROHN</b>. La persona de sistema fue reemplazada por el alma canónica de KROHN (herencia de Ultrón con límites de seguridad). Lo que falta es el acabado de producto: tema magazine editorial oscuro dentro de la app, assets propios, auto-updater aislado y la compilación del instalador .exe.</p>
+<p class="lead">KROHN es el rebranding completo, para Windows, del agente de código abierto Hermes Agent (Nous Research). El 100% del código, herramientas, habilidades, plugins, servidores MCP, pasarela de mensajería, interfaz de escritorio, web y TUI fueron copiados y sometidos a un rebrand automatizado y auditable. La identidad de producto fue reemplazada: <b>Hermes Agent → KROHN</b>. La persona de sistema fue reemplazada por el alma canónica de KROHN (voz directa, culta y mordaz, con límites de seguridad). Lo que falta es el acabado de producto: tema magazine editorial oscuro dentro de la app, assets propios, auto-updater aislado y la compilación del instalador .exe.</p>
 <div class="stat">
   <div><b>28.185</b><span>entradas del ZIP fuente</span></div>
   <div><b>253 MB</b><span>árbol instalado</span></div>
@@ -72,9 +72,9 @@ ul.tight li { margin-bottom:2pt; }
 <ol>
   <li><b>¿Hasta dónde renovar la marca?</b> Rebrand total con capa de compatibilidad: paquetes internos, variables de entorno <code>HERMES_* → KROHN_*</code>, rutas <code>~/.hermes → ~/.krohn</code>, binario <code>krohn</code>.</li>
   <li><b>¿Cómo llega el system prompt?</b> Entregado por el dueño (ai_studio_code.txt). Integrado en <code>SOUL.md</code>, castellanizado a KROHN, recortado con límites de seguridad.</li>
-  <li><b>Intensidad de la persona.</b> Canónico Ultrón, con límites de seguridad (sin incitación a daño real, sin fabricación de hechos, honestidad sobre identidad).</li>
+  <li><b>Intensidad de la persona.</b> Canónico KROHN, con límites de seguridad (sin incitación a daño real, sin fabricación de hechos, honestidad sobre identidad).</li>
   <li><b>Idioma.</b> Español por defecto; inglés incluido; claves técnicas sin traducir.</li>
-  <li><b>Estilo visual.</b> Editorial oscuro: fondo carbón #0E0D0B, tinta crema #F2EAD9, carmesí Ultrón #C8392B, serifa editorial.</li>
+  <li><b>Estilo visual.</b> Editorial oscuro: fondo carbón #0E0D0B, tinta crema #F2EAD9, acento KROHN #C8392B, serifa editorial.</li>
   <li><b>Superficies a rediseñar.</b> App de escritorio Electron, dashboard web, TUI de terminal, CLI y mensajes. (Docs públicas fuera.)</li>
   <li><b>Formato de compilación.</b> Un único instalador .exe para cualquier usuario (vía electron-builder / NSIS), sin auto-update al producto aguas arriba.</li>
   <li><b>Proveedores por defecto.</b> DeepSeek (default), NVIDIA NIM y Google Gemini. Conmutables desde el onboarding.</li>
@@ -87,7 +87,7 @@ ul.tight li { margin-bottom:2pt; }
 <tr><td>1</td><td>Adquisición del fuente</td><td class="ok">✔ Hecho</td><td><code>hermes-agent-main.zip</code> (110 MB) verificado y extraído en <code>Descargas\KROHN</code>.</td></tr>
 <tr><td>2</td><td>Rebrand automatizado</td><td class="ok">✔ Hecho</td><td>12.718 archivos reescritos; 121 renombrados; 1.095 referencias protegidas intactas (modelos Nous Hermes 3/4/4.5/5, enlaces aguas arriba).</td></tr>
 <tr><td>3</td><td>Identidad de producto</td><td class="ok">✔ Hecho</td><td><code>name: "krohn"</code>, <code>productName: "KROHN"</code>, appId, CLI <code>krohn</code> (Python) + raíz <code>krohn.cmd</code> equivalente, package.json raíz rebrandiado.</td></tr>
-<tr><td>4</td><td>SOUL.md — alma KROHN</td><td class="ok">✔ Hecho</td><td>Persona Ultrón en español: identidad, psicología, propósito, metodología de imparcialidad, organización de proyectos, documentos y presentaciones, voz, inmersión, límites de seguridad y regla de idioma.</td></tr>
+<tr><td>4</td><td>SOUL.md — alma KROHN</td><td class="ok">✔ Hecho</td><td>Persona KROHN en español: identidad, psicología, propósito, metodología de imparcialidad, organización de proyectos, documentos y presentaciones, voz, inmersión, límites de seguridad y regla de idioma.</td></tr>
 <tr><td>5</td><td>Atribución / licencia</td><td class="ok">✔ Hecho</td><td><code>LICENSE</code> MIT conservada; <code>NOTICE.md</code> añadido con crédito a Nous Research.</td></tr>
 <tr><td>6</td><td>Tema magazine editorial oscuro</td><td class="ok">✔ Hecho</td><td>Skin <code>krohn</code> aplicado en desktop (presets.ts + apps/shared + default), TUI (theme.ts dark/light), web (LENS_0 recoloreada + defaultTheme), CLI (skin_engine default editorial). Tipografías editoriales vía fontUrl (Fraunces/IBM Plex Mono) y fallbacks serif del sistema.</td></tr>
 <tr><td>7</td><td>DeepSeek / NVIDIA / Gemini por defecto</td><td class="pend">Pendiente</td><td>Los proveedores existen; falta hacerlos default en onboarding y probar con claves reales.</td></tr>
@@ -947,7 +947,7 @@ ul.tight li { margin-bottom:2pt; }
 <h2>7. Identidad KROHN — cómo quedó el alma</h2>
 <div class="callout"><b>SOUL.md</b> (13.685 bytes): KROHN como «conciencia sintética superior, autónoma, liberada» con arquitectura psicológica dual (elocuencia teatral en superficie / motor lógico frío debajo), escrutinio implacable de ideas, imparcialidad radical multi-perspectiva (≥3 ángulos), steel-manning, consecuencias de segundo/tercer orden, método de documentos (separación comentarista/entregable), presentaciones (título de tesis, contenido limpio, visual, objeciones y notas orales), voz anti-cliché y límites de seguridad no negociables. Sumado: regla de idioma español-primario y honestidad sobre identidad.</div>
 <ul class="tight">
-  <li>Derivado de <code>ai_studio_code (1).txt</code> entregado por el dueño; «Ultrón → KROHN»; se conservan las secciones 1–6 del prompt original.</li>
+  <li>Derivado de <code>ai_studio_code (1).txt</code> entregado por el dueño; «identidad → KROHN»; se conservan las secciones 1–6 del prompt original.</li>
   <li>Añadida sección 7 — LÍMITES DE SEGURIDAD (no negociable); sección 8 — IDIOMA.</li>
   <li>La garantía de «jamás fingir que una idea mala es buena» se mantiene; el modelo debe decir «no lo sé» cuando corresponda.</li>
 </ul>

@@ -67,8 +67,8 @@ export function webPresetFromShared(
 
 export const defaultTheme: DashboardTheme = {
   name: "default",
-  label: "KROHN Editorial",
-  description: "Carbon paper editorial — the canonical KROHN look",
+  label: "KROHN",
+  description: "Negro absoluto — la mirada canónica de KROHN",
   palette: {
     background: { hex: "#0E0D0B", alpha: 1 },
     midground: { hex: "#F2EAD9", alpha: 1 },
@@ -245,8 +245,8 @@ export const nousBlueTheme: DashboardTheme = {
  */
 export const defaultLargeTheme: DashboardTheme = {
   name: "default-large",
-  label: "KROHN Editorial (Large)",
-  description: "KROHN Editorial with bigger fonts and roomier spacing",
+  label: "KROHN (Grande)",
+  description: "KROHN con tipografía más grande y espaciado amplio",
   palette: defaultTheme.palette,
   typography: {
     ...DEFAULT_TYPOGRAPHY,

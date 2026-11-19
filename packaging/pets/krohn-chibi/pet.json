@@ -1,0 +1,9 @@
+{
+  "id": "krohn-chibi",
+  "displayName": "KROHN Chibi",
+  "description": "Pixel-art chibi KROHN mark for pet overlay + terminal. Built from AI-generated animated clips (Dreamina + KROHN); 9-row x 8-col sheet, 192x208 cells.",
+  "spritesheetPath": "spritesheet.png",
+  "framework": "krohn-chibi",
+  "license": "MIT",
+  "author": "Cesar D. Ciprian"
+}

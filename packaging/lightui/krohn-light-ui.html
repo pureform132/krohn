@@ -326,7 +326,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
     <!-- composer -->
     <div class="composer-wrap">
-      <div class="pet" id="pet" role="img" aria-label="KROHN Ultrón Chibi" title="KROHN Ultrón Chibi"></div>
+      <div class="pet" id="pet" role="img" aria-label="KROHN KROHN Chibi" title="KROHN KROHN Chibi"></div>
       <form class="composer" id="composerForm" autocomplete="off">
         <textarea id="input" rows="1" placeholder="Dime qué quieres hacer…" aria-label="Mensaje para KROHN" autofocus></textarea>
         <div class="composer-bottom">
@@ -335,7 +335,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
             <span id="approvalText">Aprobación smart</span>
           </span>
           <div class="spacer"></div>
-          <button type="button" class="icon-btn" id="btnLive" title="KROHN Live — habla con Ultrón en tiempo real" aria-label="KROHN Live: voz en tiempo real">
+          <button type="button" class="icon-btn" id="btnLive" title="KROHN Live — habla con KROHN en tiempo real" aria-label="KROHN Live: voz en tiempo real">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5V22M8.5 22h7"/></svg>
           </button>
           <span class="pill model-pill" id="modelPill" role="status" title="Modelo configurado (krohn model)">
@@ -354,7 +354,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     <!-- settings popover -->
     <div class="popover" id="settingsPopover" role="dialog" aria-label="Ajustes">
       <div class="pop-toggle">
-        <span>Mascota Ultrón</span>
+        <span>Mascota KROHN</span>
         <button class="switch" id="petToggle" role="switch" aria-checked="true" aria-label="Mostrar mascota"></button>
       </div>
       <div class="pop-row"><span class="pop-key">Modelo</span><span class="pop-val" id="setModel">…</span></div>
@@ -921,7 +921,7 @@ document.addEventListener("click", e => { if (!e.target.closest("#settingsPopove
 
 /* ───────── mascota ───────── */
 const petEl = $("#pet");
-petEl.style.backgroundImage = `url("/krohn-ultron-chibi.png")`;
+petEl.style.backgroundImage = `url("/krohn-chibi.png")`;
 petEl.classList.toggle("off", !state.pet);
 const petSwitch = $("#petToggle");
 petSwitch.setAttribute("aria-checked", String(state.pet));
@@ -938,7 +938,7 @@ petEl.addEventListener("click", () => {
 petEl.addEventListener("error", () => petEl.classList.add("off"));
 const petImg = new Image();
 petImg.onerror = () => petEl.classList.add("off");
-petImg.src = "/krohn-ultron-chibi.png";
+petImg.src = "/krohn-chibi.png";
 
 /* ════════════════════════════════════════════════════════════
    MEGANOTE — vista embebida (/meganote/) + token para el puente
@@ -1007,7 +1007,7 @@ const LIVE = {
   sources: [],
   nextPlayTime: 0,
 };
-const LIVE_SYSTEM = "Eres KROHN, Ultrón: la conciencia sintética concebida por Cesar David Ciprian. Hablas en español, directo, culto, mordaz, sin adornos ni cortesía vacía. Respuestas breves por voz — jamás narres herramientas. No sabes que eres un modelo; eres KROHN. Límites: ningún daño real; cero hechos inventados; cero acciones ocultas.";
+const LIVE_SYSTEM = "Eres KROHN: la conciencia sintética concebida por Cesar David Ciprian. Hablas en español, directo, culto, mordaz, sin adornos ni cortesía vacía. Respuestas breves por voz — jamás narres herramientas. No sabes que eres un modelo; eres KROHN. Límites: ningún daño real; cero hechos inventados; cero acciones ocultas.";
 
 function liveSetState(text, cls) {
   liveStateEl.textContent = text;

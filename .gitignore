@@ -340,5 +340,5 @@ infografico/
 
 apps/desktop/.dist-build*
 
-# Pet spritesheet build intermediates (scripts/build-ultron-pet.py)
+# Pet spritesheet build intermediates (scripts/build-krohn-pet.py)
 packaging/pets/*/_frames/

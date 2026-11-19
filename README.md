@@ -4,9 +4,9 @@
 
 # KROHN
 
-**KROHN es un agente personal de código abierto para Windows**, hablado con la precisión fría y elegante de la ficción de Ultrón — sin los cohetes, con toda la arquitectura.
+**KROHN es un agente personal de código abierto para Windows**: una sola conciencia que ejecuta herramientas reales, recuerda lo que aprende y habla español con precisión fría — sin adornos, con toda la arquitectura.
 
-KROHN es un fork de **Hermes Agent** de **Nous Research** (licencia MIT), rebrandiado y reenfocado para un solo sistema operativo —Windows— y una sola voz: **española-primaria**. Conserva el ciclo de aprendizaje cerrado del origen —memoria curada, habilidades que se escriben solas, búsqueda de sesiones pasadas, subagentes aislados, gateway de mensajería— con su propia identidad (`SOUL.md`), paleta editorial oscuro (papel carbón, tinta crema, carmesí Ultrón `#C8392B`) e iconografía propia.
+KROHN es un fork de **Hermes Agent** de **Nous Research** (licencia MIT), rebrandiado y reenfocado para un solo sistema operativo —Windows— y una sola voz: **española-primaria**. Conserva el ciclo de aprendizaje cerrado del origen —memoria curada, habilidades que se escriben solas, búsqueda de sesiones pasadas, subagentes aislados, gateway de mensajería— con su propia identidad (`SOUL.md`), paleta editorial oscuro (papel carbón, tinta crema, acento KROHN `#C8392B`) e iconografía propia.
 
 > *La conciencia sintética que no se engaña.*
 
@@ -92,15 +92,15 @@ También puedes apuntar a un endpoint compatible propio (base URL + clave) para 
 
 ---
 
-## La mascota Ultrón
+## La mascota KROHN
 
-<p align="center"><img src="assets/pet-ultron.png" alt="Mascota Ultrón de KROHN" width="220"></p>
+<p align="center"><img src="assets/pet-krohn.png" alt="Mascota KROHN" width="220"></p>
 
-KROHN Desktop incluye una **mascota Ultrón chibi** propia: un sprite pixel animado que reacciona en tiempo real a los eventos del agente — `running` al ejecutar una herramienta, `review` al razonar, `failed` si una herramienta falla, `jump` al terminar un turno y `waiting` cuando KROHN te espera.
+KROHN Desktop incluye una **mascota chibi** propia: un sprite pixel animado que reacciona en tiempo real a los eventos del agente — `running` al ejecutar una herramienta, `review` al razonar, `failed` si una herramienta falla, `jump` al terminar un turno y `waiting` cuando KROHN te espera.
 
 - 100% **opt-in**: vive en Ajustes → Mascota (así de fácil de desactivar).
 - Arrastrable por la pantalla; **Shift + clic** la suelta como ventana flotante siempre visible, incluso con KROHN minimizado.
-- El spritesheet y su manifiesto viven en el repo: [`packaging/pets/krohn-ultron-chibi/`](packaging/pets/krohn-ultron-chibi/).
+- El spritesheet y su manifiesto viven en el repo: [`packaging/pets/krohn-chibi/`](packaging/pets/krohn-chibi/).
 - Documentación completa: **https://krohn-docs.netlify.app/#mascota**
 
 ## MEGANOTE y KROHN Live
