@@ -79,7 +79,7 @@ ${r.cover?'<div class="thecover"></div>':""}
 ${c}
 <p class="meta">Exportado de Takenotes · ${new Date().toLocaleDateString("es",{day:"numeric",month:"long",year:"numeric"})}</p>
 </div>
-<script src="/meganote/bridge.js"></script></body>
+</body>
 </html>`}function Es(r){const g=r==null?"":String(r);return/[",\n\r]/.test(g)?`"${g.replace(/"/g,'""')}"`:g}function eg(r){if(!r.db)return"";const g=r.db.columns.map(c=>Es(c.name)).join(","),o=r.db.rows.map(c=>r.db.columns.map(u=>{const d=c.cells[u.id];return Array.isArray(d)?Es(d.map(m=>u.options?.find(p=>p.id===m)?.label??m).join("; ")):u.type==="select"?Es(u.options?.find(m=>m.id===d)?.label??d):u.type==="checkbox"?Es(d?"sí":"no"):Es(d)}).join(","));return[g,...o].join(`
 `)+`
 `}function yv(r){return r.replace(/<br\s*\/?>/gi,`
@@ -110,5 +110,5 @@ ${c}
   </head>
   <body>
     <div id="root"></div>
-  </body>
+  <script src="/meganote/bridge.js"></script></body>
 </html>

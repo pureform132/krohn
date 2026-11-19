@@ -984,7 +984,7 @@ const liveModelSelect = $("#liveModelSelect");
 const liveStartStop = $("#liveStartStop");
 const liveReason = $("#liveReason");
 const liveWave = $("#liveWave");
-const waveCtx = liveWave.getContext("2d");
+const waveCtx = (() => { try { return liveWave.getContext("2d"); } catch (_) { return null; } })();
 
 const LIVE = {
   ws: null,
@@ -1170,6 +1170,7 @@ function enqueuePcm24(bytes) {
 
 function startWaveform() {
   clearInterval(LIVE.waveTimer);
+  if (!waveCtx) return;
   const bars = 44;
   LIVE.waveTimer = setInterval(() => {
     const w = liveWave.width, h = liveWave.height;
@@ -1200,7 +1201,7 @@ function liveStop() {
   if (LIVE.audioCtxIn) { LIVE.audioCtxIn.close().catch(() => {}); LIVE.audioCtxIn = null; }
   if (LIVE.audioCtxOut) { LIVE.audioCtxOut.close().catch(() => {}); LIVE.audioCtxOut = null; }
   LIVE.sources = []; LIVE.nextPlayTime = 0;
-  waveCtx && waveCtx.clearRect(0, 0, liveWave.width, liveWave.height);
+  if (waveCtx) waveCtx.clearRect(0, 0, liveWave.width, liveWave.height);
   liveStartStop.textContent = "Empezar";
 }
 

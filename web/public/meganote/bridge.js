@@ -33,6 +33,7 @@
   var IDLE_GRACE_MS = 20000;
   var MAX_PAYLOAD = 40 * 1024 * 1024; // 40 MB — el guard contra basura, no un límite real de notas
   var TAG = '[meganote-sync]';
+  var FIRST_SYNC_KEY = 'kpn-first-sync-v1';
 
   var token = null;
   var pushing = false;
@@ -169,17 +170,22 @@
 
   function boot() {
     if (!token) return;
+    var firstSync = false;
+    try { firstSync = !!localStorage && !localStorage.getItem(FIRST_SYNC_KEY); } catch (_) {}
     Promise.all([
       remoteMeta().catch(function () { return null; }),
       idbGet().catch(function () { return null; }),
     ]).then(function (parts) {
       var meta = parts[0], local = parts[1];
       if (meta && meta.exists && meta.mtime != null) knownMtime = meta.mtime;
-      if (!local && meta && meta.exists) {
-        // IndexedDB vacío + snapshot remoto → hidratar y recargar una vez
+      if (meta && meta.exists && (firstSync || !local)) {
+        // Primera vez en este navegador (o IndexedDB vacío): el remoto MANDA.
+        // Sin esto, la app sembraría su tutorial en IndexedDB y el push lo
+        // publicaría encima de meganote.json, borrando el trabajo del agente.
         return remoteGet().then(function (r) {
           if (r && r.exists && r.data) {
             return idbPut(r.data).then(function () {
+              try { localStorage.setItem(FIRST_SYNC_KEY, String(r.mtime)); } catch (_) {}
               try { sessionStorage.setItem('kpn-applied', String(r.mtime)); } catch (_) {}
               location.reload();
             });
