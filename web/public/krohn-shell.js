@@ -441,6 +441,8 @@
     waveTimer: null,
     sources: [],
     nextTime: 0,
+    muted: false,
+    loading: null,
     provider: "gemini"
   };
 
@@ -471,6 +473,32 @@
 
   var liveEls = {};
 
+  /* Gemini Live voices. The setup frame carries the chosen prebuilt voice;
+     changing it while connected restarts the session (the voice is fixed at
+     setup time). */
+  var LIVE_VOICES = [
+    ["Puck", "Puck · cálida"],
+    ["Kore", "Kore · firme"],
+    ["Charon", "Charon · grave"],
+    ["Fenrir", "Fenrir · intensa"],
+    ["Aoede", "Aoede · ligera"],
+    ["Leda", "Leda · serena"],
+    ["Orus", "Orus · seca"],
+    ["Zephyr", "Zephyr · brillante"],
+    ["Callirrhoe", "Callirrhoe · suave"],
+    ["Autonoe", "Autonoe · clara"],
+    ["Enceladus", "Enceladus · profunda"],
+    ["Iapetus", "Iapetus · pausada"],
+    ["Umbriel", "Umbriel · oscura"],
+    ["Algieba", "Algieba · cálida"],
+    ["Despina", "Despina · ágil"],
+    ["Sulafat", "Sulafat · neutra"]
+  ];
+
+  function liveVoiceStore() {
+    try { return localStorage.getItem("krohn.live.voice") || "Puck"; } catch (_) { return "Puck"; }
+  }
+
   function buildLive() {
     var root = mk("div", "k-overlay");
     root.id = "k-live";
@@ -479,32 +507,41 @@
     root.setAttribute("aria-label", "KROHN Live — voz en tiempo real");
     root.setAttribute("aria-hidden", "true");
     root.innerHTML =
-      '<div class="k-panel">' +
-        '<div class="k-head k-live-head">' +
-          '<span class="k-title">KROHN Live</span>' +
-          '<div class="k-live-providers" role="tablist" aria-label="Proveedor Live">' +
-            '<button type="button" class="k-live-prov on" data-prov="gemini" role="tab" aria-selected="true">Gemini Live</button>' +
-            '<button type="button" class="k-live-prov" data-prov="openai" role="tab" aria-selected="false" disabled>GPT Live</button>' +
+      '<div class="k-live-scene">' +
+        '<button type="button" class="k-live-gear" data-settings aria-label="Ajustes de voz" aria-expanded="false">' +
+          '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">' +
+            '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.1"/><circle cx="8" cy="17" r="2.1"/>' +
+          "</svg>" +
+        "</button>" +
+        '<div class="k-live-center">' +
+          '<button type="button" class="k-live-orb" data-start aria-label="Empezar KROHN Live">' +
+            '<span class="k-live-glow" aria-hidden="true"></span>' +
+            '<span class="k-live-core" aria-hidden="true"></span>' +
+          "</button>" +
+          '<div class="k-live-state" data-state>Pulsa para hablar</div>' +
+          '<div class="k-live-captions">' +
+            '<div class="k-cap" data-cap="user"></div>' +
+            '<div class="k-cap" data-cap="krohn"></div>' +
           "</div>" +
-          '<button type="button" class="k-x" data-close aria-label="Cerrar KROHN Live" title="Cerrar">×</button>' +
         "</div>" +
-        '<div class="k-live-stage">' +
-          '<div class="k-live-orb">' +
-            '<svg viewBox="0 0 36 36" width="50" height="50" fill="none" aria-hidden="true">' +
-              '<path d="M5 12.5 L14 6.5 H22 L31 12.5 L27.2 21.5 L22.5 27 H13.5 L8.8 21.5 Z" stroke="#E0503E" stroke-width="2" stroke-linejoin="round"/>' +
-              '<path d="M12 15.2 H16.4 M19.6 15.2 H24" stroke="#E0503E" stroke-width="1.8" stroke-linecap="round"/>' +
+        '<div class="k-live-controls">' +
+          '<button type="button" class="k-live-round" data-mute aria-label="Silenciar micrófono" title="Silenciar micrófono">' +
+            '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">' +
+              '<rect x="9" y="3.4" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.6"/>' +
             "</svg>" +
-          "</div>" +
-          '<div class="k-live-state" data-state>Elige un modelo y pulsa Empezar</div>' +
-          '<canvas class="k-live-wave" width="640" height="62" aria-hidden="true"></canvas>' +
-          '<div class="k-live-captions"><div class="k-cap" data-cap="user"></div><div class="k-cap" data-cap="krohn"></div></div>' +
+          "</button>" +
+          '<button type="button" class="k-live-round k-live-end" data-close aria-label="Terminar y cerrar" title="Terminar">' +
+            '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">' +
+              '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>' +
+            "</svg>" +
+          "</button>" +
         "</div>" +
-        '<div class="k-live-foot">' +
-          '<select data-model aria-label="Modelo Live"></select>' +
-          '<button type="button" class="k-btn k-primary" data-start>Empezar</button>' +
+        '<div class="k-live-sheet" data-sheet aria-hidden="true">' +
+          '<label class="k-live-field"><span>Voz</span><select data-voice aria-label="Voz de KROHN Live"></select></label>' +
+          '<label class="k-live-field"><span>Modelo</span><select data-model aria-label="Modelo Live"></select></label>' +
+          '<p class="k-live-note" data-note></p>' +
+          '<p class="k-live-sign">KROHN Live · Cesar D. Ciprian</p>' +
         "</div>" +
-        '<div class="k-live-note" data-note>Voz full-duplex con tu clave de Google AI Studio. La clave no sale de este equipo salvo hacia Google.</div>' +
-        '<div class="k-credit">KROHN Live · Creado por <b>Cesar D. Ciprian</b></div>' +
       "</div>";
     document.body.appendChild(root);
 
@@ -513,37 +550,57 @@
       state: $("[data-state]", root),
       captions: { user: $('[data-cap="user"]', root), krohn: $('[data-cap="krohn"]', root) },
       model: $("[data-model]", root),
+      voice: $("[data-voice]", root),
       start: $("[data-start]", root),
-      note: $("[data-note]", root),
-      wave: $(".k-live-wave", root),
-      ctx: null
+      mute: $("[data-mute]", root),
+      settings: $("[data-settings]", root),
+      sheet: $("[data-sheet]", root),
+      note: $("[data-note]", root)
     };
-    try { liveEls.ctx = liveEls.wave.getContext("2d"); } catch (_) { liveEls.ctx = null; }
 
-    $('[data-close]', root).addEventListener("click", function () { closeOverlay(root); });
-    root.addEventListener("click", function (e) { if (e.target === root) closeOverlay(root); });
-    $('[data-prov="gemini"]', root).addEventListener("click", function () { setLiveProvider("gemini"); });
-    $('[data-prov="openai"]', root).addEventListener("click", function () { setLiveProvider("openai"); });
+    liveEls.voice.innerHTML = LIVE_VOICES.map(function (v) {
+      return '<option value="' + esc(v[0]) + '">' + esc(v[1]) + "</option>";
+    }).join("");
+    liveEls.voice.value = liveVoiceStore();
+
+    $("[data-close]", root).addEventListener("click", function () {
+      liveStop(false);
+      closeOverlay(root);
+    });
+    root.addEventListener("click", function (e) { if (e.target === root) { liveStop(false); closeOverlay(root); } });
     liveEls.start.addEventListener("click", function () {
-      if (LIVE.running || LIVE.starting) liveStop(true);
+      if (LIVE.running || LIVE.starting) liveStop(false);
       else liveStart();
+    });
+    liveEls.mute.addEventListener("click", toggleLiveMute);
+    liveEls.settings.addEventListener("click", function () {
+      var open = !liveEls.sheet.classList.contains("k-open");
+      liveEls.sheet.classList.toggle("k-open", open);
+      liveEls.sheet.setAttribute("aria-hidden", open ? "false" : "true");
+      liveEls.settings.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    liveEls.voice.addEventListener("change", function () {
+      try { localStorage.setItem("krohn.live.voice", liveEls.voice.value); } catch (_) {}
+      if (LIVE.running || LIVE.starting) {
+        liveStop(false);
+        liveStart();
+      }
+    });
+    liveEls.model.addEventListener("change", function () {
+      if (LIVE.running || LIVE.starting) {
+        liveStop(false);
+        liveStart();
+      }
     });
   }
 
-  function setLiveProvider(p) {
-    LIVE.provider = p;
-    $$(".k-live-prov", liveEls.root).forEach(function (b) {
-      var on = b.dataset.prov === p;
-      b.classList.toggle("on", on);
-      b.setAttribute("aria-selected", on ? "true" : "false");
-    });
-    if (p === "openai") {
-      liveSetState("GPT Live requiere OPENAI_API_KEY", false);
-      liveEls.note.textContent = "OPENAI_API_KEY no está configurada. Gemini Live está listo.";
-    } else {
-      liveSetState(LIVE.running ? "Escuchando…" : "Elige un modelo y pulsa Empezar", LIVE.running);
-      liveEls.note.textContent = "Voz full-duplex con tu clave de Google AI Studio. La clave no sale de este equipo salvo hacia Google.";
-    }
+  function toggleLiveMute() {
+    LIVE.muted = !LIVE.muted;
+    if (LIVE.mic) LIVE.mic.getAudioTracks().forEach(function (t) { t.enabled = !LIVE.muted; });
+    liveEls.mute.classList.toggle("k-muted", LIVE.muted);
+    liveEls.mute.setAttribute("aria-label", LIVE.muted ? "Activar micrófono" : "Silenciar micrófono");
+    liveEls.mute.title = LIVE.muted ? "Activar micrófono" : "Silenciar micrófono";
+    if (LIVE.running) liveSetState(LIVE.muted ? "Micrófono silenciado" : "Escuchando…", !LIVE.muted);
   }
 
   function liveSetState(text, on) {
@@ -563,13 +620,17 @@
     if (LIVE.loading) return LIVE.loading;
     LIVE.loading = S.api("/api/voice/live-key").then(function (r) { return r.json(); }).then(function (data) {
       var gem = (data.providers && data.providers.gemini) || {};
-      var oai = (data.providers && data.providers.openai) || {};
       LIVE.geminiReady = !!gem.available;
-      LIVE.models = (gem.models || []).filter(function (m) { return !m.music && !m.transcribe; });
+      LIVE.models = (gem.models || []).filter(function (m) {
+        var id = String(m.id || "").toLowerCase();
+        if (m.music || m.transcribe) return false;
+        if (/extended-thinking|robotics|genie|translate|embedding|image|veo/.test(id)) return false;
+        return /live|native-audio/.test(id);
+      });
       if (!LIVE.models.length) {
         LIVE.models = [
-          { id: "models/gemini-3.1-flash-live-preview", displayName: "Gemini 3.1 Flash Live" },
-          { id: "models/gemini-3.8-live", displayName: "Gemini 3.8 Live" }
+          { id: "models/gemini-3.8-live", displayName: "Gemini 3.8 Live" },
+          { id: "models/gemini-3.1-flash-live-preview", displayName: "Gemini 3.1 Flash Live" }
         ];
       }
       liveEls.model.innerHTML = LIVE.models.map(function (m) {
@@ -577,15 +638,14 @@
       }).join("");
       var rec = LIVE.models.filter(function (m) { return m.id === gem.recommended; })[0];
       if (rec) liveEls.model.value = rec.id;
-      var gpt = $('[data-prov="openai"]', liveEls.root);
-      if (gpt) {
-        gpt.disabled = !oai.available;
-        gpt.title = oai.available ? "GPT Live" : (oai.reason || "OPENAI_API_KEY no configurada");
-      }
       if (!LIVE.geminiReady) {
         liveEls.note.textContent = "GEMINI_API_KEY no detectada. Revisa `krohn doctor`.";
+        liveSetState("Gemini Live no disponible", false);
       } else {
-        liveEls.note.textContent = "Voz full-duplex con tu clave de Google AI Studio. La clave no sale de este equipo salvo hacia Google.";
+        liveEls.note.textContent =
+          "Gemini Live · la clave se queda en este equipo y viaja solo a Google. " +
+          "La voz se fija al conectar: cambiarla reinicia la sesión.";
+        liveSetState("Pulsa para hablar", false);
       }
     }).catch(function (e) {
       liveEls.note.textContent = "No se pudo leer /api/voice/live-key: " + (e.message || e);
@@ -597,15 +657,15 @@
 
   function openLive() {
     if (!liveEls.root) buildLive();
-    openOverlay("k-live", '[data-start]');
+    openOverlay("k-live", "[data-start]");
     liveCaption("user", "");
     liveCaption("krohn", "");
     if (!LIVE.running) {
-      if (LIVE.geminiReady) liveSetState("Elige un modelo y pulsa Empezar", false);
+      if (LIVE.geminiReady) liveSetState("Pulsa para hablar", false);
       else liveSetState("Cargando modelos…", false);
     }
     liveLoad();
-    if (LIVE.running) liveSetState("Escuchando…", true);
+    if (LIVE.running) liveSetState(LIVE.muted ? "Micrófono silenciado" : "Escuchando…", !LIVE.muted);
   }
 
   function liveStage(s) {
@@ -615,10 +675,6 @@
 
   function liveStart() {
     if (LIVE.starting || LIVE.running) return;
-    if (LIVE.provider === "openai") {
-      liveSetState("GPT Live requiere OPENAI_API_KEY", false);
-      return;
-    }
     if (!LIVE.geminiReady) {
       liveSetState("Cargando modelos…", false);
       liveEls.start.disabled = true;
@@ -630,10 +686,10 @@
       return;
     }
     LIVE.starting = true;
+    LIVE.muted = false;
     liveStage("start");
-    liveEls.start.textContent = "Conectando…";
     liveSetState("Conectando con Gemini Live…", false);
-    petSet("think", "Conectando Live…");
+    petSet("think");
     clearTimeout(LIVE.watchdog);
     LIVE.watchdog = setTimeout(function () {
       if (LIVE.running) return;
@@ -677,6 +733,7 @@
           LIVE.audioOut = new AC({ sampleRate: 24000 });
           LIVE.nextTime = 0;
           var model = liveEls.model.value || "models/gemini-3.8-live";
+          var voice = liveEls.voice.value || liveVoiceStore();
           var wsUrl = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=" + encodeURIComponent(key);
           liveStage("socket");
           var ws = new WebSocket(wsUrl);
@@ -686,7 +743,12 @@
             ws.send(JSON.stringify({
               setup: {
                 model: model,
-                generationConfig: { responseModalities: ["AUDIO"] },
+                generationConfig: {
+                  responseModalities: ["AUDIO"],
+                  speechConfig: {
+                    voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } }
+                  }
+                },
                 inputAudioTranscription: {},
                 outputAudioTranscription: {},
                 systemInstruction: { parts: [{ text: LIVE_SYSTEM }] }
@@ -699,8 +761,9 @@
           });
           ws.addEventListener("close", function (ev) {
             if (LIVE.running || LIVE.starting) {
+              var why = ev && ev.reason ? " · " + ev.reason : "";
               liveStop(true);
-              liveSetState("Conexión cerrada" + (ev && ev.code ? " (" + ev.code + ")" : ""), false);
+              liveSetState("Conexión cerrada" + (ev && ev.code ? " (" + ev.code + ")" : "") + why, false);
             }
           });
           ws.addEventListener("error", function () {
@@ -744,9 +807,8 @@
       LIVE.starting = false;
       liveStage("ready");
       clearTimeout(LIVE.watchdog);
-      liveEls.start.textContent = "Terminar";
       liveSetState("Escuchando…", true);
-      petSet("idle", "Live listo");
+      petSet("idle");
       startWave();
       return;
     }
@@ -762,16 +824,16 @@
           var mime = part.inlineData.mimeType || "audio/pcm;rate=24000";
           var m = /rate=(\d+)/.exec(mime);
           enqueuePcm(b64ToBytes(part.inlineData.data), m ? parseInt(m[1], 10) : 24000);
-          liveSetState("KROHN está hablando…", true);
-          petSet("speaking", "Hablando…");
+          liveSetState("KROHN responde…", true);
+          petSet("speaking");
         }
       });
     }
     if (sc.outputTranscription && sc.outputTranscription.text) liveCaption("krohn", sc.outputTranscription.text);
     if (sc.inputTranscription && sc.inputTranscription.text) liveCaption("user", sc.inputTranscription.text);
     if (sc.generationComplete || sc.turnComplete) {
-      liveSetState("Escuchando…", true);
-      petSet("idle", "Escuchando…");
+      liveSetState(LIVE.muted ? "Micrófono silenciado" : "Escuchando…", !LIVE.muted);
+      petSet("idle");
     }
   }
 
@@ -798,22 +860,20 @@
 
   function startWave() {
     clearInterval(LIVE.waveTimer);
-    if (!liveEls.ctx) return;
-    var bars = 46;
     LIVE.waveTimer = setInterval(function () {
-      var w = liveEls.wave.width, h = liveEls.wave.height, ctx = liveEls.ctx;
-      ctx.clearRect(0, 0, w, h);
-      if (!LIVE.analyser) return;
-      var data = new Uint8Array(LIVE.analyser.frequencyBinCount);
-      LIVE.analyser.getByteFrequencyData(data);
-      var bw = w / bars;
-      for (var i = 0; i < bars; i++) {
-        var v = data[Math.floor(i * data.length / bars)] / 255;
-        var bh = Math.max(2, v * (h - 8));
-        ctx.fillStyle = i % 9 === 0 ? "#30D158" : "#E0503E";
-        ctx.fillRect(i * bw + 2, (h - bh) / 2, bw - 4, bh);
+      if (!liveEls.root) return;
+      if (!LIVE.analyser) { liveEls.root.style.setProperty("--k-level", "0"); return; }
+      var data = new Uint8Array(LIVE.analyser.fftSize);
+      LIVE.analyser.getByteTimeDomainData(data);
+      var sum = 0;
+      for (var i = 0; i < data.length; i++) {
+        var v = (data[i] - 128) / 128;
+        sum += v * v;
       }
-    }, 55);
+      var rms = Math.sqrt(sum / data.length);
+      var level = Math.min(1, rms * 4.2);
+      liveEls.root.style.setProperty("--k-level", level.toFixed(3));
+    }, 70);
   }
 
   function liveStop(keepState) {
@@ -823,6 +883,7 @@
     LIVE.ws = null;
     LIVE.running = false;
     LIVE.starting = false;
+    LIVE.muted = false;
     if (LIVE.script) {
       try { LIVE.script.disconnect(); LIVE.script.onaudioprocess = null; } catch (_) {}
     }
@@ -833,10 +894,13 @@
     if (LIVE.audioOut) { LIVE.audioOut.close().catch(function () {}); LIVE.audioOut = null; }
     LIVE.sources = [];
     LIVE.nextTime = 0;
-    if (liveEls.start) liveEls.start.textContent = "Empezar";
-    if (liveEls.ctx && liveEls.wave) liveEls.ctx.clearRect(0, 0, liveEls.wave.width, liveEls.wave.height);
-    if (!keepState) liveSetState("Elige un modelo y pulsa Empezar", false);
-    petSet("idle", "");
+    if (liveEls.root) liveEls.root.style.setProperty("--k-level", "0");
+    if (liveEls.mute) {
+      liveEls.mute.classList.remove("k-muted");
+      liveEls.mute.setAttribute("aria-label", "Silenciar micrófono");
+    }
+    if (!keepState) liveSetState("Pulsa para hablar", false);
+    petSet("idle");
   }
 
   /* ------------------------------------------------------------------ */
@@ -1203,9 +1267,9 @@
     waiting: 6, loading: 6, coding: 7, review: 8, speaking: 3
   };
   var PET_LABEL = {
-    idle: "", think: "Pensando…", work: "Trabajando…", coding: "Escribiendo código…",
-    loading: "Cargando…", speaking: "Hablando…", waiting: "Te espera…",
-    failed: "Algo falló", wave: "Listo", review: "Revisando…"
+    idle: "", think: "pensando", work: "trabajando", coding: "trabajando",
+    loading: "cargando", speaking: "respondiendo", waiting: "esperando",
+    failed: "error", wave: "terminado", review: "pensando"
   };
 
   var pet = {
@@ -1225,11 +1289,17 @@
     el.type = "button";
     el.title = "KROHN — clic para Live · arrastra para mover";
     el.setAttribute("aria-label", "KROHN chibi — clic para abrir Live");
-    el.innerHTML = '<span class="k-sprite" aria-hidden="true"></span><span class="k-pet-bubble" aria-hidden="true"></span>';
+    el.innerHTML =
+      '<span class="k-sprite" aria-hidden="true"></span>' +
+      '<span class="k-pet-bubble" aria-hidden="true">' +
+        '<i class="k-pet-cloud"></i>' +
+        '<span class="k-pet-text"></span>' +
+        '<i class="k-pet-dots"></i>' +
+      "</span>";
     document.body.appendChild(el);
     pet.el = el;
     pet.sprite = $(".k-sprite", el);
-    pet.bubble = $(".k-pet-bubble", el);
+    pet.bubble = $(".k-pet-text", el);
 
     try { pet.pos = JSON.parse(localStorage.getItem("krohn.pet.pos") || "null"); } catch (_) { pet.pos = null; }
     if (pet.pos) applyPetPos();
@@ -1291,9 +1361,10 @@
   function petSet(state, label, holdMs) {
     if (!pet.el) return;
     var key = PET_ROWS[state] == null ? "idle" : state;
-    if (pet.state === key && pet.label === (label || PET_LABEL[key])) return;
+    var text = label == null ? (PET_LABEL[key] || "") : label;
+    if (pet.state === key && pet.label === text) return;
     pet.state = key;
-    pet.label = label == null ? (PET_LABEL[key] || "") : label;
+    pet.label = text;
     var row = PET_ROWS[key];
     var h = pet.el.clientHeight || 101.33;
     pet.sprite.style.backgroundPositionY = (-row * h) + "px";
@@ -1301,11 +1372,18 @@
     pet.el.classList.toggle("k-waiting", key === "waiting");
     pet.el.classList.toggle("k-speaking", key === "speaking");
     pet.el.classList.toggle("k-failed", key === "failed");
-    if (pet.label) {
-      pet.bubble.textContent = pet.label;
+    pet.el.dataset.tone = key === "failed" ? "error" : key === "waiting" ? "wait" : key === "speaking" ? "talk" : "work";
+    clearTimeout(pet.bubbleTimer);
+    if (text) {
+      pet.bubble.textContent = text;
       pet.el.classList.add("k-show-bubble");
-      clearTimeout(pet.bubbleTimer);
-      pet.bubbleTimer = setTimeout(function () { pet.el.classList.remove("k-show-bubble"); }, 3400);
+      /* Busy states keep their cloud visible for as long as the state holds;
+         the idle cloud is a short "terminado" beat, not a permanent label. */
+      if (key === "idle" || key === "wave") {
+        pet.bubbleTimer = setTimeout(function () { pet.el.classList.remove("k-show-bubble"); }, 4600);
+      }
+    } else {
+      pet.el.classList.remove("k-show-bubble");
     }
     clearTimeout(pet.idleTimer);
     if (holdMs && holdMs > 0) {
@@ -1321,30 +1399,30 @@
   function petEvent(ev) {
     if (!ev) return;
     var type = ev.type, p = ev.payload || {};
-    if (type === "message.start") { petSet("think", "Pensando…"); petIdleSoon(30000); }
-    else if (type === "thinking.delta" || type === "reasoning.delta") { petSet("think", "Pensando…"); petIdleSoon(30000); }
-    else if (type === "tool.generating") { petSet("work", "Preparando herramienta…"); petIdleSoon(30000); }
+    if (type === "message.start") { petSet("think"); petIdleSoon(30000); }
+    else if (type === "thinking.delta" || type === "reasoning.delta") { petSet("think"); petIdleSoon(30000); }
+    else if (type === "tool.generating") { petSet("work"); petIdleSoon(30000); }
     else if (type === "tool.start") {
       var name = String(p.name || "").toLowerCase();
-      if (/(terminal|shell|exec|bash|powershell|write|edit|patch|code|apply)/.test(name)) {
-        petSet("coding", "Escribiendo código…");
-      } else if (name === "clarify" || name === "approval") {
-        petSet("waiting", "Te espera…");
+      if (name === "clarify" || name === "approval") {
+        petSet("waiting");
+      } else if (/(terminal|shell|exec|bash|powershell|write|edit|patch|code|apply)/.test(name)) {
+        petSet("coding");
       } else {
-        petSet("work", name ? "Usando " + name + "…" : "Trabajando…");
+        petSet("work");
       }
       petIdleSoon(30000);
     }
     else if (type === "tool.complete") { petIdleSoon(2500); }
-    else if (type === "message.delta") { petSet("speaking", "Respondiendo…"); petIdleSoon(30000); }
+    else if (type === "message.delta") { petSet("speaking"); petIdleSoon(30000); }
     else if (type === "message.complete") {
-      if (p.status === "error") { petSet("failed", "Algo falló", 6000); }
-      else { petSet("wave", "Listo", 4200); }
+      if (p.status === "error") petSet("failed", "error", 6000);
+      else petSet("idle", "terminado", 4600);
     }
-    else if (type === "error") { petSet("failed", "Algo falló", 6000); }
-    else if (type === "clarify.request" || type === "approval.request") { petSet("waiting", "Te espera…", 20000); }
-    else if (type === "status.update" && /compress|compact/.test(String(p.kind || ""))) { petSet("loading", "Cargando…", 12000); }
-    else if (type === "gateway.reconnecting") { petSet("loading", "Reconectando…", 6000); }
+    else if (type === "error") { petSet("failed", "error", 6000); }
+    else if (type === "clarify.request" || type === "approval.request") { petSet("waiting", "esperando", 20000); }
+    else if (type === "status.update" && /compress|compact/.test(String(p.kind || ""))) { petSet("loading", "cargando", 12000); }
+    else if (type === "gateway.reconnecting") { petSet("loading", "cargando", 6000); }
   }
 
   /* ------------------------------------------------------------------ */

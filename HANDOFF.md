@@ -1,6 +1,37 @@
 # KROHN — Handoff (qué debes saber y hacer tú)
 
-Última actualización: 2026-11-19 sesión 10 — **interfaz stock de Hermes restaurada, Live arreglado, banner KROHN, sin rastro de Ultrón**.
+Última actualización: 2026-11-19 sesión 11 — **Live minimalista con voces, chibi con stats, lanzador de escritorio con backend automático**.
+
+## Sesión 11 (2026-11-19) — Live que funciona, chibi que habla, escritorio que abre
+
+**1. KROHN Live rediseñado (Gemini Live).** La ventana dejó de ser un panel con formulario y ahora es una sola sala negra: orbe azul centrado (respira y reacciona al nivel de voz), botón de micrófono y botón X abajo, ajustes discretos arriba a la derecha. Dentro de ajustes: **voz** (16 voces prebuilt de Gemini: Puck, Kore, Charon, Fenrir, Aoede…) y **modelo** (solo modelos Live/Native Audio). La voz se guarda en `localStorage` (`krohn.live.voice`) y viaja en el frame `setup` como `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName`; cambiarla con la sesión abierta la reinicia.
+
+**Verificado contra la API real de Gemini** (sin micrófono físico): handshake `setupComplete` y audio PCM 24 kHz con `gemini-3.8-live`, `gemini-3.1-flash-live-preview` y los tres `2.5-flash-native-audio`; voces Puck/Kore/Charon/Aoede/Fenrir/Leda aceptadas y con respuesta de audio. En el navegador (Edge con micrófono falso): `start → mic → audio → socket → setup-sent → ready`, estado “Escuchando…”, mute funcional. **Falta tu prueba con micrófono real**, que es lo único que no se puede simular aquí.
+
+**2. Chibi conectada a los stats.** La mascota conserva el spritesheet (9 filas × 8 columnas) y ahora muestra una **nube de pensamiento pixel-art** encima con el estado en español:
+
+| Estado | Texto | Animación |
+|---|---|---|
+| razonando | `pensando` | fila 8 (idea/lightbulb) |
+| herramienta / turno | `trabajando` | fila 7 (tecleando) |
+| error | `error` | fila 5 (wobble) |
+| clarify / aprobación | `esperando` | fila 6 (sentado, cargando) |
+| respuesta en streaming | `respondiendo` | fila 3 |
+| fin de turno | `terminado` | fila 0 (de pie, normal) |
+
+La nube es blanca con contorno negro, esquinas escalonadas, puffs y tres puntos de pensamiento; en error se vuelve `#E0503E`. Se alimenta de los eventos reales del gateway (`message.start`, `thinking.delta`, `tool.start`, `message.delta/complete`, `error`, `clarify.request`), no de datos falsos.
+
+**3. Pet instalada donde el gateway la busca.** El `pet.info` devolvía `homelander` porque el motor resuelve `display.pet.slug` en `%LOCALAPPDATA%\krohn\pets\` (no en `krohn_home\pets\`). Se copió `krohn-chibi` a la ruta correcta y ahora `pet.info` devuelve `slug: krohn-chibi`, `displayName: KROHN Chibi`, 6 frames por estado.
+
+**4. “KROHN Desktop” con backend automático.** La app Electron 1.0.1 instalada abre en gris/“Backend offline” y su bootstrap de tickets falla en este equipo (`Gateway ticket bootstrap failed`, bucle de relanzamiento). En vez de reconstruirla (no cabe en 3.7 GB), se entrega un lanzador que usa el mismo shell nativo de Windows:
+
+- `packaging/desktop/krohn-desktop.ps1` — comprueba `http://127.0.0.1:9119/api/health`; si no responde, lanza `krohn dashboard --skip-build --no-open` oculto y espera; después abre la interfaz como ventana de app de Edge (`--app=…`, sin barra de direcciones, perfil propio en `%LOCALAPPDATA%\krohn\desktop-shell`).
+- `packaging/desktop/krohn-desktop.vbs` — arranque silencioso (sin consola).
+- `packaging/desktop/install-desktop-shortcut.ps1` — instala ambos en `%LOCALAPPDATA%\krohn`, copia el icono y crea **`KROHN Desktop.lnk` en el escritorio**.
+
+Verificado: con el backend apagado, el acceso directo lo levanta (200 OK) y abre la ventana en `http://127.0.0.1:9119/`. El escritorio real de este equipo es la carpeta de OneDrive (`…\OneDrive\Escritorio`), y ahí quedó el acceso.
+
+**Límites honestos:** la app Electron nativa sigue instalada pero no se usa; reconstruirla desde fuente sigue sin ser viable por RAM. El micrófono real de tu equipo es la prueba pendiente de Live. El detector de Impeccable sobre `krohn-shell.{css,js}` no reporta hallazgos.
 
 ## Sesión 10 (2026-11-19) — la interfaz definitiva es la de Hermes, con marca KROHN
 
