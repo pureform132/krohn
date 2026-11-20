@@ -14,7 +14,9 @@
 
 **5. Paletas dentro del chat.** `@` inserta la skill en el composer del chat; `/` ejecuta `slash.exec` y publica la salida como aviso; los botones Skills/Cmd siguen abriendo la paleta.
 
-**Verificado:** protocolo completo (create/activate/submit, `message.start`/`reasoning.delta`/`message.delta`/`message.complete`, clarify respondido) y capturas previas del chat con pensamiento y respuesta en Edge headless. **Pendiente por RAM:** captura final de tarjetas de herramienta y de la tarjeta de aclaración en el navegador; el mapeo de payloads está contrastado con `tui_gateway/tool_progress.py`. Este equipo reinició el servidor de opencode dos veces durante las pruebas por falta de memoria.
+**6. El SPA detrás del panel no estorba.** El ChatPage stock sigue montado (xterm oculto); cuando su PTY muere pinta un aviso inglés a pantalla completa y un botón de copiar ligado a la terminal invisible. `hideStockChatChrome` oculta esos nodos (nunca el marco de la página) en cada pasada del montaje.
+
+**Verificado:** protocolo completo (create/activate/submit, `message.start`/`reasoning.delta`/`message.delta`/`message.complete`, clarify respondido) y **en Edge headless**: tarjeta de aclaración respondida (turno cerrado sin errores) y turno real con herramienta (`terminal` · `echo KROHN_OK` · `16.0s` · salida en el detalle, punto verde de "done", Pensamiento plegado al terminar, cero errores de consola). Capturas `chat6.png` / `chat7.png` en `%TEMP%\opencode\pwtools`. El mapeo de payloads está contrastado con `tui_gateway/tool_progress.py`; el orden de `tool.start`/`tool.complete` frente al texto final se comprobó con un cliente WS crudo (`rpc_order.py`).
 
 **Mantenimiento:** si el chat sale negro, cerrar pestañas extra, matar los `node.exe` de `playwright`/`ui-tui` y recargar. El backend es `%LOCALAPPDATA%\krohn\bin\krohn.exe dashboard --skip-build --no-open`; los assets servidos son las copias de `%LOCALAPPDATA%\krohn\krohn\krohn_cli\web_dist\` (editar `web/public` no basta: hay que copiar).
 

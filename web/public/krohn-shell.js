@@ -2111,7 +2111,9 @@
     if (p.args && Object.keys(p.args).length) {
       $("pre", el).textContent = JSON.stringify(p.args, null, 2).slice(0, 3000);
     }
-    CHAT.list.appendChild(el);
+    var anchor = CHAT.turn && CHAT.turn.el && CHAT.turn.el.parentElement === CHAT.list ? CHAT.turn.body : null;
+    if (anchor) CHAT.list.insertBefore(el, anchor);
+    else CHAT.list.appendChild(el);
     CHAT.toolEls[p.tool_id] = el;
     chatScrollBottom();
   }
