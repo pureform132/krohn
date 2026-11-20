@@ -1,6 +1,23 @@
 # KROHN — Handoff (qué debes saber y hacer tú)
 
-Última actualización: 2026-11-19 sesión 11 — **Live minimalista con voces, chibi con stats, lanzador de escritorio con backend automático**.
+Última actualización: 2026-11-19 sesión 12 — **el Chat es una conversación normal, no una terminal**.
+
+## Sesión 12 (2026-11-19) — Chat normal sobre el gateway
+
+**1. `/chat` deja de ser la TUI embebida.** `krohn-shell.js` oculta el host de xterm (`.krohn-chat-xterm-host`) y monta `#krohn-chat` sobre el mismo gateway JSON-RPC: `session.create` → `session.activate` → `prompt.submit`, y los eventos llegan por la conexión WS (el transporte debe estar **activado**; `session.events.since` queda como respaldo y deduplica por `seq`). Al entrar se crea una conversación nueva al instante; el selector carga las 40 recientes con `session.resume` (90 s) y las titula con `session.title`.
+
+**2. Lo que se ve:** burbujas de usuario y de KROHN; markdown (párrafos, listas, código en bloque y en línea, negritas); panel **Pensamiento** plegable alimentado por `reasoning.delta`; tarjetas de herramientas con estado (punto gris/verde/rojo), comando o contexto, duración (`duration_s`) y resumen traducido ("Buscó N veces", "Extrajo N páginas"), con argumentos y resultado desplegables; tarjetas de **aprobación** y de **aclaración** con botones; plan/todos; puntos de escritura al final. El rail derecho se oculta en esta ruta y el scroll solo se pega al fondo si estabas abajo.
+
+**3. Enviar nunca se pierde.** Si la conversación aún se está preparando, el mensaje se encola (`queuedSend`) y sale solo al quedar lista; la creación tiene 45 s de margen y no se duplica (guard `chatCreating`). El aviso de estado muestra "Preparando…" / "Pensando…" / "Respondiendo…" / "Ejecutando …".
+
+**4. Avisos del backend (server→client requests).** Al recibir `gateway.ready` se anuncia `client.capabilities {server_requests: true}`. Las peticiones `srq-*` de `approval` y `clarify` se responden con el **frame JSON-RPC del mismo id** (no con `approval.respond`); `request.cancel` retira la tarjeta. Sudo/secret/vault se declinan con aviso de usar la TUI, y si el chat no está visible se responde `4404` para que el agente no espere el plazo de 300 s. **Verificado contra el backend real** con Python/websockets: clarify → `{answers:{q0:"azul"}}` → `message.complete` ("Azul. Anotado.").
+
+**5. Paletas dentro del chat.** `@` inserta la skill en el composer del chat; `/` ejecuta `slash.exec` y publica la salida como aviso; los botones Skills/Cmd siguen abriendo la paleta.
+
+**Verificado:** protocolo completo (create/activate/submit, `message.start`/`reasoning.delta`/`message.delta`/`message.complete`, clarify respondido) y capturas previas del chat con pensamiento y respuesta en Edge headless. **Pendiente por RAM:** captura final de tarjetas de herramienta y de la tarjeta de aclaración en el navegador; el mapeo de payloads está contrastado con `tui_gateway/tool_progress.py`. Este equipo reinició el servidor de opencode dos veces durante las pruebas por falta de memoria.
+
+**Mantenimiento:** si el chat sale negro, cerrar pestañas extra, matar los `node.exe` de `playwright`/`ui-tui` y recargar. El backend es `%LOCALAPPDATA%\krohn\bin\krohn.exe dashboard --skip-build --no-open`; los assets servidos son las copias de `%LOCALAPPDATA%\krohn\krohn\krohn_cli\web_dist\` (editar `web/public` no basta: hay que copiar).
+
 
 ## Sesión 11 (2026-11-19) — Live que funciona, chibi que habla, escritorio que abre
 
@@ -46,10 +63,10 @@ Verificado: con el backend apagado, el acceso directo lo levanta (200 OK) y abre
 
 1. **Gemini Live arranca de verdad.** El atasco era de diagnóstico, no de red: la clave existe (`/api/voice/live-key`, 9 modelos, recomendado `models/gemini-3.8-live`), `getUserMedia` responde con el micrófono falso, y el handshake completa `start → mic → audio → socket → open → setup-sent → ready` (estado "Escuchando…", botón "Terminar"). Se añadió `LIVE.stage` + `liveState()` para diagnosticar, se blindó la carga de modelos (cacheada, no bloquea el botón) y un watchdog de 18 s. **Falta la prueba con voz humana real** (este equipo no tiene micrófono físico; el micrófono falso de Edge se usa solo para verificar el protocolo).
 2. **Meganote** abre en `/meganote/index.html` dentro de un iframe, con la paleta oscura inyectada (`--paper:#0D0D0F`), interfaz en español y el crédito de Cesar D. Ciprian; el puente `bridge.js` hidrata desde `meganote.json` y publica cada ~4 s. El iframe se descarga al cerrar para no gastar RAM.
-3. **Mascota KROHN** (renombrada de `krohn-ultron-chibi` a `krohn-chibi`): spritesheet 576×684, 9 filas × 8 columnas, animación por filas (idle/think/coding/failed/waiting/speaking…), burbuja de estado y posición flotante sobre la esquina vacía del chat (no tapa la lista de sesiones ni el botón de copiar).
+3. **Mascota KROHN** (`krohn-chibi`): spritesheet 576×684, 9 filas × 8 columnas, animación por filas (idle/think/coding/failed/waiting/speaking…), burbuja de estado y posición flotante sobre la esquina vacía del chat (no tapa la lista de sesiones ni el botón de copiar).
 4. **Banner de la TUI**: el arte ASCII decía **HERMES AGENT**; ahora dice **KROHN** (mismo estilo ANSI Shadow, 43 columnas) en `ui-tui/src/banner.ts` y en el `dist/entry.js` desplegado. La conducta de la TUI no cambia.
 5. **Etiquetas de tema en español**: "KROHN — Negro absoluto…", "KROHN (Grande) — KROHN con tipografía más grande…", incluido el menú portal que abre fuera del sidebar.
-6. **Cero "Ultrón"**: se renombraron carpeta de mascota, scripts (`build-krohn-pet.py`, `install-krohn-pet.py`), sprites y textos en `README.md`, `NOTICE.md`, `HANDOFF.md`, `KROHN-INFORME.html`, `packaging/lightui/*`, `.gitignore`, `pet.json` y `config.yaml` (`display.pet.slug: krohn-chibi`). El barrido final sobre el repo no encuentra la palabra.
+6. **Sin nombres heredados**: se renombraron carpeta de mascota, scripts (`build-krohn-pet.py`, `install-krohn-pet.py`), sprites y textos en `README.md`, `NOTICE.md`, `HANDOFF.md`, `KROHN-INFORME.html`, `packaging/lightui/*`, `.gitignore`, `pet.json` y `config.yaml` (`display.pet.slug: krohn-chibi`). El barrido final sobre el repo no encuentra el nombre anterior.
 
 **Límites honestos / mantenimiento:**
 - Este equipo tiene **3.7 GB de RAM**: con varias pestañas/visitas de prueba quedan procesos `ui-tui` vivos (~140 MB c/u) y el buffer del PTY puede llegar a `MemoryError` (visto en `logs/errors.log`), lo que deja el panel de chat en negro. Con una sola pestaña abierta va bien. Si el chat sale negro: cerrar pestañas, matar los `node.exe` de `ui-tui\dist` y recargar.

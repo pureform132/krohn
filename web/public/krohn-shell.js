@@ -385,15 +385,28 @@
             clearTimeout(p.timer);
             if (j.error) p.reject(new Error(j.error.message || "gateway error"));
             else p.resolve(j.result || {});
+            return;
           }
+          if (j && j.method === "event" && j.params) {
+            if (window.__krohnChatDebug) console.warn("[krohn-chat] live", j.params.session_id, j.params.type);
+            if (j.params.type === "gateway.ready") advertiseChatCapabilities();
+            if (CHAT.panel && j.params.session_id === CHAT.sessionId) handleChatEventOnce(j.params);
+            return;
+          }
+          if (j && j.method && j.id && j.method !== "event") handleServerRequest(j);
         });
         ws.addEventListener("close", function () {
           gw = null;
+          gwAdvertised = false;
           gwPending.forEach(function (p) { clearTimeout(p.timer); p.reject(new Error("gateway closed")); });
           gwPending.clear();
           if (!settled) { settled = true; reject(new Error("gateway closed")); }
           clearTimeout(gwRetry);
-          gwRetry = setTimeout(function () { gwConnect().catch(function () {}); }, 3500);
+          gwRetry = setTimeout(function () {
+            gwConnect().then(function () {
+              if (CHAT.sessionId) return gwCall("session.activate", { session_id: CHAT.sessionId, omit_messages: true }, 12000);
+            }).catch(function () {});
+          }, 3500);
         });
         ws.addEventListener("error", function () {
           if (!settled) { settled = true; reject(new Error("gateway error")); }
@@ -421,6 +434,28 @@
         }
       });
     });
+  }
+
+  /* Server→client requests (approval, clarify, secrets) need an explicit
+     capability handshake once per connection: without it the backend fails
+     them immediately as if this were an older client. */
+  var gwAdvertised = false;
+
+  function advertiseChatCapabilities() {
+    if (gwAdvertised) return;
+    gwAdvertised = true;
+    gwCall("client.capabilities", { server_requests: true }, 9000).catch(function () {
+      gwAdvertised = false;
+    });
+  }
+
+  function gwRespond(id, result, error) {
+    var ws = gw;
+    if (!ws || ws.readyState !== 1) return;
+    var frame = { jsonrpc: "2.0", id: id };
+    if (error) frame.error = { code: error.code || -32601, message: error.message || "not supported" };
+    else frame.result = result || {};
+    try { ws.send(JSON.stringify(frame)); } catch (_) {}
   }
 
   /* ------------------------------------------------------------------ */
@@ -1057,7 +1092,7 @@
     root.addEventListener("click", function (e) { if (e.target === root) closeOverlay(root); });
     $("[data-files]", root).addEventListener("click", function () {
       closeOverlay(root);
-      S.sendToPty("@");
+      if (!chatInsert("@")) S.sendToPty("@");
     });
     $$(".k-tab", root).forEach(function (b) {
       b.addEventListener("click", function () { setPaletteTab(b.dataset.tab); });
@@ -1240,7 +1275,33 @@
     var r = PAL.rows[PAL.active];
     if (!r) return;
     closeOverlay("k-palette");
-    S.sendToPty(r.text);
+    if (PAL.tab === "commands" && CHAT.panel && CHAT.sessionId && chatOnRoute()) {
+      runChatCommand(r.text);
+      return;
+    }
+    if (!chatInsert(r.text)) S.sendToPty(r.text);
+  }
+
+  function runChatCommand(cmd) {
+    chatNotice("Comando: " + cmd, "info");
+    gwCall("slash.exec", { session_id: CHAT.sessionId, command: cmd }, 45000).then(function (res) {
+      var out = res.output || res.message || res.notice || res.display || "";
+      if (res.warning) out = out ? res.warning + "\n" + out : res.warning;
+      chatNotice(out || "Comando ejecutado.", res.warning ? "wait" : "info");
+    }).catch(function (e) {
+      chatNotice("Comando falló: " + (e.message || e), "error");
+    });
+  }
+
+  /* Skills / commands land in the dashboard chat composer when it is the
+     visible surface, instead of the hidden embedded terminal. */
+  function chatInsert(text) {
+    if (!CHAT.panel || !CHAT.input || !/^\/chat\/?$/.test(location.pathname)) return false;
+    var cur = CHAT.input.value.replace(/\s*$/, "");
+    CHAT.input.value = cur ? cur + " " + text : text;
+    CHAT.input.focus();
+    autoGrowChat();
+    return true;
   }
 
   /* @ opens the Skills palette when typed in the embedded terminal. The
@@ -1473,6 +1534,878 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Chat — a normal conversation surface over the same gateway          */
+  /* ------------------------------------------------------------------ */
+
+  var CHAT = {
+    panel: null,
+    scroll: null,
+    list: null,
+    input: null,
+    send: null,
+    picker: null,
+    title: null,
+    sessionId: null,
+    pickerId: null,
+    sessions: [],
+    seq: 0,
+    polling: false,
+    timer: null,
+    streaming: false,
+    turn: null,
+    toolEls: {},
+    openCards: {},
+    stick: true,
+    seqReady: false,
+    lastHandled: 0,
+    queuedSend: null,
+    mounted: false
+  };
+
+  function chatOnRoute() {
+    return /^\/chat\/?$/.test(location.pathname);
+  }
+
+  function mountChat() {
+    if (!chatOnRoute()) { unmountChat(); return; }
+    var host = document.querySelector(".krohn-chat-xterm-host");
+    if (!host) return;
+    host.classList.add("k-chat-hide-terminal");
+    var parent = host.parentElement;
+    if (!parent) return;
+    if (CHAT.panel && CHAT.panel.parentElement === parent) {
+      CHAT.mounted = true;
+      hideStockChatChrome(parent);
+      return;
+    }
+    buildChat(parent);
+    CHAT.mounted = true;
+    tagChatAside(parent);
+    hideStockChatChrome(parent);
+    refreshChatSessions();
+    if (CHAT.sessionId) {
+      resumeChat(CHAT.pickerId || CHAT.sessionId).catch(function () { return newChat(); });
+    } else {
+      newChat();
+    }
+  }
+
+  function unmountChat() {
+    if (CHAT.panel) { try { CHAT.panel.remove(); } catch (_) {} }
+    CHAT.panel = null;
+    CHAT.mounted = false;
+    clearInterval(CHAT.timer);
+    CHAT.timer = null;
+    var host = document.querySelector(".krohn-chat-xterm-host");
+    if (host) host.classList.remove("k-chat-hide-terminal");
+    Array.prototype.forEach.call(document.querySelectorAll(".k-chat-aside"), function (n) {
+      n.classList.remove("k-chat-aside");
+    });
+  }
+
+  function buildChat(parent) {
+    var panel = mk("div", "");
+    panel.id = "krohn-chat";
+    panel.innerHTML =
+      '<div class="kc-head">' +
+        '<button type="button" class="kc-new" title="Nueva conversación" aria-label="Nueva conversación">＋</button>' +
+        '<select class="kc-picker" aria-label="Conversaciones"></select>' +
+        '<span class="kc-status" data-kc-status></span>' +
+      "</div>" +
+      '<div class="kc-scroll" data-kc-scroll>' +
+        '<div class="kc-empty" data-kc-empty>' +
+          '<b>KROHN</b><span>Escribe abajo para empezar. Las herramientas, el pensamiento y las respuestas aparecen aquí.</span>' +
+        "</div>" +
+      "</div>" +
+      '<div class="kc-composer">' +
+        '<textarea class="kc-input" data-kc-input rows="1" placeholder="Escribe a KROHN…" aria-label="Mensaje para KROHN"></textarea>' +
+        '<button type="button" class="kc-send" data-kc-send aria-label="Enviar mensaje" title="Enviar">' +
+          '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg>' +
+        "</button>" +
+        '<button type="button" class="kc-stop k-chat-hidden" data-kc-stop aria-label="Detener respuesta" title="Detener">■</button>' +
+      "</div>";
+    parent.appendChild(panel);
+
+    CHAT.panel = panel;
+    CHAT.scroll = $("[data-kc-scroll]", panel);
+    CHAT.list = $("[data-kc-empty]", panel).parentElement;
+    CHAT.input = $("[data-kc-input]", panel);
+    CHAT.send = $("[data-kc-send]", panel);
+    CHAT.picker = $(".kc-picker", panel);
+    CHAT.title = $("[data-kc-status]", panel);
+
+    $(".kc-new", panel).addEventListener("click", function () { void newChat(); });
+    CHAT.send.addEventListener("click", function () { if (!CHAT.streaming) void sendChat(); });
+    $("[data-kc-stop]", panel).addEventListener("click", function () { void stopChat(); });
+    CHAT.input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!CHAT.streaming) void sendChat(); }
+    });
+    CHAT.input.addEventListener("input", autoGrowChat);
+    CHAT.scroll.addEventListener("scroll", function () {
+      CHAT.stick = CHAT.scroll.scrollHeight - CHAT.scroll.scrollTop - CHAT.scroll.clientHeight < 90;
+    });
+    CHAT.picker.addEventListener("change", function () {
+      var id = CHAT.picker.value;
+      if (id && id !== CHAT.pickerId) void openChat(id);
+    });
+  }
+
+  function tagChatAside(hostParent) {
+    if (!hostParent) return;
+    var row = hostParent.parentElement;
+    if (!row) return;
+    Array.prototype.forEach.call(row.children, function (kid) {
+      if (kid !== hostParent && !kid.contains(hostParent)) kid.classList.add("k-chat-aside");
+    });
+  }
+
+  /* The stock ChatPage still runs behind the panel; when its PTY ends it
+     paints a full-screen English overlay (and a copy button bound to the
+     hidden terminal) above our chat. Hide those, never the page frame. */
+  function hideStockChatChrome(parent) {
+    var host = document.querySelector(".krohn-chat-xterm-host");
+    var scope = (parent && parent.parentElement) || document.body;
+    var re = /Chat session ended|Chat could not start|Please wait while the conversation loads|Chat disconnected|Chat is reconnecting|copy last response/i;
+    Array.prototype.forEach.call(scope.querySelectorAll("div.absolute,div.fixed,button"), function (n) {
+      if (CHAT.panel && (n.contains(CHAT.panel) || CHAT.panel.contains(n))) return;
+      if (host && n.contains(host)) return;
+      if (re.test(n.textContent || "") || re.test(n.getAttribute("aria-label") || "")) {
+        n.classList.add("k-chat-hide-extra");
+      }
+    });
+  }
+
+  function autoGrowChat() {
+    if (!CHAT.input) return;
+    CHAT.input.style.height = "auto";
+    CHAT.input.style.height = Math.min(CHAT.input.scrollHeight, 168) + "px";
+  }
+
+  function chatScrollBottom(force) {
+    if (!CHAT.scroll) return;
+    var typing = $(".kc-typing", CHAT.panel);
+    if (typing) CHAT.list.appendChild(typing);
+    if (force || CHAT.stick !== false) CHAT.scroll.scrollTop = CHAT.scroll.scrollHeight;
+  }
+
+  function chatClear() {
+    if (!CHAT.list) return;
+    Array.prototype.slice.call(CHAT.list.querySelectorAll(".kc-msg,.kc-tool,.kc-notice,.kc-todos,.kc-typing")).forEach(function (n) { n.remove(); });
+    var empty = $("[data-kc-empty]", CHAT.panel);
+    if (empty) empty.classList.remove("k-chat-hidden");
+    CHAT.turn = null;
+    CHAT.toolEls = {};
+    CHAT.openCards = {};
+  }
+
+  function chatEmpty(show) {
+    var empty = CHAT.panel && $("[data-kc-empty]", CHAT.panel);
+    if (empty) empty.classList.toggle("k-chat-hidden", !show);
+  }
+
+  function chatStatus(text) {
+    if (!CHAT.title) return;
+    CHAT.title.textContent = text || "";
+  }
+
+  function chatRelative(ts) {
+    if (!ts) return "";
+    var s = Math.max(0, (Date.now() / 1000) - ts);
+    if (s < 60) return "ahora";
+    if (s < 3600) return Math.round(s / 60) + "m";
+    if (s < 86400) return Math.round(s / 3600) + "h";
+    return Math.round(s / 86400) + "d";
+  }
+
+  function renameChatOption(sid, title) {
+    if (!CHAT.picker || !title) return;
+    var hit = null;
+    Array.prototype.forEach.call(CHAT.picker.options, function (o) {
+      if (o.value === sid) hit = o;
+    });
+    if (!hit && CHAT.pickerId) {
+      Array.prototype.forEach.call(CHAT.picker.options, function (o) {
+        if (o.value === CHAT.pickerId) hit = o;
+      });
+    }
+    if (!hit) return;
+    CHAT.sessions.forEach(function (r) { if (r.id === hit.value) r.title = title; });
+    hit.textContent = title + " · ahora";
+  }
+
+  function chatLabel(row) {
+    var t = (row.title || "").trim() || "Sesión sin título";
+    return t + " · " + chatRelative(row.started_at);
+  }
+
+  function fillChatPicker(rows) {
+    CHAT.sessions = rows || [];
+    if (!CHAT.picker) return;
+    CHAT.picker.innerHTML = CHAT.sessions.map(function (r) {
+      return '<option value="' + esc(r.id) + '">' + esc(chatLabel(r)) + "</option>";
+    }).join("");
+    if (CHAT.pickerId) {
+      var has = Array.prototype.some.call(CHAT.picker.options, function (o) { return o.value === CHAT.pickerId; });
+      if (!has) {
+        var opt = document.createElement("option");
+        opt.value = CHAT.pickerId;
+        opt.textContent = "Conversación actual";
+        CHAT.picker.insertBefore(opt, CHAT.picker.firstChild);
+      }
+      CHAT.picker.value = CHAT.pickerId;
+    }
+  }
+
+  function refreshChatSessions() {
+    return gwCall("session.list", { limit: 40 }, 9000).then(function (r) {
+      fillChatPicker((r && r.sessions) || []);
+    }).catch(function () {});
+  }
+
+  function adoptChat(runtimeId, messages, pickerId, label) {
+    CHAT.sessionId = runtimeId;
+    CHAT.pickerId = pickerId;
+    CHAT.lastHandled = 0;
+    chatClear();
+    var msgs = messages || [];
+    msgs.forEach(renderHistoryMessage);
+    chatEmpty(msgs.length === 0);
+    if (CHAT.picker) {
+      var has = Array.prototype.some.call(CHAT.picker.options, function (o) { return o.value === pickerId; });
+      if (!has) {
+        var opt = document.createElement("option");
+        opt.value = pickerId;
+        opt.textContent = label || "Conversación actual";
+        CHAT.picker.insertBefore(opt, CHAT.picker.firstChild);
+      }
+      CHAT.picker.value = pickerId;
+    }
+    chatScrollBottom();
+    chatStatus(msgs.length ? "" : "Conversación nueva");
+    CHAT.stick = true;
+    CHAT.seqReady = false;
+    return gwCall("session.activate", { session_id: runtimeId, omit_messages: true }, 15000).then(function () {
+      if (window.__krohnChatDebug) console.warn("[krohn-chat] activated", runtimeId);
+    }).catch(function (e) {
+      if (window.__krohnChatDebug) console.warn("[krohn-chat] activate failed", e && e.message);
+    }).then(function () {
+      return gwCall("session.events.since", { session_id: runtimeId, last_seen: 0 }, 9000).then(function (ev) {
+        CHAT.seq = (ev && ev.latest_seq) || 0;
+        replayOpenRequests(ev && ev.open_requests);
+        CHAT.seqReady = true;
+        startChatPolling();
+        flushQueuedChat();
+      }).catch(function () { CHAT.seqReady = true; startChatPolling(); flushQueuedChat(); });
+    });
+  }
+
+  function openChat(id) {
+    CHAT.pickerId = id;
+    return resumeChat(id).catch(function (e) {
+      chatStatus("");
+      chatNotice("No se pudo abrir la conversación: " + (e.message || e), "error");
+    });
+  }
+
+  function resumeChat(id) {
+    CHAT.sessionId = null;
+    CHAT.seq = 0;
+    CHAT.seqReady = false;
+    CHAT.lastHandled = 0;
+    CHAT.streaming = false;
+    chatClear();
+    chatEmpty(true);
+    chatStatus("Cargando conversación…");
+    return gwCall("session.resume", { session_id: id, source: "webapp" }, 90000).then(function (r) {
+      var runtime = (r && r.session_id) || id;
+      var messages = (r && r.messages) || [];
+      if (!messages.length) {
+        return gwCall("session.history", { session_id: runtime }, 15000).then(function (h) {
+          return adoptChat(runtime, (h && h.messages) || [], id);
+        });
+      }
+      return adoptChat(runtime, messages, id);
+    });
+  }
+
+  var chatCreating = false;
+
+  function newChat() {
+    if (chatCreating) return Promise.resolve();
+    chatCreating = true;
+    chatStatus("Creando conversación…");
+    CHAT.seqReady = false;
+    return gwCall("session.create", { source: "webapp" }, 45000).then(function (r) {
+      if (!r || !r.session_id) throw new Error("no se pudo crear la sesión");
+      return adoptChat(r.session_id, r.messages || [], r.stored_session_id || r.session_id, "Nueva conversación");
+    }).catch(function (e) {
+      chatNotice("No se pudo crear la conversación: " + (e.message || e), "error");
+    }).then(function () { chatCreating = false; });
+  }
+
+  function startChatPolling() {
+    clearInterval(CHAT.timer);
+    CHAT.timer = setInterval(chatPoll, 1500);
+  }
+
+  function chatPoll() {
+    if (!CHAT.sessionId || CHAT.polling || !CHAT.mounted) return;
+    var sid = CHAT.sessionId;
+    CHAT.polling = true;
+    gwCall("session.events.since", { session_id: sid, last_seen: CHAT.seq }, 8000).then(function (r) {
+      if (!r || sid !== CHAT.sessionId) return;
+      if (window.__krohnChatDebug) console.warn("[krohn-chat] poll", r.count, r.latest_seq, r.truncated);
+      if (r.truncated) {
+        CHAT.seq = r.latest_seq || 0;
+        return gwCall("session.history", { session_id: sid }, 12000).then(function (h) {
+          chatClear();
+          ((h && h.messages) || []).forEach(renderHistoryMessage);
+          chatScrollBottom();
+        });
+      }
+      (r.events || []).forEach(handleChatEventOnce);
+      replayOpenRequests(r.open_requests);
+      if (typeof r.latest_seq === "number") CHAT.seq = Math.max(CHAT.seq, r.latest_seq);
+    }).catch(function (e) {
+      if (window.__krohnChatDebug) console.warn("[krohn-chat] poll failed", e && e.message);
+    }).then(function () { CHAT.polling = false; });
+  }
+
+  function handleChatEventOnce(ev) {
+    if (!ev) return;
+    if (typeof ev.seq === "number") {
+      if (ev.seq <= CHAT.lastHandled) return;
+      CHAT.lastHandled = ev.seq;
+      if (ev.seq > CHAT.seq) CHAT.seq = ev.seq;
+    }
+    handleChatEvent(ev);
+  }
+
+  function handleChatEvent(ev) {
+    if (!ev) return;
+    var type = ev.type, p = ev.payload || {};
+    if (type === "message.start") {
+      chatEmpty(false);
+      CHAT.streaming = true;
+      setChatStop(true);
+      chatTyping(true);
+      chatStatus("Pensando…");
+      petSet("think");
+      return;
+    }
+    if (type === "thinking.delta") {
+      chatStatus("Pensando…");
+      return;
+    }
+    if (type === "reasoning.delta") {
+      addThinking(p.text || p.delta || "");
+      return;
+    }
+    if (type === "message.delta") {
+      chatTyping(false);
+      addAssistantDelta(p.text || p.delta || "");
+      chatStatus("Respondiendo…");
+      petSet("speaking");
+      return;
+    }
+    if (type === "message.interim") {
+      if (p.text) addAssistantDelta((p.already_streamed ? "" : "") + p.text + "\n\n");
+      return;
+    }
+    if (type === "tool.start") {
+      chatTyping(false);
+      addToolStart(p);
+      chatStatus("Ejecutando " + (p.name || "herramienta") + "…");
+      petSet("work");
+      return;
+    }
+    if (type === "tool.complete") {
+      completeTool(p);
+      chatStatus("Pensando…");
+      petSet("think");
+      return;
+    }
+    if (type === "session.title") {
+      renameChatOption(p.session_id, p.title);
+      return;
+    }
+    if (type === "message.complete") {
+      chatTyping(false);
+      if (p.status === "error") chatNotice(p.error || p.message || "El turno falló.", "error");
+      finalizeAssistant(p);
+      CHAT.streaming = false;
+      setChatStop(false);
+      chatStatus("");
+      petSet("idle", "terminado", 4600);
+      refreshChatSessions();
+      return;
+    }
+    if (type === "error") {
+      chatTyping(false);
+      chatNotice(p.message || "Error del agente.", "error");
+      return;
+    }
+    if (type === "request.cancel") {
+      dropServerCard(p.id);
+      return;
+    }
+    if (type === "approval.request") {
+      addApproval(p);
+      return;
+    }
+    if (type === "clarify.request") {
+      chatNotice("KROHN espera una aclaración: " + (p.question || p.text || "revisa la terminal"), "wait");
+      return;
+    }
+    if (type === "todo.updated") {
+      renderTodos(p);
+      return;
+    }
+  }
+
+  /* ---- rendering ---- */
+
+  function chatNotice(text, tone) {
+    if (!CHAT.panel) return;
+    chatEmpty(false);
+    var el = mk("div", "kc-notice");
+    el.dataset.tone = tone || "info";
+    el.textContent = text;
+    CHAT.list.appendChild(el);
+    chatScrollBottom();
+  }
+
+  function chatTyping(on) {
+    if (!CHAT.panel) return;
+    var el = $(".kc-typing", CHAT.panel);
+    if (!on) { if (el) el.remove(); return; }
+    if (el) return;
+    el = mk("div", "kc-typing");
+    el.innerHTML = "<i></i><i></i><i></i>";
+    CHAT.list.appendChild(el);
+    chatScrollBottom();
+  }
+
+  function currentTurn() {
+    if (CHAT.turn) return CHAT.turn;
+    var el = mk("div", "kc-msg kc-assistant");
+    el.innerHTML =
+      '<div class="kc-who">KROHN</div>' +
+      '<details class="kc-think k-chat-hidden"><summary>Pensamiento</summary><pre></pre></details>' +
+      '<div class="kc-body"></div>';
+    CHAT.list.appendChild(el);
+    CHAT.turn = { el: el, body: $(".kc-body", el), think: $(".kc-think", el), thinkPre: $(".kc-think pre", el), text: "" };
+    return CHAT.turn;
+  }
+
+  function addThinking(text) {
+    if (!text) return;
+    var t = currentTurn();
+    var pre = t.thinkPre;
+    pre.textContent += text;
+    t.think.classList.remove("k-chat-hidden");
+    t.think.open = true;
+    chatScrollBottom();
+  }
+
+  function addAssistantDelta(text) {
+    if (!text) return;
+    var t = currentTurn();
+    t.text += text;
+    t.body.textContent = t.text;
+    chatScrollBottom();
+  }
+
+  function finalizeAssistant(p) {
+    var t = CHAT.turn;
+    if (!t) {
+      if (!(p && typeof p.text === "string" && p.text.trim())) return;
+      t = currentTurn();
+    }
+    if (p && typeof p.text === "string" && p.text.trim() && p.text.length >= t.text.length) t.text = p.text;
+    if (p && p.reasoning && !t.thinkPre.textContent.trim()) {
+      t.thinkPre.textContent = p.reasoning;
+      t.think.classList.remove("k-chat-hidden");
+    }
+    if (t.text.trim()) {
+      t.body.innerHTML = chatMarkdown(t.text);
+    } else {
+      t.body.remove();
+      if (!t.thinkPre.textContent.trim()) t.el.remove();
+    }
+    if (t.thinkPre.textContent.trim()) t.think.open = false;
+    CHAT.turn = null;
+  }
+
+  function renderHistoryMessage(m) {
+    if (!m) return;
+    if (m.display_kind === "hidden" || m.role === "system") return;
+    if (m.role === "user") {
+      if (m.text) addUserBubble(m.text);
+      return;
+    }
+    if (m.role === "tool") {
+      var tid = m.tool_call_id || ("h" + (m.row_id || Math.floor(Math.random() * 1e9)));
+      addToolStart({ tool_id: tid, name: m.name || "herramienta", args: m.args || {} });
+      completeTool({ tool_id: tid, name: m.name || "herramienta", args: m.args || {}, result: m.content, summary: "" });
+      return;
+    }
+    if (m.role === "assistant") {
+      var el = mk("div", "kc-msg kc-assistant");
+      el.innerHTML =
+        '<div class="kc-who">KROHN</div>' +
+        (m.reasoning ? '<details class="kc-think"><summary>Pensamiento</summary><pre></pre></details>' : "") +
+        '<div class="kc-body"></div>';
+      if (m.reasoning) $(".kc-think pre", el).textContent = m.reasoning;
+      $(".kc-body", el).innerHTML = chatMarkdown(m.text || "");
+      CHAT.list.appendChild(el);
+      return;
+    }
+  }
+
+  function addUserBubble(text) {
+    chatEmpty(false);
+    var el = mk("div", "kc-msg kc-user");
+    el.innerHTML = '<div class="kc-who">Tú</div><div class="kc-body"></div>';
+    $(".kc-body", el).innerHTML = chatMarkdown(String(text));
+    CHAT.list.appendChild(el);
+    chatScrollBottom();
+  }
+
+  function toolSummary(p) {
+    if (p.context) return String(p.context);
+    var args = p.args || {};
+    var name = p.name || "herramienta";
+    if (args.command) return String(args.command);
+    if (args.path) return String(args.path);
+    if (args.query) return String(args.query);
+    if (args.url) return String(args.url);
+    if (args.code) return String(args.code).slice(0, 80);
+    var keys = Object.keys(args);
+    if (!keys.length) return "";
+    try { return JSON.stringify(args).slice(0, 120); } catch (_) { return ""; }
+  }
+
+  function toolMetaSummary(s) {
+    if (!s) return "";
+    var m = /^Did (\d+) searches?(?: in .*)?$/i.exec(s);
+    if (m) return m[1] + (m[1] === "1" ? " búsqueda" : " búsquedas");
+    m = /^Extracted (\d+) pages?(?: in .*)?$/i.exec(s);
+    if (m) return m[1] + (m[1] === "1" ? " página" : " páginas");
+    return String(s);
+  }
+
+  function addToolStart(p) {
+    if (!p || !p.tool_id) return;
+    if (CHAT.toolEls[p.tool_id]) return;
+    chatEmpty(false);
+    var el = mk("div", "kc-tool");
+    el.dataset.state = "running";
+    el.innerHTML =
+      '<div class="kc-tool-head"><span class="kc-tool-dot"></span><b></b><span class="kc-tool-meta"></span></div>' +
+      '<div class="kc-tool-sub"></div>' +
+      '<details class="kc-tool-more"><summary>Detalle</summary><pre></pre></details>';
+    $("b", el).textContent = p.name || "herramienta";
+    $(".kc-tool-sub", el).textContent = toolSummary(p);
+    el.classList.toggle("k-chat-hidden", false);
+    if (p.args && Object.keys(p.args).length) {
+      $("pre", el).textContent = JSON.stringify(p.args, null, 2).slice(0, 3000);
+    }
+    CHAT.list.appendChild(el);
+    CHAT.toolEls[p.tool_id] = el;
+    chatScrollBottom();
+  }
+
+  function completeTool(p) {
+    if (!p || !p.tool_id) return;
+    var el = CHAT.toolEls[p.tool_id];
+    if (!el) { addToolStart(p); el = CHAT.toolEls[p.tool_id]; }
+    if (!el) return;
+    var failed = p.is_error || p.error || (p.result && p.result.error);
+    el.dataset.state = failed ? "error" : "done";
+    var meta = $(".kc-tool-meta", el);
+    if (meta) {
+      var bits = [];
+      if (p.duration_s) bits.push(Math.max(0.1, p.duration_s).toFixed(1) + "s");
+      var summary = toolMetaSummary(p.summary);
+      if (summary) bits.push(String(summary).slice(0, 90));
+      meta.textContent = bits.join(" · ");
+    }
+    var pre = $("pre", el);
+    if (pre) {
+      var body = p.result_text || p.result;
+      var text = typeof body === "string" ? body : JSON.stringify(body, null, 2);
+      var more = $(".kc-tool-more", el);
+      if (text && text.length) {
+        pre.textContent = String(text).slice(0, 4000);
+        if (more) more.classList.remove("k-chat-hidden");
+      } else if (more) {
+        more.classList.add("k-chat-hidden");
+      }
+    }
+    chatScrollBottom();
+  }
+
+  function replayOpenRequests(list) {
+    if (!Array.isArray(list) || !list.length) return;
+    list.forEach(function (req) {
+      if (!req || !req.id || CHAT.openCards[req.id]) return;
+      handleServerRequest({ jsonrpc: "2.0", id: req.id, method: req.method, params: req.params || {} });
+    });
+  }
+
+  /* JSON-RPC server→client requests (tui_gateway/server_requests.py). The
+     reply is the response frame with the same srq id, not an RPC call. */
+  function handleServerRequest(frame) {
+    if (!frame || !frame.id) return;
+    var method = frame.method;
+    var p = frame.params || {};
+    if (CHAT.openCards[frame.id]) return;
+    /* No chat surface (another route) or a session this window is not showing:
+       decline like the desktop does so the agent fails fast instead of waiting
+       out clarify's 300 s deadline. */
+    if (!CHAT.panel || (p.session_id && CHAT.sessionId && p.session_id !== CHAT.sessionId)) {
+      gwRespond(frame.id, null, { code: 4404, message: "No KROHN window is showing this chat." });
+      return;
+    }
+    if (method === "approval") {
+      addApproval(p, frame.id);
+      return;
+    }
+    if (method === "clarify") {
+      addClarify(p, frame.id);
+      return;
+    }
+    if (method === "sudo" || method === "secret" || /^vault\./.test(method)) {
+      gwRespond(frame.id, { value: "" });
+      chatNotice("KROHN pidió un dato privado (" + (p.prompt || method) + "). Responde ese aviso en la TUI.", "wait");
+      return;
+    }
+    if (method === "setup_beat") {
+      gwRespond(frame.id, { answer: null });
+      return;
+    }
+    gwRespond(frame.id, null, { code: -32601, message: "unsupported request" });
+  }
+
+  function dropServerCard(id) {
+    var el = id && CHAT.openCards[id];
+    if (!el) return;
+    try { el.remove(); } catch (_) {}
+    delete CHAT.openCards[id];
+  }
+
+  function addApproval(p, reqId) {
+    chatEmpty(false);
+    var el = mk("div", "kc-notice kc-prompt");
+    el.dataset.tone = "wait";
+    el.innerHTML = '<b>KROHN necesita tu aprobación</b><span></span><div class="kc-actions"></div>';
+    $("span", el).textContent = p.description || p.command || "Comando pendiente";
+    var actions = $(".kc-actions", el);
+    var choices = Array.isArray(p.choices) && p.choices.length ? p.choices : ["once", "always", "deny"];
+    choices.forEach(function (c) {
+      var b = mk("button", "kc-action");
+      b.type = "button";
+      b.textContent = c === "once" ? "Permitir una vez" : c === "always" ? "Permitir siempre" : c === "session" ? "Permitir sesión" : c === "deny" ? "Rechazar" : c;
+      b.addEventListener("click", function () {
+        b.disabled = true;
+        var done = function () {
+          el.dataset.tone = "info";
+          actions.remove();
+          if (reqId) delete CHAT.openCards[reqId];
+        };
+        var fail = function (e) { chatNotice("No se pudo responder: " + (e.message || e), "error"); };
+        if (reqId) { gwRespond(reqId, { choice: c }); done(); return; }
+        gwCall("approval.respond", { session_id: CHAT.sessionId, request_id: p.request_id, choice: c }, 12000).then(done).catch(fail);
+      });
+      actions.appendChild(b);
+    });
+    CHAT.list.appendChild(el);
+    if (reqId) CHAT.openCards[reqId] = el;
+    chatScrollBottom();
+  }
+
+  function addClarify(p, reqId) {
+    chatEmpty(false);
+    var qs = Array.isArray(p.questions) && p.questions.length ? p.questions : [{ qid: "q", question: p.question || "¿Puedes aclararlo?" }];
+    var el = mk("div", "kc-notice kc-prompt kc-clarify");
+    el.dataset.tone = "wait";
+    el.innerHTML = "<b>KROHN necesita una aclaración</b>";
+    var answers = {};
+    var inputs = {};
+    qs.forEach(function (q, i) {
+      var block = mk("div", "kc-q");
+      var label = mk("span", "kc-q-label");
+      label.textContent = (i + 1) + ". " + q.question;
+      block.appendChild(label);
+      if (Array.isArray(q.choices) && q.choices.length) {
+        var row = mk("div", "kc-actions");
+        q.choices.forEach(function (c) {
+          var b = mk("button", "kc-action");
+          b.type = "button";
+          b.textContent = c;
+          b.addEventListener("click", function () {
+            answers[q.qid] = c;
+            Array.prototype.forEach.call(row.children, function (k) { k.classList.toggle("on", k === b); });
+          });
+          row.appendChild(b);
+        });
+        block.appendChild(row);
+      } else {
+        var inp = mk("input", "kc-q-input");
+        inp.type = "text";
+        inp.placeholder = q.multi_select ? "Escribe una respuesta por línea" : "Tu respuesta";
+        inp.setAttribute("aria-label", q.question);
+        inputs[q.qid] = inp;
+        block.appendChild(inp);
+      }
+      el.appendChild(block);
+    });
+    var actions = mk("div", "kc-actions kc-q-send");
+    var send = mk("button", "kc-action on");
+    send.type = "button";
+    send.textContent = "Responder";
+    send.addEventListener("click", function () {
+      Object.keys(inputs).forEach(function (k) { answers[k] = inputs[k].value; });
+      var has = Object.keys(answers).some(function (k) { return String(answers[k] || "").trim(); });
+      var result = has ? { answers: answers, outcome: "submitted" } : { answers: null, outcome: "cancelled" };
+      if (reqId) gwRespond(reqId, result);
+      else gwCall("clarify.respond", { session_id: CHAT.sessionId, request_id: p.request_id, answer: JSON.stringify(answers) }, 12000).catch(function () {});
+      el.dataset.tone = "info";
+      el.querySelectorAll("button,input").forEach(function (n) { n.disabled = true; });
+      if (reqId) delete CHAT.openCards[reqId];
+    });
+    var skip = mk("button", "kc-action");
+    skip.type = "button";
+    skip.textContent = "Omitir";
+    skip.addEventListener("click", function () {
+      if (reqId) gwRespond(reqId, { answers: null, outcome: "cancelled" });
+      el.dataset.tone = "info";
+      el.querySelectorAll("button,input").forEach(function (n) { n.disabled = true; });
+      if (reqId) delete CHAT.openCards[reqId];
+    });
+    actions.appendChild(send);
+    actions.appendChild(skip);
+    el.appendChild(actions);
+    CHAT.list.appendChild(el);
+    if (reqId) CHAT.openCards[reqId] = el;
+    chatScrollBottom();
+  }
+
+  function renderTodos(p) {
+    var todos = (p && p.todos) || (p && p.items) || null;
+    if (!Array.isArray(todos) || !todos.length) return;
+    var old = $(".kc-todos", CHAT.panel);
+    if (old) old.remove();
+    var el = mk("div", "kc-todos");
+    el.innerHTML = "<b>Plan</b>";
+    todos.forEach(function (t) {
+      var row = mk("div", "kc-todo");
+      row.dataset.done = t.status === "completed" || t.done ? "1" : "0";
+      row.textContent = (t.status === "completed" ? "✓ " : "• ") + (t.text || t.title || "");
+      el.appendChild(row);
+    });
+    CHAT.list.appendChild(el);
+    chatScrollBottom();
+  }
+
+  function chatMarkdown(src) {
+    var text = String(src || "");
+    var blocks = text.split(/```/);
+    var out = "";
+    blocks.forEach(function (block, i) {
+      if (i % 2 === 1) {
+        var nl = block.indexOf("\n");
+        var lang = nl >= 0 ? block.slice(0, nl).trim() : "";
+        var code = nl >= 0 ? block.slice(nl + 1) : block;
+        out += '<pre class="kc-code"><code>' + esc(code.replace(/\n$/, "")) + "</code></pre>";
+        return;
+      }
+      var parts = block.split(/\n{2,}/);
+      parts.forEach(function (par) {
+        if (!par.trim()) return;
+        out += "<p>" + inlineMarkdown(par) + "</p>";
+      });
+    });
+    return out || "";
+  }
+
+  function inlineMarkdown(s) {
+    var t = esc(s);
+    t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
+    t = t.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    t = t.replace(/(^|\n)([*-] )/g, "$1• ");
+    t = t.replace(/\n/g, "<br>");
+    return t;
+  }
+
+  /* ---- send / stop ---- */
+
+  function setChatStop(on) {
+    if (!CHAT.panel) return;
+    CHAT.send.classList.toggle("k-chat-hidden", !!on);
+    $("[data-kc-stop]", CHAT.panel).classList.toggle("k-chat-hidden", !on);
+  }
+
+  function flushQueuedChat() {
+    if (!CHAT.queuedSend || !CHAT.sessionId || !CHAT.seqReady || CHAT.streaming) return;
+    var text = CHAT.queuedSend;
+    CHAT.queuedSend = null;
+    CHAT.input.value = text;
+    autoGrowChat();
+    void sendChat();
+  }
+
+  function sendChat() {
+    var text = (CHAT.input.value || "").trim();
+    if (!text) return;
+    if (!CHAT.sessionId || !CHAT.seqReady) {
+      CHAT.queuedSend = text;
+      CHAT.input.value = "";
+      autoGrowChat();
+      chatStatus("Preparando…");
+      chatNotice("Preparando la conversación. El mensaje se enviará solo.", "info");
+      if (!CHAT.sessionId) void newChat();
+      return;
+    }
+    CHAT.input.value = "";
+    autoGrowChat();
+    CHAT.stick = true;
+    addUserBubble(text);
+    chatEmpty(false);
+    CHAT.streaming = true;
+    setChatStop(true);
+    chatTyping(true);
+    chatStatus("Pensando…");
+    petSet("think");
+    gwCall("prompt.submit", { session_id: CHAT.sessionId, text: text }, 25000).catch(function (e) {
+      if (!CHAT.pickerId || !/session not found/i.test(e && e.message || "")) throw e;
+      return resumeChat(CHAT.pickerId).then(function () {
+        addUserBubble(text);
+        return gwCall("prompt.submit", { session_id: CHAT.sessionId, text: text }, 25000);
+      });
+    }).catch(function (e) {
+      CHAT.streaming = false;
+      setChatStop(false);
+      chatTyping(false);
+      chatNotice("No se pudo enviar: " + (e.message || e), "error");
+    });
+  }
+
+  function stopChat() {
+    if (!CHAT.sessionId) return;
+    gwCall("session.interrupt", { session_id: CHAT.sessionId }, 12000).then(function () {
+      CHAT.streaming = false;
+      setChatStop(false);
+      chatTyping(false);
+      chatStatus("Detenido");
+      petSet("idle");
+    }).catch(function (e) {
+      chatNotice("No se pudo detener: " + (e.message || e), "error");
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* boot                                                               */
   /* ------------------------------------------------------------------ */
 
@@ -1488,6 +2421,22 @@
     };
   };
   S.petState = function () { return { state: pet.state, label: pet.label }; };
+  S.chat = {
+    open: openChat,
+    send: sendChat,
+    state: function () {
+      return {
+        mounted: !!CHAT.panel,
+        sessionId: CHAT.sessionId,
+        sessions: CHAT.sessions.length,
+        streaming: CHAT.streaming,
+        seq: CHAT.seq,
+        pickerId: CHAT.pickerId,
+        seqReady: CHAT.seqReady,
+        messages: CHAT.list ? CHAT.list.querySelectorAll(".kc-msg,.kc-tool").length : 0
+      };
+    }
+  };
 
   onReady(function () {
     buildLive();
@@ -1497,6 +2446,8 @@
     bootSidebar();
     watchThemeMenus();
     startPetPolling();
+    mountChat();
+    setInterval(mountChat, 2000);
     setInterval(relabelTheme, 2500);
     /* Warm the slow lists (skills scans the disk, slash comes over RPC) so the
        palette opens instantly when the user types @ or /. */
