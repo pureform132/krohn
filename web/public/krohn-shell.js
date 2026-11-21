@@ -544,7 +544,7 @@
     root.setAttribute("aria-hidden", "true");
     root.innerHTML =
       '<div class="k-live-scene">' +
-        '<button type="button" class="k-live-gear" data-settings aria-label="Ajustes de voz" aria-expanded="false">' +
+        '<button type="button" class="k-live-gear" data-settings aria-label="Ajustes de Live" title="Ajustes de Live" aria-expanded="false">' +
           '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">' +
             '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.1"/><circle cx="8" cy="17" r="2.1"/>' +
           "</svg>" +
@@ -1493,7 +1493,13 @@
   }
 
   function toolFailed(p) {
-    return !!(p && (p.is_error || p.error || (p.result && p.result.error)));
+    if (!p) return false;
+    if (p.is_error || p.error) return true;
+    var r = p.result;
+    if (!r || typeof r !== "object") return false;
+    if (r.success === false || r.ok === false) return true;
+    if (typeof r.error === "string" && r.error.trim()) return true;
+    return typeof r.exit_code === "number" && r.exit_code !== 0;
   }
 
   function petEvent(ev) {

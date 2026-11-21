@@ -13,7 +13,7 @@
 | Momento real | Estado | Fila | Texto |
 |---|---|---|---|
 | `tool.generating` / `tool.start` (cualquier herramienta) | `work` | 1 (plano azul + martillo) | `trabajando` |
-| `tool.complete` con error, evento `error`, `message.complete` con `status:"error"` | `failed` | 5 (se tambalea en un pie) | `error` |
+| `tool.complete` con error o código de salida distinto de cero, evento `error`, `message.complete` con `status:"error"` | `failed` | 5 (se tambalea en un pie) | `error` |
 | crear/retomar conversación, enviar, compresión o reconexión | `loading` | 6 (sentada) | `cargando` |
 | razonamiento | `think` | 3 | `pensando` |
 | respuesta en streaming | `speaking` | 3 | `respondiendo` |
