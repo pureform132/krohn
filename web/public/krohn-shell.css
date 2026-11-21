@@ -848,6 +848,11 @@ body {
 #krohn-pet.k-speaking .k-sprite { animation-duration: .78s; }
 #krohn-pet.k-failed .k-sprite { animation-duration: .9s; }
 
+#krohn-pet[data-size="s"] .k-pet-text { padding: 5px 8px 4px; font-size: 9px; }
+#krohn-pet[data-size="s"] .k-pet-bubble { min-width: 62px; }
+#krohn-pet[data-size="l"] .k-pet-text { padding: 7px 12px 6px; font-size: 11px; }
+#krohn-pet[data-size="l"] .k-pet-bubble { min-width: 84px; }
+
 /* ============================================================================
    Toast
    ========================================================================== */

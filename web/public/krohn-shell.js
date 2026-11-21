@@ -391,6 +391,7 @@
             if (window.__krohnChatDebug) console.warn("[krohn-chat] live", j.params.session_id, j.params.type);
             if (j.params.type === "gateway.ready") advertiseChatCapabilities();
             if (CHAT.panel && j.params.session_id === CHAT.sessionId) handleChatEventOnce(j.params);
+            else if (!CHAT.mounted) petEvent(j.params);
             return;
           }
           if (j && j.method && j.id && j.method !== "event") handleServerRequest(j);
@@ -574,6 +575,9 @@
         '<div class="k-live-sheet" data-sheet aria-hidden="true">' +
           '<label class="k-live-field"><span>Voz</span><select data-voice aria-label="Voz de KROHN Live"></select></label>' +
           '<label class="k-live-field"><span>Modelo</span><select data-model aria-label="Modelo Live"></select></label>' +
+          '<label class="k-live-field"><span>Chibi</span><select data-pet-size aria-label="Tamaño de la chibi de KROHN">' +
+            '<option value="s">Pequeña</option><option value="m">Mediana</option><option value="l">Grande</option>' +
+          "</select></label>" +
           '<p class="k-live-note" data-note></p>' +
           '<p class="k-live-sign">KROHN Live · Cesar D. Ciprian</p>' +
         "</div>" +
@@ -586,6 +590,7 @@
       captions: { user: $('[data-cap="user"]', root), krohn: $('[data-cap="krohn"]', root) },
       model: $("[data-model]", root),
       voice: $("[data-voice]", root),
+      petSize: $("[data-pet-size]", root),
       start: $("[data-start]", root),
       mute: $("[data-mute]", root),
       settings: $("[data-settings]", root),
@@ -597,6 +602,7 @@
       return '<option value="' + esc(v[0]) + '">' + esc(v[1]) + "</option>";
     }).join("");
     liveEls.voice.value = liveVoiceStore();
+    liveEls.petSize.value = petSizeStore();
 
     $("[data-close]", root).addEventListener("click", function () {
       liveStop(false);
@@ -626,6 +632,9 @@
         liveStop(false);
         liveStart();
       }
+    });
+    liveEls.petSize.addEventListener("change", function () {
+      applyPetSize(liveEls.petSize.value);
     });
   }
 
@@ -1332,6 +1341,32 @@
     loading: "cargando", speaking: "respondiendo", waiting: "esperando",
     failed: "error", wave: "terminado", review: "pensando"
   };
+  /* Celda 72×76 del spritesheet, ampliada sin deformar. La posición guardada
+     sigue siendo válida: applyPetSize la vuelve a limitar al viewport. */
+  var PET_SIZES = { s: [72, 76], m: [96, 101.33], l: [128, 135.11] };
+
+  function petSizeStore() {
+    try {
+      var v = localStorage.getItem("krohn.pet.size");
+      return PET_SIZES[v] ? v : "m";
+    } catch (_) { return "m"; }
+  }
+
+  function applyPetSize(key) {
+    var size = PET_SIZES[key] ? key : "m";
+    var dims = PET_SIZES[size];
+    if (pet.el) {
+      pet.el.dataset.size = size;
+      pet.el.style.setProperty("--pet-w", dims[0] + "px");
+      pet.el.style.setProperty("--pet-h", dims[1] + "px");
+      if (pet.sprite) {
+        var row = PET_ROWS[pet.state] == null ? 0 : PET_ROWS[pet.state];
+        pet.sprite.style.backgroundPositionY = (-row * dims[1]) + "px";
+      }
+      if (pet.pos) applyPetPos();
+    }
+    try { localStorage.setItem("krohn.pet.size", size); } catch (_) {}
+  }
 
   var pet = {
     el: null,
@@ -1348,7 +1383,7 @@
     var el = mk("button", "");
     el.id = "krohn-pet";
     el.type = "button";
-    el.title = "KROHN — clic para Live · arrastra para mover";
+    el.title = "KROHN — clic para Live y ajustes (voz, modelo, tamaño) · arrastra para mover";
     el.setAttribute("aria-label", "KROHN chibi — clic para abrir Live");
     el.innerHTML =
       '<span class="k-sprite" aria-hidden="true"></span>' +
@@ -1363,6 +1398,7 @@
     pet.bubble = $(".k-pet-text", el);
 
     try { pet.pos = JSON.parse(localStorage.getItem("krohn.pet.pos") || "null"); } catch (_) { pet.pos = null; }
+    applyPetSize(petSizeStore());
     if (pet.pos) applyPetPos();
     petSet("idle", "", 0);
 
@@ -1423,11 +1459,10 @@
     if (!pet.el) return;
     var key = PET_ROWS[state] == null ? "idle" : state;
     var text = label == null ? (PET_LABEL[key] || "") : label;
-    if (pet.state === key && pet.label === text) return;
     pet.state = key;
     pet.label = text;
     var row = PET_ROWS[key];
-    var h = pet.el.clientHeight || 101.33;
+    var h = (PET_SIZES[pet.el.dataset.size] || PET_SIZES.m)[1];
     pet.sprite.style.backgroundPositionY = (-row * h) + "px";
     pet.el.classList.toggle("k-busy", key === "think" || key === "work" || key === "coding" || key === "loading");
     pet.el.classList.toggle("k-waiting", key === "waiting");
@@ -1457,24 +1492,25 @@
     pet.idleTimer = setTimeout(function () { petSet("idle", "", 0); }, ms || 7000);
   }
 
+  function toolFailed(p) {
+    return !!(p && (p.is_error || p.error || (p.result && p.result.error)));
+  }
+
   function petEvent(ev) {
     if (!ev) return;
     var type = ev.type, p = ev.payload || {};
     if (type === "message.start") { petSet("think"); petIdleSoon(30000); }
     else if (type === "thinking.delta" || type === "reasoning.delta") { petSet("think"); petIdleSoon(30000); }
-    else if (type === "tool.generating") { petSet("work"); petIdleSoon(30000); }
+    else if (type === "tool.generating") { petSet("work", "trabajando", 600000); }
     else if (type === "tool.start") {
       var name = String(p.name || "").toLowerCase();
-      if (name === "clarify" || name === "approval") {
-        petSet("waiting");
-      } else if (/(terminal|shell|exec|bash|powershell|write|edit|patch|code|apply)/.test(name)) {
-        petSet("coding");
-      } else {
-        petSet("work");
-      }
-      petIdleSoon(30000);
+      if (name === "clarify" || name === "approval") petSet("waiting", "esperando", 20000);
+      else petSet("work", "trabajando", 600000);
     }
-    else if (type === "tool.complete") { petIdleSoon(2500); }
+    else if (type === "tool.complete") {
+      if (toolFailed(p)) petSet("failed", "error", 6000);
+      else petIdleSoon(2500);
+    }
     else if (type === "message.delta") { petSet("speaking"); petIdleSoon(30000); }
     else if (type === "message.complete") {
       if (p.status === "error") petSet("failed", "error", 6000);
@@ -1482,7 +1518,7 @@
     }
     else if (type === "error") { petSet("failed", "error", 6000); }
     else if (type === "clarify.request" || type === "approval.request") { petSet("waiting", "esperando", 20000); }
-    else if (type === "status.update" && /compress|compact/.test(String(p.kind || ""))) { petSet("loading", "cargando", 12000); }
+    else if (type === "status.update" && /compress|compact|prepar|loading|cargando/.test(String(p.kind || ""))) { petSet("loading", "cargando", 12000); }
     else if (type === "gateway.reconnecting") { petSet("loading", "cargando", 6000); }
   }
 
@@ -1496,7 +1532,10 @@
   var petPollBusy = false;
 
   function petPoll() {
-    if (petPollBusy) return;
+    /* The chat drives the pet from its own live events; replaying the same
+       session through this fallback would overwrite real states with stale
+       ones (and flash old turns on every poll). */
+    if (petPollBusy || (typeof CHAT !== "undefined" && CHAT.mounted)) return;
     petPollBusy = true;
     var now = Date.now();
     var needSession = !petSession || now - petSessionAt > 12000;
@@ -1782,6 +1821,7 @@
     }
     chatScrollBottom();
     chatStatus(msgs.length ? "" : "Conversación nueva");
+    petSet("idle", "", 0);
     CHAT.stick = true;
     CHAT.seqReady = false;
     return gwCall("session.activate", { session_id: runtimeId, omit_messages: true }, 15000).then(function () {
@@ -1816,6 +1856,7 @@
     chatClear();
     chatEmpty(true);
     chatStatus("Cargando conversación…");
+    petSet("loading", "cargando", 90000);
     return gwCall("session.resume", { session_id: id, source: "webapp" }, 90000).then(function (r) {
       var runtime = (r && r.session_id) || id;
       var messages = (r && r.messages) || [];
@@ -1834,12 +1875,14 @@
     if (chatCreating) return Promise.resolve();
     chatCreating = true;
     chatStatus("Creando conversación…");
+    petSet("loading", "cargando", 45000);
     CHAT.seqReady = false;
     return gwCall("session.create", { source: "webapp" }, 45000).then(function (r) {
       if (!r || !r.session_id) throw new Error("no se pudo crear la sesión");
       return adoptChat(r.session_id, r.messages || [], r.stored_session_id || r.session_id, "Nueva conversación");
     }).catch(function (e) {
       chatNotice("No se pudo crear la conversación: " + (e.message || e), "error");
+      petSet("failed", "error", 6000);
     }).then(function () { chatCreating = false; });
   }
 
@@ -1895,6 +1938,7 @@
     }
     if (type === "thinking.delta") {
       chatStatus("Pensando…");
+      petSet("think");
       return;
     }
     if (type === "reasoning.delta") {
@@ -1922,7 +1966,8 @@
     if (type === "tool.complete") {
       completeTool(p);
       chatStatus("Pensando…");
-      petSet("think");
+      if (toolFailed(p)) petSet("failed", "error", 6000);
+      else petSet("think");
       return;
     }
     if (type === "session.title") {
@@ -1931,18 +1976,21 @@
     }
     if (type === "message.complete") {
       chatTyping(false);
-      if (p.status === "error") chatNotice(p.error || p.message || "El turno falló.", "error");
+      var failed = p.status === "error";
+      if (failed) chatNotice(p.error || p.message || "El turno falló.", "error");
       finalizeAssistant(p);
       CHAT.streaming = false;
       setChatStop(false);
       chatStatus("");
-      petSet("idle", "terminado", 4600);
+      if (failed) petSet("failed", "error", 6000);
+      else petSet("idle", "terminado", 4600);
       refreshChatSessions();
       return;
     }
     if (type === "error") {
       chatTyping(false);
       chatNotice(p.message || "Error del agente.", "error");
+      petSet("failed", "error", 6000);
       return;
     }
     if (type === "request.cancel") {
@@ -1951,10 +1999,12 @@
     }
     if (type === "approval.request") {
       addApproval(p);
+      petSet("waiting", "esperando", 20000);
       return;
     }
     if (type === "clarify.request") {
       chatNotice("KROHN espera una aclaración: " + (p.question || p.text || "revisa la terminal"), "wait");
+      petSet("waiting", "esperando", 20000);
       return;
     }
     if (type === "todo.updated") {
@@ -2379,7 +2429,7 @@
     setChatStop(true);
     chatTyping(true);
     chatStatus("Pensando…");
-    petSet("think");
+    petSet("loading", "cargando", 30000);
     gwCall("prompt.submit", { session_id: CHAT.sessionId, text: text }, 25000).catch(function (e) {
       if (!CHAT.pickerId || !/session not found/i.test(e && e.message || "")) throw e;
       return resumeChat(CHAT.pickerId).then(function () {
@@ -2391,6 +2441,7 @@
       setChatStop(false);
       chatTyping(false);
       chatNotice("No se pudo enviar: " + (e.message || e), "error");
+      petSet("failed", "error", 6000);
     });
   }
 
@@ -2422,7 +2473,11 @@
       models: LIVE.models.length, stage: LIVE.stage, geminiReady: LIVE.geminiReady
     };
   };
-  S.petState = function () { return { state: pet.state, label: pet.label }; };
+  S.petState = function () { return { state: pet.state, label: pet.label, size: petSizeStore() }; };
+  S.petSize = function (key) {
+    if (key) applyPetSize(key);
+    return petSizeStore();
+  };
   S.chat = {
     open: openChat,
     send: sendChat,

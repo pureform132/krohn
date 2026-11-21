@@ -1,6 +1,30 @@
 # KROHN — Handoff (qué debes saber y hacer tú)
 
-Última actualización: 2026-11-19 sesión 12 — **el Chat es una conversación normal, no una terminal**.
+Última actualización: 2026-11-20 sesión 13 — **tamaño de la chibi, sesiones vaciadas y las tres animaciones conectadas**.
+
+## Sesión 13 (2026-11-20) — Chibi: tamaño, herramientas, error y carga
+
+**1. Tamaño de la chibi, simple y persistente.** En los ajustes de Live (engranaje, arriba a la derecha) hay un selector **Chibi**: Pequeña / Mediana / Grande. Se guarda en `localStorage` como `krohn.pet.size` (`s`/`m`/`l`) y se aplica en el acto: 72×76, 96×101.33 y 128×135.11 px. `applyPetSize()` fija `--pet-w`/`--pet-h` y recalcula la fila del spritesheet; la nube ajusta tipografía y ancho. También se puede leer o cambiar desde consola con `KROHN_SHELL.petSize()` / `KROHN_SHELL.petSize("l")`.
+
+**2. Sesiones almacenadas: cero.** Se enumeraron y eliminaron **82** sesiones por `session.delete` sobre el WS del gateway (historial, mensajes y archivos), respetando la negativa del backend para sesiones vivas. `session.list` devuelve **0**; en `%LOCALAPPDATA%\krohn\sessions\` solo queda `sessions.json` (rutas de emparejamiento, no conversaciones) y no quedan `request_dump_*.json`. Configuración, skills, mascotas y memorias intactas. El `state.db` conserva su tamaño porque SQLite reutiliza las páginas; el contenido de conversaciones ya no está.
+
+**3. Las tres animaciones ya se ven cuando toca.** El spritesheet ya tenía las filas; el problema era el cableado.
+
+| Momento real | Estado | Fila | Texto |
+|---|---|---|---|
+| `tool.generating` / `tool.start` (cualquier herramienta) | `work` | 1 (plano azul + martillo) | `trabajando` |
+| `tool.complete` con error, evento `error`, `message.complete` con `status:"error"` | `failed` | 5 (se tambalea en un pie) | `error` |
+| crear/retomar conversación, enviar, compresión o reconexión | `loading` | 6 (sentada) | `cargando` |
+| razonamiento | `think` | 3 | `pensando` |
+| respuesta en streaming | `speaking` | 3 | `respondiendo` |
+| clarify / aprobación | `waiting` | 6 | `esperando` |
+| fin de turno | `idle` | 0 | `terminado` |
+
+`petSet` ya no retorna temprano cuando el estado se repite, así la animación se reinicia y el cambio nunca queda enmascarado. El sondeo `petPoll` se desactiva mientras el chat está montado: sus eventos en vivo mandan y no se pisan con estados viejos. Las herramientas ya no se clasifican por nombre: todas usan la fila del plano y el martillo.
+
+**Verificado en Edge headless** (`pet-test.mjs`, `pet-test.log` y capturas `pet-work.png`, `pet-failed.png`, `pet-loading.png` en `%TEMP%\opencode\pwtools`): las tres filas con su nube correcta, tamaños `s`/`m`/`l` con `background-size` proporcional, selector con las tres opciones y **cero errores de consola**. `node --check` limpio; `krohn-shell.js` y `.css` copiados a `web_dist` con hash idéntico al fuente.
+
+**Límites honestos:** no se tocó nada más de la interfaz stock. Sigue pendiente tu prueba de Live con micrófono real.
 
 ## Sesión 12 (2026-11-19) — Chat normal sobre el gateway
 
